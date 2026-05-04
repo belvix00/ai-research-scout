@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Why Vision-Language Models Stop Looking: Attention Dilution from First Principles · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="index.html">Home</a><a class="" href="daily.html">Daily</a><a class="" href="weekly.html">Weekly</a><a class="active" href="blog.html">First-principles Blog</a><a class="" href="running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>Why Vision-Language Models Stop Looking: Attention Dilution from First Principles</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>Today&#x27;s scout surfaced a paper on <strong>Persistent Visual Memory</strong> for large vision-language models. The interesting phrase was <strong>visual signal dilution</strong>: as a multimodal model generates more and more text, its attention to the original image can decay. This is not just a vague &quot;the model forgot the image&quot; story. There is a clean mathematical reason this can happen.</p>
+<p>The opportunity is useful because it turns a messy multimodal failure into a simple mechanism:</p>
+<blockquote>If visual tokens and text tokens compete inside one softmax attention pool, then adding more text tokens can reduce the probability mass available to visual tokens.</blockquote>
+<p>Let&#x27;s derive that from the beginning.</p>
+<h2>Start from the simplest possible problem</h2>
+<p>Imagine you are answering a question about an image.</p>
+<p>The image contains one important fact:</p>
+<ul>
+<li>The mug is <strong>red</strong>.</li>
+</ul>
+<p>The conversation also contains many text tokens:</p>
+<ul>
+<li>user question</li>
+<li>previous answer tokens</li>
+<li>chain-of-thought-like intermediate text</li>
+<li>tool messages</li>
+<li>captions</li>
+<li>formatting tokens</li>
+</ul>
+<p>At the start, the model only has a few text tokens, so the image tokens are easy to consult. Later, after generating a long answer, the model has hundreds or thousands of text tokens in its context. The red mug fact is still present in the image tokens, but now it competes with a much larger textual history.</p>
+<p>The central question:</p>
+<blockquote>When the model decides what to generate next, how much of its attention goes to the image versus its own text history?</blockquote>
+<p>To answer that, we need to invent attention.</p>
+<h2>Inventing attention from first principles</h2>
+<p>Suppose we have a current hidden state <code>q</code>, called a <strong>query</strong>. It represents what the model is currently looking for.</p>
+<p>Every previous token has a <strong>key</strong> <code>k_i</code>, representing what information that token can offer.</p>
+<p>A natural way to measure relevance is a dot product:</p>
+<pre><code>score_i = q · k_i</code></pre>
+<p>If <code>score_i</code> is large, token <code>i</code> seems relevant. If it is small, token <code>i</code> seems irrelevant.</p>
+<p>But raw scores are not probabilities. We want weights that are:</p>
+<ol>
+<li>non-negative</li>
+<li>sum to 1</li>
+<li>larger when the score is larger</li>
+</ol>
+<p>The standard answer is softmax:</p>
+<pre><code>a_i = exp(score_i) / sum_j exp(score_j)</code></pre>
+<p>Then the model forms a weighted mixture of value vectors <code>v_i</code>:</p>
+<pre><code>output = sum_i a_i v_i</code></pre>
+<p>So attention is just:</p>
+<blockquote>compare current query to all keys, normalize those comparisons into probabilities, and average the corresponding values.</blockquote>
+<h2>Where dilution enters</h2>
+<p>Now split the context into two groups:</p>
+<ul>
+<li>image tokens: <code>I</code></li>
+<li>text tokens: <code>T</code></li>
+</ul>
+<p>The total attention assigned to image tokens is:</p>
+<pre><code>A_image = sum_{i in I} exp(score_i) / [sum_{i in I} exp(score_i) + sum_{j in T} exp(score_j)]</code></pre>
+<p>Define:</p>
+<pre><code>S_image = sum_{i in I} exp(score_i)
+S_text  = sum_{j in T} exp(score_j)</code></pre>
+<p>Then:</p>
+<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<p>This equation is the whole mechanism.</p>
+<p>If <code>S_text</code> grows while <code>S_image</code> stays roughly fixed, then <code>A_image</code> shrinks.</p>
+<p>For example, suppose the image contributes total softmax mass score:</p>
+<pre><code>S_image = 10</code></pre>
+<p>Early in the answer, text contributes:</p>
+<pre><code>S_text = 10</code></pre>
+<p>Then:</p>
+<pre><code>A_image = 10 / (10 + 10) = 0.5</code></pre>
+<p>Half the attention goes to the image.</p>
+<p>Later, after a long generation, suppose many text tokens are moderately relevant:</p>
+<pre><code>S_text = 90</code></pre>
+<p>Then:</p>
+<pre><code>A_image = 10 / (10 + 90) = 0.1</code></pre>
+<p>Now only 10% goes to the image.</p>
+<p>The model did not delete the image. The image tokens are still there. But the softmax denominator became dominated by text.</p>
+<p>This is attention dilution.</p>
+<h2>The neural network version</h2>
+<p>In a transformer layer, this happens across many heads and layers.</p>
+<p>For one attention head:</p>
+<pre><code>Q = X W_Q
+K = X W_K
+V = X W_V
+Attention(Q,K,V) = softmax(Q K^T / sqrt(d)) V</code></pre>
+<p>For a generated token at position <code>t</code>, its query attends over previous positions. If the context contains image tokens plus generated text tokens, the softmax is normalized across all allowed positions.</p>
+<p>So the visual information must win a competition against:</p>
+<ul>
+<li>the original prompt</li>
+<li>previous answer tokens</li>
+<li>instruction tokens</li>
+<li>formatting tokens</li>
+<li>any scratchpad-like text</li>
+<li>repeated entities introduced by the model itself</li>
+</ul>
+<p>The longer the generation, the more competitors exist.</p>
+<p>The mathematical bottleneck is not simply sequence length. It is:</p>
+<pre><code>visual relevance mass / total relevance mass</code></pre>
+<p>If the model generates text that is internally self-consistent, those generated tokens may become highly relevant to future tokens. The model can start attending to its own story more than the image. That is how visual drift can happen.</p>
+<h2>A simple derivative intuition</h2>
+<p>The softmax also shapes gradients.</p>
+<p>If an image token gets attention weight <code>a_i</code>, then its value vector contributes:</p>
+<pre><code>a_i v_i</code></pre>
+<p>When <code>a_i</code> becomes tiny, the image token has little effect on the output. It also receives weaker learning signal through that attention path.</p>
+<p>A very rough intuition:</p>
+<pre><code>small attention weight -&gt; small contribution -&gt; small correction signal</code></pre>
+<p>So dilution is not only an inference-time issue. During training, if long multimodal sequences often bury image tokens under text, the model may not learn robust mechanisms for repeatedly re-accessing visual evidence.</p>
+<h2>Where the bottleneck appears</h2>
+<p>The bottleneck appears at the shared attention pool.</p>
+<p>The architecture asks one mechanism to do two jobs:</p>
+<ol>
+<li>maintain a long textual discourse</li>
+<li>preserve access to visual evidence</li>
+</ol>
+<p>But these two jobs have different needs.</p>
+<p>Text discourse wants rich self-conditioning. The model should remember what it already said.</p>
+<p>Visual grounding wants persistent access to the original perceptual facts. The model should keep checking the image.</p>
+<p>If both jobs share one softmax competition, text can crowd out vision.</p>
+<p>This suggests the fix: give visual information a path that does not vanish just because the text history grows.</p>
+<h2>Inventing persistent visual memory</h2>
+<p>From first principles, if the problem is:</p>
+<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<p>then possible fixes include:</p>
+<ol>
+<li>Increase <code>S_image</code></li>
+</ol>
+<p>   - make visual keys more relevant</p>
+<p>   - add stronger visual retrieval heads</p>
+<ol>
+<li>Decrease irrelevant <code>S_text</code></li>
+</ol>
+<p>   - compress text history</p>
+<p>   - remove unneeded generated tokens</p>
+<ol>
+<li>Avoid the shared denominator</li>
+</ol>
+<p>   - give vision a separate pathway</p>
+<p>   - retrieve visual memory outside standard attention</p>
+<p>   - periodically refresh visual facts</p>
+<p>Persistent visual memory is in the third family. Instead of forcing visual evidence to compete with all text tokens at every step, keep a dedicated visual route available.</p>
+<p>A simple conceptual architecture:</p>
+<pre><code>normal transformer path: text + image mixed through attention
+visual memory path:     direct access to compact visual embeddings
+combined output:        normal_output + visual_memory_output</code></pre>
+<p>This is similar in spirit to adding a side-channel for information that the main channel tends to lose.</p>
+<p>That should sound familiar: many research opportunities are side-channel opportunities.</p>
+<ul>
+<li>LoRA can be a side-channel for low-rank adaptation.</li>
+<li>MTP can be a side-channel for richer output gradients.</li>
+<li>persistent visual memory can be a side-channel for visual evidence.</li>
+<li>agent memory can be a side-channel outside raw context.</li>
+</ul>
+<h2>Why this becomes a research opportunity</h2>
+<p>The opportunity is not merely to say “attention dilution exists.” The opportunity is to build a clean diagnostic.</p>
+<p>A good diagnostic should ask:</p>
+<blockquote>Does visual grounding degrade as generated text length increases, even when the relevant visual fact remains unchanged?</blockquote>
+<p>This is a beautiful small experiment because the causal variable is simple: output length.</p>
+<p>You can create images with details like:</p>
+<ul>
+<li>a red mug next to a blue notebook</li>
+<li>a tiny number on a sign</li>
+<li>an object in the top-left corner</li>
+<li>two similar objects with one distinguishing attribute</li>
+</ul>
+<p>Then ask a model to produce long answers where it must recall the detail at the end.</p>
+<p>If accuracy drops with answer length, that suggests visual evidence becomes less accessible over generation.</p>
+<h2>A tiny experiment you can run</h2>
+<h3>Dataset</h3>
+<p>Create 50 simple images manually or synthetically. Each image has one critical detail.</p>
+<p>Example:</p>
+<pre><code>Image: a red triangle above a green circle
+Question: Write a 300-word story about the scene. At the end, answer: what color was the triangle?
+Correct answer: red</code></pre>
+<h3>Conditions</h3>
+<p>Run three conditions:</p>
+<ol>
+<li><strong>Short answer</strong></li>
+</ol>
+<p>   - ask directly for the detail</p>
+<ol>
+<li><strong>Long answer</strong></li>
+</ol>
+<p>   - ask for a long explanation, then the detail</p>
+<ol>
+<li><strong>Long answer with visual refresh</strong></li>
+</ol>
+<p>   - insert a compact reminder midway, e.g. “Before final answer, re-inspect the image.”</p>
+<h3>Metrics</h3>
+<pre><code>accuracy_short
+accuracy_long
+accuracy_long_with_refresh</code></pre>
+<p>If:</p>
+<pre><code>accuracy_short &gt; accuracy_long</code></pre>
+<p>then visual grounding degrades with generation length.</p>
+<p>If:</p>
+<pre><code>accuracy_long_with_refresh &gt; accuracy_long</code></pre>
+<p>then some cheap persistent-memory or refresh mechanism may help.</p>
+<h3>Optional mechanistic probe</h3>
+<p>If you can access attention maps, measure:</p>
+<pre><code>visual_attention_fraction_t = attention_mass_to_image_tokens_at_step_t</code></pre>
+<p>Plot:</p>
+<pre><code>visual_attention_fraction_t vs generation step t</code></pre>
+<p>The expected curve under dilution is downward sloping.</p>
+<h2>Why this is good for your research taste</h2>
+<p>This concept has the kind of shape you like:</p>
+<ol>
+<li>It starts with a precise mechanism.</li>
+<li>The math is simple enough to derive.</li>
+<li>The failure can be tested with a tiny experiment.</li>
+<li>The result can become a visually clear demo.</li>
+<li>It connects architecture, inference behavior, and representation bottlenecks.</li>
+</ol>
+<p>It also echoes your SLM rare-token work. In both cases, the model has information available somewhere, but the interface makes access uneven.</p>
+<p>For rare tokens, the bottleneck may be gradient flow through tied input/output embeddings.</p>
+<p>For images, the bottleneck may be attention mass through a shared softmax denominator.</p>
+<p>Different surface. Same deeper question:</p>
+<blockquote>Which useful signals get crowded out by the dominant channel?</blockquote>
+<h2>What to remember</h2>
+<p>The key equation is:</p>
+<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<p>As generated text grows, <code>S_text</code> can grow. If <code>S_image</code> does not grow with it, the image gets a smaller fraction of attention.</p>
+<p>That is visual signal dilution.</p>
+<p>The research move is to test whether grounding failures are actually state-access failures, then try small fixes:</p>
+<ul>
+<li>visual refresh prompts</li>
+<li>compact visual memory summaries</li>
+<li>separate visual memory paths</li>
+<li>attention regularization</li>
+<li>retrieval-style visual side-channels</li>
+</ul>
+<p>The broader lesson:</p>
+<blockquote>Long-context multimodal intelligence may depend less on having all information in the context, and more on keeping the right information accessible at the right time.</blockquote></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 02:42</p>
+  </footer>
+</body>
+</html>
