@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css" integrity="sha384-sN7K3wE8KuzdD5qBnQnUhfLJ6v9U6FowM9mDdP3Yy1Kw3N1FYWyYJcA+6QEi8Yb" crossorigin="anonymous">
 </head>
 <body>
   <div class="noise"></div>
@@ -45,7 +46,7 @@
 <p>Suppose we have a current hidden state <code>q</code>, called a <strong>query</strong>. It represents what the model is currently looking for.</p>
 <p>Every previous token has a <strong>key</strong> <code>k_i</code>, representing what information that token can offer.</p>
 <p>A natural way to measure relevance is a dot product:</p>
-<pre><code>score_i = q · k_i</code></pre>
+<div class="math-block">$$\mathrm{score}_i = q^\top k_i$$</div>
 <p>If <code>score_i</code> is large, token <code>i</code> seems relevant. If it is small, token <code>i</code> seems irrelevant.</p>
 <p>But raw scores are not probabilities. We want weights that are:</p>
 <ol>
@@ -54,9 +55,9 @@
 <li>larger when the score is larger</li>
 </ol>
 <p>The standard answer is softmax:</p>
-<pre><code>a_i = exp(score_i) / sum_j exp(score_j)</code></pre>
+<div class="math-block">$$a_i = \frac{\exp(\mathrm{score}_i)}{\sum_j \exp(\mathrm{score}_j)}$$</div>
 <p>Then the model forms a weighted mixture of value vectors <code>v_i</code>:</p>
-<pre><code>output = sum_i a_i v_i</code></pre>
+<div class="math-block">$$\mathrm{output} = \sum_i a_i v_i$$</div>
 <p>So attention is just:</p>
 <blockquote>compare current query to all keys, normalize those comparisons into probabilities, and average the corresponding values.</blockquote>
 <h2>Where dilution enters</h2>
@@ -66,35 +67,33 @@
 <li>text tokens: <code>T</code></li>
 </ul>
 <p>The total attention assigned to image tokens is:</p>
-<pre><code>A_image = sum_{i in I} exp(score_i) / [sum_{i in I} exp(score_i) + sum_{j in T} exp(score_j)]</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{\sum_{i \in I} \exp(\mathrm{score}_i)}{\sum_{i \in I} \exp(\mathrm{score}_i) + \sum_{j \in T} \exp(\mathrm{score}_j)}$$</div>
 <p>Define:</p>
-<pre><code>S_image = sum_{i in I} exp(score_i)
-S_text  = sum_{j in T} exp(score_j)</code></pre>
+<div class="math-block">$$S_{\text{image}} = \sum_{i \in I} \exp(\mathrm{score}_i)$$</div>
+<div class="math-block">$$S_{\text{text}} = \sum_{j \in T} \exp(\mathrm{score}_j)$$</div>
 <p>Then:</p>
-<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{S_{\text{image}}}{S_{\text{image}} + S_{\text{text}}}$$</div>
 <p>This equation is the whole mechanism.</p>
 <p>If <code>S_text</code> grows while <code>S_image</code> stays roughly fixed, then <code>A_image</code> shrinks.</p>
 <p>For example, suppose the image contributes total softmax mass score:</p>
-<pre><code>S_image = 10</code></pre>
+<div class="math-block">$$S_{\text{image}} = 10$$</div>
 <p>Early in the answer, text contributes:</p>
-<pre><code>S_text = 10</code></pre>
+<div class="math-block">$$S_{\text{text}} = 10$$</div>
 <p>Then:</p>
-<pre><code>A_image = 10 / (10 + 10) = 0.5</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{10}{10 + 10} = 0.5$$</div>
 <p>Half the attention goes to the image.</p>
 <p>Later, after a long generation, suppose many text tokens are moderately relevant:</p>
-<pre><code>S_text = 90</code></pre>
+<div class="math-block">$$S_{\text{text}} = 90$$</div>
 <p>Then:</p>
-<pre><code>A_image = 10 / (10 + 90) = 0.1</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{10}{10 + 90} = 0.1$$</div>
 <p>Now only 10% goes to the image.</p>
 <p>The model did not delete the image. The image tokens are still there. But the softmax denominator became dominated by text.</p>
 <p>This is attention dilution.</p>
 <h2>The neural network version</h2>
 <p>In a transformer layer, this happens across many heads and layers.</p>
 <p>For one attention head:</p>
-<pre><code>Q = X W_Q
-K = X W_K
-V = X W_V
-Attention(Q,K,V) = softmax(Q K^T / sqrt(d)) V</code></pre>
+<div class="math-block">$$Q = XW_Q, \quad K = XW_K, \quad V = XW_V$$</div>
+<div class="math-block">$$\mathrm{Attention}(Q,K,V) = \mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{d}}\right)V$$</div>
 <p>For a generated token at position <code>t</code>, its query attends over previous positions. If the context contains image tokens plus generated text tokens, the softmax is normalized across all allowed positions.</p>
 <p>So the visual information must win a competition against:</p>
 <ul>
@@ -107,15 +106,15 @@ Attention(Q,K,V) = softmax(Q K^T / sqrt(d)) V</code></pre>
 </ul>
 <p>The longer the generation, the more competitors exist.</p>
 <p>The mathematical bottleneck is not simply sequence length. It is:</p>
-<pre><code>visual relevance mass / total relevance mass</code></pre>
+<div class="math-block">$$\frac{\text{visual relevance mass}}{\text{total relevance mass}}$$</div>
 <p>If the model generates text that is internally self-consistent, those generated tokens may become highly relevant to future tokens. The model can start attending to its own story more than the image. That is how visual drift can happen.</p>
 <h2>A simple derivative intuition</h2>
 <p>The softmax also shapes gradients.</p>
 <p>If an image token gets attention weight <code>a_i</code>, then its value vector contributes:</p>
-<pre><code>a_i v_i</code></pre>
+<div class="math-block">$$a_i v_i$$</div>
 <p>When <code>a_i</code> becomes tiny, the image token has little effect on the output. It also receives weaker learning signal through that attention path.</p>
 <p>A very rough intuition:</p>
-<pre><code>small attention weight -&gt; small contribution -&gt; small correction signal</code></pre>
+<div class="math-block">$$\text{small attention weight} \rightarrow \text{small contribution} \rightarrow \text{small correction signal}$$</div>
 <p>So dilution is not only an inference-time issue. During training, if long multimodal sequences often bury image tokens under text, the model may not learn robust mechanisms for repeatedly re-accessing visual evidence.</p>
 <h2>Where the bottleneck appears</h2>
 <p>The bottleneck appears at the shared attention pool.</p>
@@ -131,7 +130,7 @@ Attention(Q,K,V) = softmax(Q K^T / sqrt(d)) V</code></pre>
 <p>This suggests the fix: give visual information a path that does not vanish just because the text history grows.</p>
 <h2>Inventing persistent visual memory</h2>
 <p>From first principles, if the problem is:</p>
-<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{S_{\text{image}}}{S_{\text{image}} + S_{\text{text}}}$$</div>
 <p>then possible fixes include:</p>
 <ol>
 <li>Increase <code>S_image</code></li>
@@ -198,20 +197,18 @@ Correct answer: red</code></pre>
 </ol>
 <p>   - insert a compact reminder midway, e.g. “Before final answer, re-inspect the image.”</p>
 <h3>Metrics</h3>
-<pre><code>accuracy_short
-accuracy_long
-accuracy_long_with_refresh</code></pre>
+<div class="math-block">$$\mathrm{accuracy}_{\text{short}}, \quad \mathrm{accuracy}_{\text{long}}, \quad \mathrm{accuracy}_{\text{long+refresh}}$$</div>
 <p>If:</p>
-<pre><code>accuracy_short &gt; accuracy_long</code></pre>
+<div class="math-block">$$\mathrm{accuracy}_{\text{short}} &gt; \mathrm{accuracy}_{\text{long}}$$</div>
 <p>then visual grounding degrades with generation length.</p>
 <p>If:</p>
-<pre><code>accuracy_long_with_refresh &gt; accuracy_long</code></pre>
+<div class="math-block">$$\mathrm{accuracy}_{\text{long+refresh}} &gt; \mathrm{accuracy}_{\text{long}}$$</div>
 <p>then some cheap persistent-memory or refresh mechanism may help.</p>
 <h3>Optional mechanistic probe</h3>
 <p>If you can access attention maps, measure:</p>
-<pre><code>visual_attention_fraction_t = attention_mass_to_image_tokens_at_step_t</code></pre>
+<div class="math-block">$$\mathrm{visual\_attention\_fraction}_t = \mathrm{attention\_mass\_to\_image\_tokens}_t$$</div>
 <p>Plot:</p>
-<pre><code>visual_attention_fraction_t vs generation step t</code></pre>
+<div class="math-block">$$\mathrm{visual\_attention\_fraction}_t \; \text{vs.} \; t$$</div>
 <p>The expected curve under dilution is downward sloping.</p>
 <h2>Why this is good for your research taste</h2>
 <p>This concept has the kind of shape you like:</p>
@@ -229,7 +226,7 @@ accuracy_long_with_refresh</code></pre>
 <blockquote>Which useful signals get crowded out by the dominant channel?</blockquote>
 <h2>What to remember</h2>
 <p>The key equation is:</p>
-<pre><code>A_image = S_image / (S_image + S_text)</code></pre>
+<div class="math-block">$$A_{\text{image}} = \frac{S_{\text{image}}}{S_{\text{image}} + S_{\text{text}}}$$</div>
 <p>As generated text grows, <code>S_text</code> can grow. If <code>S_image</code> does not grow with it, the image gets a smaller fraction of attention.</p>
 <p>That is visual signal dilution.</p>
 <p>The research move is to test whether grounding failures are actually state-access failures, then try small fixes:</p>
@@ -244,7 +241,9 @@ accuracy_long_with_refresh</code></pre>
 <blockquote>Long-context multimodal intelligence may depend less on having all information in the context, and more on keeping the right information accessible at the right time.</blockquote></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 02:49</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:20</p>
   </footer>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js" integrity="sha384-hIoBPJpTUs74ddyc4bFZSM1MZu6ADomyXk8EogbLDBsPU5rkXF/dtZZxL1Pceg6x" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaLwNThNQJkps43JxM2KyR7U5PEr4xcJwV4q5A5G0yD+wzQUMUzL4N" crossorigin="anonymous" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
 </body>
 </html>
