@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>AI Research Scout Morning Briefing — 2026-05-04 · AI Research Scout</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,7 +15,7 @@
   <div class="noise"></div>
   <header class="topbar">
     <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
-    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
   </header>
   <main>
     <article class="prose"><h1>AI Research Scout Morning Briefing — 2026-05-04</h1>
@@ -31,11 +32,11 @@
 <p><strong>First-principles concept:</strong></p>
 <p>A text language model gets a sequence of discrete tokens. Each token is an index into a vocabulary. This makes the next-token objective clean: predict one of <code>V</code> symbols. Speech is harder. Raw waveform is continuous, high-rate, and full of redundant local structure. So most modern speech/audio language models first compress audio into a sequence of codec tokens or latent vectors. The tokenizer becomes the “interface” between the physical signal and the sequence model.</p>
 <p>If the tokenizer is discrete, like Encodec-style codes, the model inherits a language-model-like problem: predict symbols. But speech has continuous factors — pitch, timbre, rhythm, speaker identity, emotion, room acoustics — that may not quantize cleanly into a small codebook. If the tokenizer is continuous, the next-step prediction problem becomes more like predicting a distribution over latent vectors. Diffusion is one way to model that distribution: instead of picking a single class, the model learns to denoise a latent sample toward plausible audio latents.</p>
-<p>The key mechanism question is: <strong>what information does the audio tokenizer preserve, and what gradients does it expose to the sequence model?</strong> In text, your SLM weight-tying idea asks whether the input/output embedding interface creates gradient coupling that hurts rare tokens. In audio, the analogous question is whether the codec/tokenizer interface creates coupling or bottlenecks between speaker identity, phonetic content, prosody, and acoustic detail.</p>
+<p>The key mechanism question is: <strong>what information does the audio tokenizer preserve, and what gradients does it expose to the sequence model?</strong> In audio, the codec/tokenizer interface may create bottlenecks between speaker identity, phonetic content, prosody, and acoustic detail.</p>
 <p><strong>Why now:</strong></p>
 <p>Audio ML is moving from short clips and TTS demos toward long-form, multi-speaker, conversational generation. That makes tokenizer compression and latent stability more important. A tiny error in short TTS is tolerable; in long-form generation, representation drift becomes audible. If continuous tokenizers are becoming practical, then many text-LM training questions can be translated into audio: output bottlenecks, latent collapse, rare event degradation, and factor entanglement.</p>
 <p><strong>Why this is a good opportunity for Aman:</strong></p>
-<p>This connects to your audio ML/talking-face interests and your mechanism-first SLM work. You do not need to build VibeVoice. A strong small project would be: <strong>study whether audio tokenizers create rare-factor degradation analogous to rare-token degradation in LMs.</strong> Rare accents, speaker timbres, phonemes, emotional tones, or code-switching could be the audio equivalent of rare words.</p>
+<p>This connects to your audio ML/talking-face interests and mechanism-first small-model work. You do not need to build VibeVoice. A strong small project would be: <strong>study whether audio tokenizers create rare-factor degradation.</strong> Rare accents, speaker timbres, phonemes, emotional tones, or code-switching could expose weakly represented factors.</p>
 <p><strong>Mechanism/bottleneck hypothesis:</strong></p>
 <p>Audio generation quality may fail not because the decoder is weak, but because the tokenizer compresses multiple independent factors into a latent geometry where rare factors receive weak or conflicting gradient signals. In other words: the speech tokenizer may be the real LM head.</p>
 <p><strong>1-3 day experiment:</strong></p>
@@ -92,21 +93,21 @@
 <p>But aggressive quantization is not just a representation problem. It is an optimization problem. Imagine a continuous weight wants to move from +0.2 to -0.2. In full precision, it crosses smoothly through zero. In ternary space, small updates may not change the discrete state at all, or may flip too abruptly. The model can get stuck in “quantization traps” where gradient information exists but cannot express itself as a useful weight change.</p>
 <p>So the deep question is: <strong>how does learning behave when the parameter space has cliffs, bins, and dead zones?</strong> This is very aligned with training dynamics.</p>
 <p><strong>Why now:</strong></p>
-<p>Edge inference and on-device LLMs need low-bit models. But many low-bit discussions are framed as engineering compression. The research opportunity is to inspect the training dynamics: which weights become trapped, which layers suffer, whether rare-token or rare-feature behavior is disproportionately damaged, and whether small adapter paths can rescue the missing gradient channel.</p>
+<p>Edge inference and on-device LLMs need low-bit models. But many low-bit discussions are framed as engineering compression. The research opportunity is to inspect the training dynamics: which weights become trapped, which layers suffer, whether weak or low-frequency features are disproportionately damaged, and whether small adapter paths can rescue the missing gradient channel.</p>
 <p><strong>Why this is a good opportunity for Aman:</strong></p>
-<p>This strongly connects to your SLM gradient-channel bottleneck idea. Weight tying asks: does one shared matrix force conflicting gradient roles? Ternary quantization asks: does a tiny discrete weight alphabet destroy small but important gradient directions? Both are about representational interfaces that restrict gradient flow.</p>
+<p>This connects to a broader gradient-channel bottleneck theme. Ternary quantization asks whether a tiny discrete weight alphabet destroys small but important gradient directions. The useful framing is representational interfaces that restrict gradient flow, without forcing the connection to one prior project.</p>
 <p><strong>Mechanism/bottleneck hypothesis:</strong></p>
-<p>Rare or low-frequency features may be hurt more by ternary quantization because their gradients are weaker and less likely to push weights across quantization thresholds. This could create a rare-token/rare-feature degradation mechanism parallel to your tied-embedding hypothesis.</p>
+<p>Rare or low-frequency features may be hurt more by ternary quantization because their gradients are weaker and less likely to push weights across quantization thresholds. This could create a clean weak-feature degradation mechanism.</p>
 <p><strong>1-3 day experiment:</strong></p>
 <ul>
 <li>Train a tiny transformer or MLP language model on a synthetic frequency-skewed corpus.</li>
 <li>Compare full precision, post-training ternary, quantization-aware ternary, and ternary + small LoRA/adapters.</li>
 <li>Track error by token frequency bucket.</li>
 <li>Plot how often weights change ternary state per layer and per training phase.</li>
-<li>Ask: do rare-token gradients fail to move quantized weights?</li>
+<li>Ask: do weak-feature gradients fail to move quantized weights?</li>
 </ul>
 <p><strong>Artifact:</strong></p>
-<p>A small paper-style note: “Do Low-Bit Weights Starve Rare Features?” This could become a clean extension of your rare-token gradient-coupling roadmap.</p>
+<p>A small paper-style note: “Do Low-Bit Weights Starve Weak Features?” This could become a clean small-model training-dynamics project.</p>
 <p><strong>Risks / novelty caveat:</strong></p>
 <p>Quantization literature is huge. The novelty must be narrow: not “ternary quantization is new,” but “frequency-skewed gradient starvation under ternary constraints is measurable and fixable with a small gradient side-channel.”</p>
 <p>---</p>
@@ -184,7 +185,7 @@
 <p>No major source failures in the test scrape. Hugging Face CLI returned papers but not always direct URLs, so I resolved key paper URLs through arXiv title search where possible.</p></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:23</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:41</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
