@@ -41,131 +41,131 @@
 <h2>Five research opportunities</h2>
 <h3>1. Treat multimodal tokenizers as measurable gradient gates</h3>
 <ul>
-<li><strong>Evidence / source links</strong></li>
+<li>Evidence / source links:</li>
 </ul>
 <p>  - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a></p>
 <p>  - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a></p>
 <ul>
-<li><strong>Mechanism</strong></li>
+<li>Mechanism:</li>
 </ul>
 <p>  - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the generation loss needs them.</p>
 <ul>
-<li><strong>Why it matters for Aman</strong></li>
+<li>Why it matters for Aman:</li>
 </ul>
 <p>  - This is close to the recurring “interface bottleneck” theme but not limited to text LM heads. It is a clean multimodal analog: the tokenizer is where rare factors can vanish before the model has a chance to learn them.</p>
 <ul>
-<li><strong>Minimal experiment or probe</strong></li>
+<li>Minimal experiment or probe:</li>
 </ul>
 <p>  - Train or use a small visual tokenizer/generator pair on synthetic images with controllable factors: object identity, count, color, position, and rare attributes. Compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder. Plot factor-level mutual information or probe accuracy in tokenizer latents, and generation error by factor frequency.</p>
 <ul>
-<li><strong>What would falsify it</strong></li>
+<li>What would falsify it:</li>
 </ul>
 <p>  - If frozen and end-to-end tokenizers preserve the same factor information under matched capacity/data, and downstream generation errors do not shift by factor frequency or semantic nameability, then the tokenizer-gradient-gate story is weak.</p>
 <ul>
-<li><strong>Confidence:</strong> medium</li>
+<li>Confidence: medium</li>
 </ul>
 <h3>2. Build an audio identity-leakage probe for codec and speaker representations</h3>
 <ul>
-<li><strong>Evidence / source links</strong></li>
+<li>Evidence / source links:</li>
 </ul>
 <p>  - <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a></p>
 <p>  - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a></p>
 <ul>
-<li><strong>Mechanism</strong></li>
+<li>Mechanism:</li>
 </ul>
 <p>  - Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak script or accent. Conversely, a joint talking-face generator benefits from coupling high-level semantics while decoupling low-level audio/video rendering. The key mechanism is factor separation across representation layers.</p>
 <ul>
-<li><strong>Why it matters for Aman</strong></li>
+<li>Why it matters for Aman:</li>
 </ul>
 <p>  - This is directly relevant to TTS and talking-face work, and it is small enough to test without training a giant model. Aman can reuse public speech encoders/codecs and build a probing harness.</p>
 <ul>
-<li><strong>Minimal experiment or probe</strong></li>
+<li>Minimal experiment or probe:</li>
 </ul>
 <p>  - Take WavLM/ECAPA and one codec-token representation. Use small multilingual or cross-script speech pairs if available. Train linear probes for speaker, language/script, phoneme bucket, and pitch/prosody; add a gradient-reversal projection head for one nuisance factor. Measure whether improving invariance to script preserves speaker verification and whether it damages prosody/phonetic detail.</p>
 <ul>
-<li><strong>What would falsify it</strong></li>
+<li>What would falsify it:</li>
 </ul>
 <p>  - If script/language probes cannot predict above chance from speaker embeddings, and cross-script same-speaker similarity is stable across accent groups, then the leakage is dataset-specific rather than a general mechanism.</p>
 <ul>
-<li><strong>Confidence:</strong> medium</li>
+<li>Confidence: medium</li>
 </ul>
 <h3>3. Use MoE routing masks as a mechanistic intervention, not just a safety adapter</h3>
 <ul>
-<li><strong>Evidence / source links</strong></li>
+<li>Evidence / source links:</li>
 </ul>
 <p>  - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a></p>
 <p>  - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a></p>
 <p>  - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a></p>
 <ul>
-<li><strong>Mechanism</strong></li>
+<li>Mechanism:</li>
 </ul>
 <p>  - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without changing all model weights.</p>
 <ul>
-<li><strong>Why it matters for Aman</strong></li>
+<li>Why it matters for Aman:</li>
 </ul>
 <p>  - Aman has trained MoE models. A small MoE routing lab could produce publishable mechanistic results faster than full model training: expert specialization, routing stability, rare-token routing, safety/reasoning path differences, and whether steering masks act like low-rank adapters in route space.</p>
 <ul>
-<li><strong>Minimal experiment or probe</strong></li>
+<li>Minimal experiment or probe:</li>
 </ul>
 <p>  - Train a toy MoE transformer on a synthetic mixture task with separable domains and rare features. Log router entropy, expert assignment, gradient norms per expert, and rare-feature accuracy. Then intervene with static masks, learned router bias, or activation steering masks and measure whether route changes causally recover or damage specific behaviors.</p>
 <ul>
-<li><strong>What would falsify it</strong></li>
+<li>What would falsify it:</li>
 </ul>
 <p>  - If routing interventions change little beyond random noise, or if behavior is determined almost entirely by dense shared layers in the toy setting, then route-space steering may be too weak for mechanistic leverage.</p>
 <ul>
-<li><strong>Confidence:</strong> medium</li>
+<li>Confidence: medium</li>
 </ul>
 <h3>4. Convert deployment/inference feedback into a small agent-learning experiment</h3>
 <ul>
-<li><strong>Evidence / source links</strong></li>
+<li>Evidence / source links:</li>
 </ul>
 <p>  - <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a></p>
 <p>  - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a></p>
 <p>  - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a></p>
 <ul>
-<li><strong>Mechanism</strong></li>
+<li>Mechanism:</li>
 </ul>
 <p>  - Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For tool agents, the analogous signal is not a robot intervention but a reviewer/controller deciding whether the current tool call and arguments are safe, scoped, and likely to progress. Structured skill representations could make that feedback less free-form and more learnable.</p>
 <ul>
-<li><strong>Why it matters for Aman</strong></li>
+<li>Why it matters for Aman:</li>
 </ul>
 <p>  - This connects directly to agent memory and Hermes-style skill use. It suggests a cheap experiment: no robot fleet required, just a tool-calling sandbox with synthetic tasks and a reviewer loop.</p>
 <ul>
-<li><strong>Minimal experiment or probe</strong></li>
+<li>Minimal experiment or probe:</li>
 </ul>
 <p>  - Build 30–50 synthetic tool tasks with hidden constraints. Compare: base agent, post-hoc critic only, inference-time reviewer that can block/repair tool calls, and reviewer plus structured skill schema. Track success, invalid calls, repeated mistakes, and whether corrections become reusable memory entries.</p>
 <ul>
-<li><strong>What would falsify it</strong></li>
+<li>What would falsify it:</li>
 </ul>
 <p>  - If inference-time feedback reduces invalid calls only by making the agent overly conservative, or if structured skills do not improve transfer to new tasks, then the feedback loop is not yet learning useful state.</p>
 <ul>
-<li><strong>Confidence:</strong> medium</li>
+<li>Confidence: medium</li>
 </ul>
 <h3>5. Measure serving-stack choices as perturbations to model mechanisms</h3>
 <ul>
-<li><strong>Evidence / source links</strong></li>
+<li>Evidence / source links:</li>
 </ul>
 <p>  - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a></p>
 <p>  - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a></p>
 <p>  - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a></p>
 <ul>
-<li><strong>Mechanism</strong></li>
+<li>Mechanism:</li>
 </ul>
 <p>  - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior.</p>
 <ul>
-<li><strong>Why it matters for Aman</strong></li>
+<li>Why it matters for Aman:</li>
 </ul>
 <p>  - This bridges inference optimization with mechanistic interpretability. It is also aligned with MLX/on-device interests: the artifact can be a local harness rather than a large training run.</p>
 <ul>
-<li><strong>Minimal experiment or probe</strong></li>
+<li>Minimal experiment or probe:</li>
 </ul>
 <p>  - Run one small open model across two serving paths if available: baseline eager/fp16 and an optimized low-bit or CUDA-graph path. Use prompts with controlled rare facts, long context, and tool-call-like formatting. Compare output agreement, logit drift, activation cosine drift if hooks are available, KV memory cost, and failure cases per context length.</p>
 <ul>
-<li><strong>What would falsify it</strong></li>
+<li>What would falsify it:</li>
 </ul>
 <p>  - If all serving modes produce indistinguishable logits/activations under matched seeds and precision, then the serving stack is mostly an efficiency layer for this model/task scale.</p>
 <ul>
-<li><strong>Confidence:</strong> low-to-medium</li>
+<li>Confidence: low-to-medium</li>
 </ul>
 <h2>Questions generated today</h2>
 <ul>
@@ -193,7 +193,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 14:35</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 14:37</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
