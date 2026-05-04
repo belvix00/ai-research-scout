@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Idea Database · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="active" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — Idea Database</h1>
+<p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
+<p>Generated: 2026-05-04 03:49:28</p>
+<h2>Codec-token speech models: where do linguistic vs speaker features separate?</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>inference</code>, <code>mech-interp</code>, <code>small-model</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Speculation: codec language models may have a sharper layerwise split between phonetic content, prosody, and speaker identity than text LMs have for syntax/semantics. Experiment: Use a public speech representation/model checkpoint; fit linear probes and small SAEs on codec-token hidden states for phoneme, speaker, and prosody labels on a tiny dataset. Evidence: Evidence: <a href="https://arxiv.org/abs/2601.15621v1" target="_blank" rel="noopener">Qwen3-TTS Technical Report</a> from audio/speech-focused sources. ### Weak signals / bottlen</p>
+<h3>Minimal experiment</h3>
+<p>Use a public speech representation/model checkpoint; fit linear probes and small SAEs on codec-token hidden states for phoneme, speaker, and prosody labels on a tiny dataset.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Speculation: codec language models may have a sharper layerwise split between phonetic content, prosody, and speaker identity than text LMs have for syntax/semantics. Experiment: Use a public speech representation/model checkpoint; fit linear probes and small SAEs on codec-token hidden states for phoneme, speaker, and prosody labels on a tiny dataset. Evidence: Evidence: <a href="https://arxiv.org/abs/2601.15621v1" target="_blank" rel="noopener">Qwen3-TTS Technical Report</a> from audio/speech-focused sources. ### Weak signals / bottlenecks - Inference settings as mechanistic perturbations remain under-instrumented. - Tokenization/frequency-skew pathologies remain a good small-model</li>
+</ul>
+<h2>Continuous speech tokens as the “LM-head problem” of audio</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>training-dynamics</code>, <code>small-model</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><strong>Source evidence:</strong> - VibeVoice Technical Report — https://arxiv.org/abs/2508.19205v1 - Scraped from Hugging Face daily papers. The abstract claims long-form multi-speaker speech synthesis using “next-token diffusion” over continuous latent vectors and introduces a continuous speech tokenizer with much stronger compression than Encodec-style representations. <strong>First-principles concept:</strong> A text language model gets a sequence of discrete tokens. Each token is an index into a vocabulary. This mak</p>
+<h3>Minimal experiment</h3>
+<p><strong> - Pick a small speech dataset or use short public clips. - Extract latents from 1-2 available audio codecs/tokenizers. - Group examples by a factor: speaker, language/script, phoneme class, pitch band, or accent if metadata exists. - Measure nearest-neighbor structure and reconstruction error across common vs rare groups. - Train a tiny predictor over codec latents and test whether rare factors degrade faster than common factors. - Plot: factor frequency vs reconstruction/prediction error. </strong>Artifact:<strong> A notebook/blog titled: “Is the Speech Tokenizer the LM Head of Audio Models?” with plots showing which speech factors survive compression and which ones get gradient-starved. </strong>Risks / no</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - VibeVoice Technical Report — https://arxiv.org/abs/2508.19205v1 - Scraped from Hugging Face daily papers. The abstract claims long-form multi-speaker speech synthesis using “next-token diffusion” over continuous latent vectors and introduces a continuous speech tokenizer with much stronger compression than Encodec-style representations. <strong>First-principles concept:</strong> A text language model gets a sequence of discrete tokens. Each token is an index into a vocabulary. This makes the next-token objective clean: predict one of <code>V</code> symbols. Speech is harder. Raw waveform is continuous, high-rate, and full of redundant local st</li>
+</ul>
+<h2>Gradient-channel bottlenecks as measurable small-model pathology</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>mech-interp</code>, <code>small-model</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>General theme: some training signals get compressed, diluted, or routed through narrow interfaces before they become robust behavior. Experiment: train tiny models on controlled skewed data and log per-feature gradient norms, cosine drift, and downstream accuracy under several auxiliary-objective or adapter variants. Keep this broad; do not force new ideas through a single prior hypothesis.</p>
+<h3>Minimal experiment</h3>
+<p>train tiny models on controlled skewed data and log per-feature gradient norms, cosine drift, and downstream accuracy under several auxiliary-objective or adapter variants. Keep this broad; do not force new ideas through a single prior hypothesis.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — General theme: some training signals get compressed, diluted, or routed through narrow interfaces before they become robust behavior. Experiment: train tiny models on controlled skewed data and log per-feature gradient norms, cosine drift, and downstream accuracy under several auxiliary-objective or adapter variants. Keep this broad; do not force new ideas through a single prior hypothesis.</li>
+</ul>
+<h2>KV-cache memory is not a systems detail; it is the inference-time computational graph</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>training-dynamics</code>, <code>agent-memory</code>, <code>multimodal</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><strong>Source evidence:</strong> - PagedAttention paper — https://arxiv.org/abs/2309.06180v1 - GitHub signals: vLLM, SGLang, llama.cpp all remain active and central to inference. <strong>First-principles concept:</strong> In an autoregressive transformer, every new token attends to previous tokens. To avoid recomputing keys and values for the entire prefix, inference systems store them in a KV cache. This cache grows with sequence length, batch size, number of layers, hidden size, and number of attention heads. At a hig</p>
+<h3>Minimal experiment</h3>
+<p><strong> - Use a small local model through llama.cpp, vLLM, or MLX if feasible. - Run synthetic prompts with different context structures: repeated boilerplate, useful facts, retrieved chunks, tool logs. - Measure latency/memory/token throughput as context grows. - Pair this with a simple task score: does the model actually use the extra context? - Define a metric: </strong>useful answer improvement per KV-cache MB<strong>. </strong>Artifact:<strong> A blog/notebook: “Context Is Not Free: Measuring Useful Information per KV-Cache Byte.” This could become a bridge between inference optimization and agent memory. </strong>Risks / novelty caveat:** PagedAttention itself is established. The opportunity is not to rediscover it; it is</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - PagedAttention paper — https://arxiv.org/abs/2309.06180v1 - GitHub signals: vLLM, SGLang, llama.cpp all remain active and central to inference. <strong>First-principles concept:</strong> In an autoregressive transformer, every new token attends to previous tokens. To avoid recomputing keys and values for the entire prefix, inference systems store them in a KV cache. This cache grows with sequence length, batch size, number of layers, hidden size, and number of attention heads. At a high level, training is dominated by matrix multiplications; serving is often dominated by <strong>memory layout and movement</strong>. The KV cache is not just a sto</li>
+</ul>
+<h2>KV-cache/quantization stress harness for mechanism experiments on-device</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>mech-interp</code>, <code>small-model</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Evidence-backed opportunity: inference kernels are improving, but mechanism papers rarely report how cache quantization/speculation changes hidden-state trajectories, not just tokens/sec. Experiment: Run the same small model under fp16, low-bit weights, low-bit KV, and speculative decoding; compare activation cosine drift, attention entropy, failure cases, and SAE feature firing stability. Evidence: Evidence: [SpeCache: Speculative Key-Value Caching for Efficient Generation of LLMs](https://arxi</p>
+<h3>Minimal experiment</h3>
+<p>Run the same small model under fp16, low-bit weights, low-bit KV, and speculative decoding; compare activation cosine drift, attention entropy, failure cases, and SAE feature firing stability.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Evidence-backed opportunity: inference kernels are improving, but mechanism papers rarely report how cache quantization/speculation changes hidden-state trajectories, not just tokens/sec. Experiment: Run the same small model under fp16, low-bit weights, low-bit KV, and speculative decoding; compare activation cosine drift, attention entropy, failure cases, and SAE feature firing stability. Evidence: Evidence: <a href="https://arxiv.org/abs/2503.16163v1" target="_blank" rel="noopener">SpeCache: Speculative Key-Value Caching for Efficient Generation of LLMs</a> and recent configured repo/HF activity around inference systems.</li>
+</ul>
+<h2>Low-bit weights as weak-feature gradient starvation</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>training-dynamics</code>, <code>mech-interp</code>, <code>small-model</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Ternary quantization may disproportionately trap weak gradients from low-frequency or weakly supervised features. Experiment: tiny skewed-data LM with full precision vs ternary vs ternary+adapter side-channel.</p>
+<h3>Minimal experiment</h3>
+<p>tiny skewed-data LM with full precision vs ternary vs ternary+adapter side-channel.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Ternary quantization may disproportionately trap weak gradients from low-frequency or weakly supervised features. Experiment: tiny skewed-data LM with full precision vs ternary vs ternary+adapter side-channel.</li>
+</ul>
+<h2>Persistent visual memory: multimodal models lose perception because text steals attention mass</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>agent-memory</code>, <code>multimodal</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><strong>Source evidence:</strong> - Persistent Visual Memory: Sustaining Perception for Deep Generation in LVLMs — https://arxiv.org/abs/2605.00814v1 - The abstract describes “Visual Signal Dilution,” where growing textual history expands the attention partition function and visual attention decays with generated sequence length. <strong>First-principles concept:</strong> In attention, each query distributes probability mass over keys. If there are a few image tokens and many text tokens, the image tokens must compete wi</p>
+<h3>Minimal experiment</h3>
+<p><strong> - Use an open LVLM if available locally or through a lightweight API. - Create images with small details that matter late in the answer. - Ask for long multi-step descriptions where the detail must be recalled near the end. - Compare short vs long answer accuracy on visual details. - If attention maps are accessible, track visual-token attention over generation length. - Prototype a simple prompting/control baseline: periodically restate visual facts or insert a compact visual memory summary, then compare drift. </strong>Artifact:** A visual blog/demo: “Why Vision-Language Models Stop Looking.” Include attention/accuracy-over-length plots and simple examples where the model’s answer becomes less</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - Persistent Visual Memory: Sustaining Perception for Deep Generation in LVLMs — https://arxiv.org/abs/2605.00814v1 - The abstract describes “Visual Signal Dilution,” where growing textual history expands the attention partition function and visual attention decays with generated sequence length. <strong>First-principles concept:</strong> In attention, each query distributes probability mass over keys. If there are a few image tokens and many text tokens, the image tokens must compete with an ever-growing text history. Even if the image is important, the softmax normalization spreads attention over more positions. As generation gets l</li>
+</ul>
+<h2>Procedural execution failure as loss of algorithmic state</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>mech-interp</code>, <code>agent-memory</code>, <code>multimodal</code>, <code>small-model</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><strong>Source evidence:</strong> - When LLMs Stop Following Steps: A Diagnostic Study of Procedural Execution in Language Models — https://arxiv.org/abs/2605.00817v1 - The paper studies step-wise arithmetic procedures and reports degradation as procedure length and look-back dependencies increase. <strong>First-principles concept:</strong> A model can answer a reasoning benchmark correctly without actually following the specified algorithm. Final-answer accuracy hides the path. Procedural execution asks a stricter quest</p>
+<h3>Minimal experiment</h3>
+<p>*<em> - Generate synthetic programs with variables: <code>a = x + 2</code>, <code>b = a </em> 3</code>, later <code>return b - a</code>, etc. - Train or finetune a tiny model on next-token prediction vs next-token + auxiliary intermediate-state prediction. - Vary length and look-back distance. - Measure exact step fidelity, not just final answer. - If possible, compare tied vs untied LM head or MTP-style objective to see whether output-gradient bottlenecks matter for procedure tokens/rare variable references. <strong>Artifact:</strong> A notebook: “Do Small LMs Lose Their Registers?” The core plot would show accuracy vs look-back distance and whether auxiliary gradient channels help. <strong>Risks / novelty caveat:</strong> Procedural/reasoning diagnostics</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - When LLMs Stop Following Steps: A Diagnostic Study of Procedural Execution in Language Models — https://arxiv.org/abs/2605.00817v1 - The paper studies step-wise arithmetic procedures and reports degradation as procedure length and look-back dependencies increase. <strong>First-principles concept:</strong> A model can answer a reasoning benchmark correctly without actually following the specified algorithm. Final-answer accuracy hides the path. Procedural execution asks a stricter question: if I give the model a simple algorithm and inputs, can it maintain the intermediate variables and execute each step faithfully? This is fundament</li>
+</ul>
+<h2>Procedural reasoning as lost registers</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</p>
+<h3>Minimal experiment</h3>
+<p>synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</li>
+</ul>
+<h2>Speech tokenizer as audio interface bottleneck</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>VibeVoice-like continuous speech tokenizers suggest that rare speakers/accents/phonetic factors may be compressed into weakly separated latent directions. Experiment: measure factor frequency vs codec reconstruction/prediction error on a small speech set.</p>
+<h3>Minimal experiment</h3>
+<p>measure factor frequency vs codec reconstruction/prediction error on a small speech set.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — VibeVoice-like continuous speech tokenizers suggest that rare speakers/accents/phonetic factors may be compressed into weakly separated latent directions. Experiment: measure factor frequency vs codec reconstruction/prediction error on a small speech set.</li>
+</ul>
+<h2>Ternary quantization as an optimization-dynamics problem, not just compression</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>training-dynamics</code>, <code>mech-interp</code>, <code>small-model</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><strong>Source evidence:</strong> - Tequila: Trapping-free Ternary Quantization for Large Language Models — https://arxiv.org/abs/2509.23809v2 - Scraped from Hugging Face papers. <strong>First-principles concept:</strong> Quantization maps high-precision weights to a smaller set of values. In ternary quantization, each weight becomes one of three values: <code>-1</code>, <code>0</code>, or <code>1</code> up to scaling. This is attractive because multiplication can become addition/subtraction/skip, which is much friendlier for hardware. But aggressive qu</p>
+<h3>Minimal experiment</h3>
+<p><strong> - Train a tiny transformer or MLP language model on a synthetic frequency-skewed corpus. - Compare full precision, post-training ternary, quantization-aware ternary, and ternary + small LoRA/adapters. - Track error by token frequency bucket. - Plot how often weights change ternary state per layer and per training phase. - Ask: do weak-feature gradients fail to move quantized weights? </strong>Artifact:<strong> A small paper-style note: “Do Low-Bit Weights Starve Weak Features?” This could become a clean small-model training-dynamics project. </strong>Risks / novelty caveat:** Quantization literature is huge. The novelty must be narrow: not “ternary quantization is new,” but “frequency-skewed gradient starvat</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - Tequila: Trapping-free Ternary Quantization for Large Language Models — https://arxiv.org/abs/2509.23809v2 - Scraped from Hugging Face papers. <strong>First-principles concept:</strong> Quantization maps high-precision weights to a smaller set of values. In ternary quantization, each weight becomes one of three values: <code>-1</code>, <code>0</code>, or <code>1</code> up to scaling. This is attractive because multiplication can become addition/subtraction/skip, which is much friendlier for hardware. But aggressive quantization is not just a representation problem. It is an optimization problem. Imagine a continuous weight wants to move from +0.2 to -0.2. In full p</li>
+</ul>
+<h2>Useful information per KV-cache byte</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>PagedAttention/vLLM/SGLang/llama.cpp signals suggest agent memory and long-context research should price hidden-state memory, not just tokens. Experiment: synthetic context utility vs KV-cache cost; artifact: “Context Is Not Free.”</p>
+<h3>Minimal experiment</h3>
+<p>synthetic context utility vs KV-cache cost; artifact: “Context Is Not Free.”</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — PagedAttention/vLLM/SGLang/llama.cpp signals suggest agent memory and long-context research should price hidden-state memory, not just tokens. Experiment: synthetic context utility vs KV-cache cost; artifact: “Context Is Not Free.”</li>
+</ul>
+<h2>Visual signal dilution in LVLMs</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>agent-memory</code>, <code>multimodal</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Long multimodal generation may drift because visual tokens lose attention mass to accumulated text. Experiment: detail-recall accuracy vs generation length, with optional visual-memory refresh baseline. ### HN source note - Hacker News front page added as a weak-signal source. It should mostly surface tooling/infra/manual-work bottlenecks; today’s top HN items were mostly not promoted except as background signals.</p>
+<h3>Minimal experiment</h3>
+<p>detail-recall accuracy vs generation length, with optional visual-memory refresh baseline. ### HN source note - Hacker News front page added as a weak-signal source. It should mostly surface tooling/infra/manual-work bottlenecks; today’s top HN items were mostly not promoted except as background signals.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Long multimodal generation may drift because visual tokens lose attention mass to accumulated text. Experiment: detail-recall accuracy vs generation length, with optional visual-memory refresh baseline. ### HN source note - Hacker News front page added as a weak-signal source. It should mostly surface tooling/infra/manual-work bottlenecks; today’s top HN items were mostly not promoted except as background signals.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:49</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
