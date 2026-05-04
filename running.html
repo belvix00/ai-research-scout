@@ -52,21 +52,23 @@
 <li>Tokenization/frequency-skew pathologies remain a good small-model testbed, but should not dominate unrelated scout outputs.</li>
 <li>Audio codec representations need small, disentangled probes before larger talking-face/audio systems.</li>
 </ul>
-<h2>Daily additions — 2026-05-04 test briefing</h2>
+<h2>Daily additions — 2026-05-04</h2>
 <ul>
-<li><strong>Speech tokenizer as audio interface bottleneck</strong> — VibeVoice-like continuous speech tokenizers suggest that rare speakers/accents/phonetic factors may be compressed into weakly separated latent directions. Experiment: measure factor frequency vs codec reconstruction/prediction error on a small speech set.</li>
-<li><strong>Useful information per KV-cache byte</strong> — PagedAttention/vLLM/SGLang/llama.cpp signals suggest agent memory and long-context research should price hidden-state memory, not just tokens. Experiment: synthetic context utility vs KV-cache cost; artifact: “Context Is Not Free.”</li>
-<li><strong>Low-bit weights as weak-feature gradient starvation</strong> — Ternary quantization may disproportionately trap weak gradients from low-frequency or weakly supervised features. Experiment: tiny skewed-data LM with full precision vs ternary vs ternary+adapter side-channel.</li>
-<li><strong>Procedural reasoning as lost registers</strong> — Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</li>
-<li><strong>Visual signal dilution in LVLMs</strong> — Long multimodal generation may drift because visual tokens lose attention mass to accumulated text. Experiment: detail-recall accuracy vs generation length, with optional visual-memory refresh baseline.</li>
+<li><strong>Multimodal tokenizers as gradient gates</strong> — GenLIP and end-to-end 1D semantic tokenizer work suggest the perception→sequence interface is now directly supervised by generative losses. Experiment: controlled synthetic visual factors, compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder; measure factor probes and generation errors by rarity/nameability.</li>
+<li><strong>Audio identity leakage probe for codec and speaker representations</strong> — LASE shows speaker encoders can leak script/language information with accent-conditional failures; Talker-T2AV supports separating high-level cross-modal semantics from low-level rendering. Experiment: WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</li>
+<li><strong>MoE routing masks as mechanistic interventions</strong> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
+<li><strong>Deployment-time feedback loops for tool agents</strong> — Learning While Deploying and Apple Reinforced Agent show correction signals moving into deployment/inference loops. Experiment: tool-calling sandbox with reviewer that can block/repair calls, plus structured skill interfaces, to test whether feedback becomes reusable memory.</li>
+<li><strong>Serving-stack perturbation harness for model mechanisms</strong> — MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts.</li>
 </ul>
-<h3>HN source note</h3>
+<h3>Weak signals / bottlenecks</h3>
 <ul>
-<li>Hacker News front page added as a weak-signal source. It should mostly surface tooling/infra/manual-work bottlenecks; today’s top HN items were mostly not promoted except as background signals.</li>
+<li>Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems.</li>
+<li>Inference systems should be logged as mechanism perturbations, not just throughput infrastructure.</li>
+<li>HN remained weak/noisy today; no HN item was promoted into a primary opportunity.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:53</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 14:35</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

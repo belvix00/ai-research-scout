@@ -20,7 +20,123 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-04 03:49:28</p>
+<p>Generated: 2026-05-04 14:35:41</p>
+<h2>Mechanism</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 5</li>
+</ul>
+<h3>Thesis</h3>
+<p>Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior.</li>
+<li><code>daily/2026-05-04.md</code> — Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For tool agents, the analogous signal is not a robot intervention but a reviewer/controller deciding whether the current tool call and arguments are safe, scoped, and likely to progress. Structured skill representations could make that feedback less free-form and more learnable.</li>
+<li><code>daily/2026-05-04.md</code> — Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without changing all model weights.</li>
+<li><code>daily/2026-05-04.md</code> — Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak script or accent. Conversely, a joint talking-face generator benefits from coupling high-level semantics while decoupling low-level audio/video rendering. The key mechanism is factor separation across representation layers.</li>
+</ul>
+<h2>Minimal experiment or probe</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>mech-interp</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 5</li>
+</ul>
+<h3>Thesis</h3>
+<p>Run one small open model across two serving paths if available: baseline eager/fp16 and an optimized low-bit or CUDA-graph path. Use prompts with controlled rare facts, long context, and tool-call-like formatting. Compare output agreement, logit drift, activation cosine drift if hooks are available, KV memory cost, and failure cases per context length.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — Run one small open model across two serving paths if available: baseline eager/fp16 and an optimized low-bit or CUDA-graph path. Use prompts with controlled rare facts, long context, and tool-call-like formatting. Compare output agreement, logit drift, activation cosine drift if hooks are available, KV memory cost, and failure cases per context length.</li>
+<li><code>daily/2026-05-04.md</code> — Build 30–50 synthetic tool tasks with hidden constraints. Compare: base agent, post-hoc critic only, inference-time reviewer that can block/repair tool calls, and reviewer plus structured skill schema. Track success, invalid calls, repeated mistakes, and whether corrections become reusable memory entries.</li>
+<li><code>daily/2026-05-04.md</code> — Train a toy MoE transformer on a synthetic mixture task with separable domains and rare features. Log router entropy, expert assignment, gradient norms per expert, and rare-feature accuracy. Then intervene with static masks, learned router bias, or activation steering masks and measure whether route changes causally recover or damage specific behaviors.</li>
+<li><code>daily/2026-05-04.md</code> — Take WavLM/ECAPA and one codec-token representation. Use small multilingual or cross-script speech pairs if available. Train linear probes for speaker, language/script, phoneme bucket, and pitch/prosody; add a gradient-reversal projection head for one nuisance factor. Measure whether improving invariance to script preserves speaker verification and whether it damages prosody/phonetic detail.</li>
+</ul>
+<h2>What would falsify it</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 5</li>
+</ul>
+<h3>Thesis</h3>
+<p>If all serving modes produce indistinguishable logits/activations under matched seeds and precision, then the serving stack is mostly an efficiency layer for this model/task scale.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — If all serving modes produce indistinguishable logits/activations under matched seeds and precision, then the serving stack is mostly an efficiency layer for this model/task scale.</li>
+<li><code>daily/2026-05-04.md</code> — If inference-time feedback reduces invalid calls only by making the agent overly conservative, or if structured skills do not improve transfer to new tasks, then the feedback loop is not yet learning useful state.</li>
+<li><code>daily/2026-05-04.md</code> — If routing interventions change little beyond random noise, or if behavior is determined almost entirely by dense shared layers in the toy setting, then route-space steering may be too weak for mechanistic leverage.</li>
+<li><code>daily/2026-05-04.md</code> — If script/language probes cannot predict above chance from speaker embeddings, and cross-script same-speaker similarity is stable across accent groups, then the leakage is dataset-specific rather than a general mechanism.</li>
+</ul>
+<h2>Why it matters for Aman</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>training-dynamics</code>, <code>mech-interp</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 5</li>
+</ul>
+<h3>Thesis</h3>
+<p>This bridges inference optimization with mechanistic interpretability. It is also aligned with MLX/on-device interests: the artifact can be a local harness rather than a large training run.</p>
+<h3>Minimal experiment</h3>
+<p>no robot fleet required, just a tool-calling sandbox with synthetic tasks and a reviewer loop.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — This bridges inference optimization with mechanistic interpretability. It is also aligned with MLX/on-device interests: the artifact can be a local harness rather than a large training run.</li>
+<li><code>daily/2026-05-04.md</code> — This connects directly to agent memory and Hermes-style skill use. It suggests a cheap experiment: no robot fleet required, just a tool-calling sandbox with synthetic tasks and a reviewer loop.</li>
+<li><code>daily/2026-05-04.md</code> — Aman has trained MoE models. A small MoE routing lab could produce publishable mechanistic results faster than full model training: expert specialization, routing stability, rare-token routing, safety/reasoning path differences, and whether steering masks act like low-rank adapters in route space.</li>
+<li><code>daily/2026-05-04.md</code> — This is directly relevant to TTS and talking-face work, and it is small enough to test without training a giant model. Aman can reuse public speech encoders/codecs and build a probing harness.</li>
+</ul>
+<h2>Audio identity leakage probe for codec and speaker representations</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>training-dynamics</code>, <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>LASE shows speaker encoders can leak script/language information with accent-conditional failures; Talker-T2AV supports separating high-level cross-modal semantics from low-level rendering. Experiment: WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</p>
+<h3>Minimal experiment</h3>
+<p>WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — LASE shows speaker encoders can leak script/language information with accent-conditional failures; Talker-T2AV supports separating high-level cross-modal semantics from low-level rendering. Experiment: WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</li>
+</ul>
+<h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>training-dynamics</code>, <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li><strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a> - <strong>Mechanism</strong> - Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak scrip</li>
+</ul>
+<h3>Minimal experiment</h3>
+<p><strong> - Take WavLM/ECAPA and one codec-token representation. Use small multilingual or cross-script speech pairs if available. Train linear probes for speaker, language/script, phoneme bucket, and pitch/prosody; add a gradient-reversal projection head for one nuisance factor. Measure whether improving invariance to script preserves speaker verification and whether it damages prosody/phonetic detail. - </strong></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a> - <strong>Mechanism</strong> - Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak script or accent. Conversely, a joint talking-face generator benefits from coupling high-level semantics while decoupling low-level audio/video rendering.</li>
+</ul>
 <h2>Codec-token speech models: where do linguistic vs speaker features separate?</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -39,6 +155,86 @@
 <ul>
 <li><code>running.md</code> — Speculation: codec language models may have a sharper layerwise split between phonetic content, prosody, and speaker identity than text LMs have for syntax/semantics. Experiment: Use a public speech representation/model checkpoint; fit linear probes and small SAEs on codec-token hidden states for phoneme, speaker, and prosody labels on a tiny dataset. Evidence: Evidence: <a href="https://arxiv.org/abs/2601.15621v1" target="_blank" rel="noopener">Qwen3-TTS Technical Report</a> from audio/speech-focused sources. ### Weak signals / bottlenecks - Inference settings as mechanistic perturbations remain under-instrumented. - Tokenization/frequency-skew pathologies remain a good small-model</li>
 </ul>
+<h2>Confidence:** medium</h2>
+<h3>2. Build an audio identity-leakage probe for codec and speaker representations</h3>
+<ul>
+<li>**Evidence / source links</li>
+</ul>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a></li>
+</ul>
+<h2>Confidence:** medium</h2>
+<h3>3. Use MoE routing masks as a mechanistic intervention, not just a safety adapter</h3>
+<ul>
+<li>**Evidence / source links</li>
+</ul>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a></li>
+</ul>
+<h2>Confidence:** medium</h2>
+<h3>4. Convert deployment/inference feedback into a small agent-learning experiment</h3>
+<ul>
+<li>**Evidence / source links</li>
+</ul>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a></li>
+</ul>
+<h2>Confidence:** medium</h2>
+<h3>5. Measure serving-stack choices as perturbations to model mechanisms</h3>
+<ul>
+<li>**Evidence / source links</li>
+</ul>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a></li>
+</ul>
 <h2>Continuous speech tokens as the “LM-head problem” of audio</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -56,6 +252,60 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - VibeVoice Technical Report — https://arxiv.org/abs/2508.19205v1 - Scraped from Hugging Face daily papers. The abstract claims long-form multi-speaker speech synthesis using “next-token diffusion” over continuous latent vectors and introduces a continuous speech tokenizer with much stronger compression than Encodec-style representations. <strong>First-principles concept:</strong> A text language model gets a sequence of discrete tokens. Each token is an index into a vocabulary. This makes the next-token objective clean: predict one of <code>V</code> symbols. Speech is harder. Raw waveform is continuous, high-rate, and full of redundant local st</li>
+</ul>
+<h2>Convert deployment/inference feedback into a small agent-learning experiment</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>mech-interp</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li><strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a> - <strong>Mechanism</strong> - Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For</li>
+</ul>
+<h3>Minimal experiment</h3>
+<p>no robot fleet required, just a tool-calling sandbox with synthetic tasks and a reviewer loop. - <strong>Minimal experiment or probe</strong> - Build 30–50 synthetic tool tasks with hidden constraints. Compare: base agent, post-hoc critic only, inference-time reviewer that can block/repair tool calls, and reviewer plus structured skill schema. Track success, invalid calls, repeated mistakes, and whether corrections become reusable memory entries. - <strong>What would falsify it</strong> - If inference-time feedback reduces invalid calls only by making the agent overly conservative, or if structured skills do not improve transfer to new tasks, then the feedback loop is not yet learning useful state. - **</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a> - <strong>Mechanism</strong> - Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For tool agents, the analogous signal is not a robot intervention but a reviewer/controller deciding whether the current tool call and arguments are safe,</li>
+</ul>
+<h2>Deployment-time feedback loops for tool agents</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>agent-memory</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Learning While Deploying and Apple Reinforced Agent show correction signals moving into deployment/inference loops. Experiment: tool-calling sandbox with reviewer that can block/repair calls, plus structured skill interfaces, to test whether feedback becomes reusable memory.</p>
+<h3>Minimal experiment</h3>
+<p>tool-calling sandbox with reviewer that can block/repair calls, plus structured skill interfaces, to test whether feedback becomes reusable memory.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — Learning While Deploying and Apple Reinforced Agent show correction signals moving into deployment/inference loops. Experiment: tool-calling sandbox with reviewer that can block/repair calls, plus structured skill interfaces, to test whether feedback becomes reusable memory.</li>
+</ul>
+<h2>Evidence / source links</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>multimodal</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p><a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a></li>
 </ul>
 <h2>Gradient-channel bottlenecks as measurable small-model pathology</h2>
 <ul>
@@ -129,6 +379,62 @@
 <ul>
 <li><code>running.md</code> — Ternary quantization may disproportionately trap weak gradients from low-frequency or weakly supervised features. Experiment: tiny skewed-data LM with full precision vs ternary vs ternary+adapter side-channel.</li>
 </ul>
+<h2>Measure serving-stack choices as perturbations to model mechanisms</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>inference</code>, <code>training-dynamics</code>, <code>mech-interp</code>, <code>agent-memory</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li><strong>Evidence / source links</strong> - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - <strong>Mechanism</strong> - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also pert</li>
+</ul>
+<h3>Minimal experiment</h3>
+<p><strong> - Run one small open model across two serving paths if available: baseline eager/fp16 and an optimized low-bit or CUDA-graph path. Use prompts with controlled rare facts, long context, and tool-call-like formatting. Compare output agreement, logit drift, activation cosine drift if hooks are available, KV memory cost, and failure cases per context length. - </strong></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - <strong>Mechanism</strong> - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior. - <strong>Why it matters for Aman</strong> - This bridges infere</li>
+</ul>
+<h2>MoE routing masks as mechanistic interventions</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</p>
+<h3>Minimal experiment</h3>
+<p>toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
+</ul>
+<h2>Multimodal tokenizers as gradient gates</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>mech-interp</code>, <code>multimodal</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>GenLIP and end-to-end 1D semantic tokenizer work suggest the perception→sequence interface is now directly supervised by generative losses. Experiment: controlled synthetic visual factors, compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder; measure factor probes and generation errors by rarity/nameability.</p>
+<h3>Minimal experiment</h3>
+<p>controlled synthetic visual factors, compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder; measure factor probes and generation errors by rarity/nameability.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — GenLIP and end-to-end 1D semantic tokenizer work suggest the perception→sequence interface is now directly supervised by generative losses. Experiment: controlled synthetic visual factors, compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder; measure factor probes and generation errors by rarity/nameability.</li>
+</ul>
 <h2>Persistent visual memory: multimodal models lose perception because text steals attention mass</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -183,6 +489,24 @@
 <ul>
 <li><code>running.md</code> — Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</li>
 </ul>
+<h2>Serving-stack perturbation harness for model mechanisms</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>audio</code>, <code>inference</code>, <code>mech-interp</code>, <code>agent-memory</code>, <code>on-device</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between s</p>
+<h3>Minimal experiment</h3>
+<p>compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN item was promoted into a primary opportunity.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>running.md</code> — MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN</li>
+</ul>
 <h2>Speech tokenizer as audio interface bottleneck</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -218,6 +542,46 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>daily/2026-05-04.md</code> — <strong>Source evidence:</strong> - Tequila: Trapping-free Ternary Quantization for Large Language Models — https://arxiv.org/abs/2509.23809v2 - Scraped from Hugging Face papers. <strong>First-principles concept:</strong> Quantization maps high-precision weights to a smaller set of values. In ternary quantization, each weight becomes one of three values: <code>-1</code>, <code>0</code>, or <code>1</code> up to scaling. This is attractive because multiplication can become addition/subtraction/skip, which is much friendlier for hardware. But aggressive quantization is not just a representation problem. It is an optimization problem. Imagine a continuous weight wants to move from +0.2 to -0.2. In full p</li>
+</ul>
+<h2>Treat multimodal tokenizers as measurable gradient gates</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>mech-interp</code>, <code>multimodal</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li><strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - <strong>Mechanism</strong> - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change</li>
+</ul>
+<h3>Minimal experiment</h3>
+<p><strong> - Train or use a small visual tokenizer/generator pair on synthetic images with controllable factors: object identity, count, color, position, and rare attributes. Compare frozen tokenizer vs jointly trained tokenizer vs language-token-supervised encoder. Plot factor-level mutual information or probe accuracy in tokenizer latents, and generation error by factor frequency. - </strong></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - <strong>Mechanism</strong> - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the g</li>
+</ul>
+<h2>Use MoE routing masks as a mechanistic intervention, not just a safety adapter</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: <code>training-dynamics</code>, <code>mech-interp</code></li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li><strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert wei</li>
+</ul>
+<h3>Minimal experiment</h3>
+<p><strong> - Train a toy MoE transformer on a synthetic mixture task with separable domains and rare features. Log router entropy, expert assignment, gradient norms per expert, and rare-feature accuracy. Then intervene with static masks, learned router bias, or activation steering masks and measure whether route changes causally recover or damage specific behaviors. - </strong></p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
 </ul>
 <h2>Useful information per KV-cache byte</h2>
 <ul>
@@ -257,7 +621,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:53</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 14:35</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
