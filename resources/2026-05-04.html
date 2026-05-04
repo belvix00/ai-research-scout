@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-04 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-04</h1>
+<p>Plain list of resources collected today. This is intentionally not a synthesis: just source, link, and a short 3-4 line summary so Aman can scan the raw material directly.</p>
+<h2>Hugging Face Papers/arXiv — VibeVoice Technical Report</h2>
+<p>Link: https://arxiv.org/abs/2508.19205v1</p>
+<p>Summary: Audio ML paper about long-form multi-speaker speech synthesis. The key signal is next-token diffusion over continuous speech latents and a continuous speech tokenizer claiming much stronger compression than Encodec-like codecs. Worth scanning for audio tokenizer/interface bottlenecks and codec latent probing ideas.</p>
+<h2>Hugging Face Papers/arXiv — Efficient Memory Management for Large Language Model Serving with PagedAttention</h2>
+<p>Link: https://arxiv.org/abs/2309.06180v1</p>
+<p>Summary: Inference systems paper around KV-cache memory management and fragmentation. The virtual-memory analogy is useful beyond systems throughput: it frames KV cache as a constrained hidden-state storage budget. Good source for experiments on useful information per cache byte and on-device inference stress tests.</p>
+<h2>Hugging Face Papers/arXiv — Tequila: Trapping-free Ternary Quantization for Large Language Models</h2>
+<p>Link: https://arxiv.org/abs/2509.23809v2</p>
+<p>Summary: Quantization paper focused on ternary weights and avoiding optimization traps. Useful as a mechanism source, not just a compression result. The research angle is whether low-bit constraints selectively damage weak or low-frequency features and how adapter/side-channel paths change that.</p>
+<h2>arXiv cs.CL — When LLMs Stop Following Steps: A Diagnostic Study of Procedural Execution in Language Models</h2>
+<p>Link: https://arxiv.org/abs/2605.00817v1</p>
+<p>Summary: Diagnostic paper on procedural execution failures as sequence length/look-back grows. Useful for thinking about procedural reasoning as distributed state/register decay. Could inspire small synthetic tasks comparing next-token-only training against auxiliary state or multi-step prediction losses.</p>
+<h2>arXiv cs.CV — Persistent Visual Memory: Sustaining Perception for Deep Generation in LVLMs</h2>
+<p>Link: https://arxiv.org/abs/2605.00814v1</p>
+<p>Summary: Multimodal mechanism paper about visual signal dilution during long generation. The useful signal is architectural: keep a persistent visual branch/memory so text tokens do not dominate attention mass over time. Good candidate for a first-principles post or small demo measuring visual recall vs generation length.</p>
+<h2>Hacker News — The Hidden Costs of Great Abstractions</h2>
+<p>Link: https://jdgr.net/the-hidden-costs-of-great-abstractions</p>
+<p>Summary: General systems weak signal about abstractions hiding real costs. Not an ML paper, but useful as an infra lens: agent frameworks, inference stacks, and training abstractions often hide bottlenecks until debugging or scaling. Keep as background for missing-tool/bottleneck-dashboard ideas.</p>
+<h2>Hacker News — Using underdrawings for accurate text and numbers</h2>
+<p>Link: https://samcollins.blog/underdrawings/</p>
+<p>Summary: Weak signal around generation with explicit scaffolds/underdrawings. The ML analogy is intermediate plans or constraints that make generation more reliable. Could connect to structured latent planning, visual generation scaffolds, or tool-agent intermediate state.</p>
+<h2>Apple ML — Reinforced Agent: Inference-Time Feedback for Tool-Calling Agents</h2>
+<p>Link: https://machinelearning.apple.com/research/reinforced-agent-inference-feedback</p>
+<p>Summary: Apple ML post about inference-time feedback for tool-calling agents. Relevant for agent control and memory because it moves some correction/adaptation into inference rather than training. Worth watching for small reproductions around tool-use feedback loops and provenance/trust in agent memory.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 03:53</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
