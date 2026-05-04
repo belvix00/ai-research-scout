@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Research Scout Morning Briefing — 2026-05-04 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="index.html">Home</a><a class="active" href="daily.html">Daily</a><a class="" href="weekly.html">Weekly</a><a class="" href="blog.html">First-principles Blog</a><a class="" href="running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Morning Briefing — 2026-05-04</h1>
+<h2>Thesis of the morning</h2>
+<p>Today’s strongest opportunity cluster is not “bigger models” or “new benchmarks.” It is <strong>control of hidden state</strong>: speech models need better continuous latent states, LLM serving needs better KV-cache state management, quantized models need better optimization state, reasoning models lose procedural state over long step chains, and multimodal models lose visual state as text grows. Different fields are hitting the same shape of problem: neural systems are powerful, but the useful information gets compressed, fragmented, diluted, or trapped in the wrong representation.</p>
+<p>For you, this is a good day because these signals connect directly to your preferred style of research: small controlled experiments, mechanism-first claims, and infrastructure-aware ideas. The best opportunities are not to chase SOTA, but to build small probes that expose <em>where information flows badly</em> and whether a simple architectural or optimization intervention fixes it.</p>
+<h2>The 5 selected opportunities</h2>
+<h3>1. Continuous speech tokens as the “LM-head problem” of audio</h3>
+<p><strong>Source evidence:</strong></p>
+<ul>
+<li>VibeVoice Technical Report — https://arxiv.org/abs/2508.19205v1</li>
+<li>Scraped from Hugging Face daily papers. The abstract claims long-form multi-speaker speech synthesis using “next-token diffusion” over continuous latent vectors and introduces a continuous speech tokenizer with much stronger compression than Encodec-style representations.</li>
+</ul>
+<p><strong>First-principles concept:</strong></p>
+<p>A text language model gets a sequence of discrete tokens. Each token is an index into a vocabulary. This makes the next-token objective clean: predict one of <code>V</code> symbols. Speech is harder. Raw waveform is continuous, high-rate, and full of redundant local structure. So most modern speech/audio language models first compress audio into a sequence of codec tokens or latent vectors. The tokenizer becomes the “interface” between the physical signal and the sequence model.</p>
+<p>If the tokenizer is discrete, like Encodec-style codes, the model inherits a language-model-like problem: predict symbols. But speech has continuous factors — pitch, timbre, rhythm, speaker identity, emotion, room acoustics — that may not quantize cleanly into a small codebook. If the tokenizer is continuous, the next-step prediction problem becomes more like predicting a distribution over latent vectors. Diffusion is one way to model that distribution: instead of picking a single class, the model learns to denoise a latent sample toward plausible audio latents.</p>
+<p>The key mechanism question is: <strong>what information does the audio tokenizer preserve, and what gradients does it expose to the sequence model?</strong> In text, your SLM weight-tying idea asks whether the input/output embedding interface creates gradient coupling that hurts rare tokens. In audio, the analogous question is whether the codec/tokenizer interface creates coupling or bottlenecks between speaker identity, phonetic content, prosody, and acoustic detail.</p>
+<p><strong>Why now:</strong></p>
+<p>Audio ML is moving from short clips and TTS demos toward long-form, multi-speaker, conversational generation. That makes tokenizer compression and latent stability more important. A tiny error in short TTS is tolerable; in long-form generation, representation drift becomes audible. If continuous tokenizers are becoming practical, then many text-LM training questions can be translated into audio: output bottlenecks, latent collapse, rare event degradation, and factor entanglement.</p>
+<p><strong>Why this is a good opportunity for Aman:</strong></p>
+<p>This connects to your audio ML/talking-face interests and your mechanism-first SLM work. You do not need to build VibeVoice. A strong small project would be: <strong>study whether audio tokenizers create rare-factor degradation analogous to rare-token degradation in LMs.</strong> Rare accents, speaker timbres, phonemes, emotional tones, or code-switching could be the audio equivalent of rare words.</p>
+<p><strong>Mechanism/bottleneck hypothesis:</strong></p>
+<p>Audio generation quality may fail not because the decoder is weak, but because the tokenizer compresses multiple independent factors into a latent geometry where rare factors receive weak or conflicting gradient signals. In other words: the speech tokenizer may be the real LM head.</p>
+<p><strong>1-3 day experiment:</strong></p>
+<ul>
+<li>Pick a small speech dataset or use short public clips.</li>
+<li>Extract latents from 1-2 available audio codecs/tokenizers.</li>
+<li>Group examples by a factor: speaker, language/script, phoneme class, pitch band, or accent if metadata exists.</li>
+<li>Measure nearest-neighbor structure and reconstruction error across common vs rare groups.</li>
+<li>Train a tiny predictor over codec latents and test whether rare factors degrade faster than common factors.</li>
+<li>Plot: factor frequency vs reconstruction/prediction error.</li>
+</ul>
+<p><strong>Artifact:</strong></p>
+<p>A notebook/blog titled: “Is the Speech Tokenizer the LM Head of Audio Models?” with plots showing which speech factors survive compression and which ones get gradient-starved.</p>
+<p><strong>Risks / novelty caveat:</strong></p>
+<p>The exact VibeVoice tokenizer may not be open. But the research idea does not depend on that specific model. The core experiment can use open codecs and still produce useful mechanism insight.</p>
+<p>---</p>
+<h3>2. KV-cache memory is not a systems detail; it is the inference-time computational graph</h3>
+<p><strong>Source evidence:</strong></p>
+<ul>
+<li>PagedAttention paper — https://arxiv.org/abs/2309.06180v1</li>
+<li>GitHub signals: vLLM, SGLang, llama.cpp all remain active and central to inference.</li>
+</ul>
+<p><strong>First-principles concept:</strong></p>
+<p>In an autoregressive transformer, every new token attends to previous tokens. To avoid recomputing keys and values for the entire prefix, inference systems store them in a KV cache. This cache grows with sequence length, batch size, number of layers, hidden size, and number of attention heads.</p>
+<p>At a high level, training is dominated by matrix multiplications; serving is often dominated by <strong>memory layout and movement</strong>. The KV cache is not just a storage object. It determines how many requests can be batched, how long contexts can be served, how much fragmentation occurs, and how cheaply the model can branch, reuse prefixes, or run agents with long histories.</p>
+<p>PagedAttention’s insight is to treat KV cache allocation more like virtual memory: split sequences into blocks/pages instead of requiring huge contiguous chunks. This reduces fragmentation and lets the system share or manage memory more flexibly.</p>
+<p><strong>Why now:</strong></p>
+<p>Long-context inference, agents, tool use, and multimodal systems all amplify KV-cache pressure. Every “agent memory” or “long reasoning” system eventually becomes an inference memory-management problem. Meanwhile, on-device inference via MLX/llama.cpp-style systems makes this even more constrained because Apple Silicon memory is shared and finite.</p>
+<p><strong>Why this is a good opportunity for Aman:</strong></p>
+<p>You care about MLX and on-device models. A great personal edge is to connect low-level inference constraints to high-level research questions: if context/memory is expensive, then architectures or agent-memory policies should be evaluated by <strong>information retained per byte of KV cache</strong>, not just accuracy.</p>
+<p><strong>Mechanism/bottleneck hypothesis:</strong></p>
+<p>The recurring bottleneck is not “context length” in the abstract. It is <strong>unpriced hidden-state accumulation</strong>. Agents and long-context models keep adding tokens because the interface makes tokens cheap conceptually but expensive physically. The missing tool is a profiler that tells you which parts of the context are actually consuming KV memory and whether they are decision-relevant.</p>
+<p><strong>1-3 day experiment:</strong></p>
+<ul>
+<li>Use a small local model through llama.cpp, vLLM, or MLX if feasible.</li>
+<li>Run synthetic prompts with different context structures: repeated boilerplate, useful facts, retrieved chunks, tool logs.</li>
+<li>Measure latency/memory/token throughput as context grows.</li>
+<li>Pair this with a simple task score: does the model actually use the extra context?</li>
+<li>Define a metric: <strong>useful answer improvement per KV-cache MB</strong>.</li>
+</ul>
+<p><strong>Artifact:</strong></p>
+<p>A blog/notebook: “Context Is Not Free: Measuring Useful Information per KV-Cache Byte.” This could become a bridge between inference optimization and agent memory.</p>
+<p><strong>Risks / novelty caveat:</strong></p>
+<p>PagedAttention itself is established. The opportunity is not to rediscover it; it is to build a small, clear research/demo layer showing how inference memory pressure changes agent/memory design.</p>
+<p>---</p>
+<h3>3. Ternary quantization as an optimization-dynamics problem, not just compression</h3>
+<p><strong>Source evidence:</strong></p>
+<ul>
+<li>Tequila: Trapping-free Ternary Quantization for Large Language Models — https://arxiv.org/abs/2509.23809v2</li>
+<li>Scraped from Hugging Face papers.</li>
+</ul>
+<p><strong>First-principles concept:</strong></p>
+<p>Quantization maps high-precision weights to a smaller set of values. In ternary quantization, each weight becomes one of three values: <code>-1</code>, <code>0</code>, or <code>1</code> up to scaling. This is attractive because multiplication can become addition/subtraction/skip, which is much friendlier for hardware.</p>
+<p>But aggressive quantization is not just a representation problem. It is an optimization problem. Imagine a continuous weight wants to move from +0.2 to -0.2. In full precision, it crosses smoothly through zero. In ternary space, small updates may not change the discrete state at all, or may flip too abruptly. The model can get stuck in “quantization traps” where gradient information exists but cannot express itself as a useful weight change.</p>
+<p>So the deep question is: <strong>how does learning behave when the parameter space has cliffs, bins, and dead zones?</strong> This is very aligned with training dynamics.</p>
+<p><strong>Why now:</strong></p>
+<p>Edge inference and on-device LLMs need low-bit models. But many low-bit discussions are framed as engineering compression. The research opportunity is to inspect the training dynamics: which weights become trapped, which layers suffer, whether rare-token or rare-feature behavior is disproportionately damaged, and whether small adapter paths can rescue the missing gradient channel.</p>
+<p><strong>Why this is a good opportunity for Aman:</strong></p>
+<p>This strongly connects to your SLM gradient-channel bottleneck idea. Weight tying asks: does one shared matrix force conflicting gradient roles? Ternary quantization asks: does a tiny discrete weight alphabet destroy small but important gradient directions? Both are about representational interfaces that restrict gradient flow.</p>
+<p><strong>Mechanism/bottleneck hypothesis:</strong></p>
+<p>Rare or low-frequency features may be hurt more by ternary quantization because their gradients are weaker and less likely to push weights across quantization thresholds. This could create a rare-token/rare-feature degradation mechanism parallel to your tied-embedding hypothesis.</p>
+<p><strong>1-3 day experiment:</strong></p>
+<ul>
+<li>Train a tiny transformer or MLP language model on a synthetic frequency-skewed corpus.</li>
+<li>Compare full precision, post-training ternary, quantization-aware ternary, and ternary + small LoRA/adapters.</li>
+<li>Track error by token frequency bucket.</li>
+<li>Plot how often weights change ternary state per layer and per training phase.</li>
+<li>Ask: do rare-token gradients fail to move quantized weights?</li>
+</ul>
+<p><strong>Artifact:</strong></p>
+<p>A small paper-style note: “Do Low-Bit Weights Starve Rare Features?” This could become a clean extension of your rare-token gradient-coupling roadmap.</p>
+<p><strong>Risks / novelty caveat:</strong></p>
+<p>Quantization literature is huge. The novelty must be narrow: not “ternary quantization is new,” but “frequency-skewed gradient starvation under ternary constraints is measurable and fixable with a small gradient side-channel.”</p>
+<p>---</p>
+<h3>4. Procedural execution failure as loss of algorithmic state</h3>
+<p><strong>Source evidence:</strong></p>
+<ul>
+<li>When LLMs Stop Following Steps: A Diagnostic Study of Procedural Execution in Language Models — https://arxiv.org/abs/2605.00817v1</li>
+<li>The paper studies step-wise arithmetic procedures and reports degradation as procedure length and look-back dependencies increase.</li>
+</ul>
+<p><strong>First-principles concept:</strong></p>
+<p>A model can answer a reasoning benchmark correctly without actually following the specified algorithm. Final-answer accuracy hides the path. Procedural execution asks a stricter question: if I give the model a simple algorithm and inputs, can it maintain the intermediate variables and execute each step faithfully?</p>
+<p>This is fundamentally about <strong>state maintenance</strong>. A procedure is not just a sequence of words; it is a sequence of transformations over variables. As the number of steps grows, the model must keep track of which intermediate values matter, when to retrieve them, and how to avoid overwriting them with irrelevant context.</p>
+<p>Transformers do not have explicit registers. They emulate registers through activations and attention patterns. So as algorithm length grows, the “register file” is distributed across hidden states and attention heads. Look-back dependencies stress whether the model can retrieve the right intermediate variable after many distractor steps.</p>
+<p><strong>Why now:</strong></p>
+<p>Everyone wants long-horizon agents and reasoning models, but many systems still evaluate final answers more than process fidelity. A controlled procedural benchmark is useful because it turns fuzzy “reasoning” into a measurable state-tracking problem.</p>
+<p><strong>Why this is a good opportunity for Aman:</strong></p>
+<p>This fits your interest in training dynamics and mechanism clarity. You can build a tiny controlled version and inspect failures directly. It also connects to MTP: if multi-token prediction widens the gradient channel, maybe it helps models learn multi-step state transitions rather than only next-token local continuation.</p>
+<p><strong>Mechanism/bottleneck hypothesis:</strong></p>
+<p>LLMs may fail long procedures because next-token training under-supervises intermediate state. The model is rewarded for local textual continuation, not for preserving latent variables across long horizons. MTP, auxiliary state-prediction losses, or explicit scratchpad-state supervision may improve this by adding more gradient signal to intermediate computations.</p>
+<p><strong>1-3 day experiment:</strong></p>
+<ul>
+<li>Generate synthetic programs with variables: <code>a = x + 2</code>, <code>b = a * 3</code>, later <code>return b - a</code>, etc.</li>
+<li>Train or finetune a tiny model on next-token prediction vs next-token + auxiliary intermediate-state prediction.</li>
+<li>Vary length and look-back distance.</li>
+<li>Measure exact step fidelity, not just final answer.</li>
+<li>If possible, compare tied vs untied LM head or MTP-style objective to see whether output-gradient bottlenecks matter for procedure tokens/rare variable references.</li>
+</ul>
+<p><strong>Artifact:</strong></p>
+<p>A notebook: “Do Small LMs Lose Their Registers?” The core plot would show accuracy vs look-back distance and whether auxiliary gradient channels help.</p>
+<p><strong>Risks / novelty caveat:</strong></p>
+<p>Procedural/reasoning diagnostics exist. The angle should be mechanism-specific: intermediate state as a gradient-supervision bottleneck, and whether small architectural/training changes fix it.</p>
+<p>---</p>
+<h3>5. Persistent visual memory: multimodal models lose perception because text steals attention mass</h3>
+<p><strong>Source evidence:</strong></p>
+<ul>
+<li>Persistent Visual Memory: Sustaining Perception for Deep Generation in LVLMs — https://arxiv.org/abs/2605.00814v1</li>
+<li>The abstract describes “Visual Signal Dilution,” where growing textual history expands the attention partition function and visual attention decays with generated sequence length.</li>
+</ul>
+<p><strong>First-principles concept:</strong></p>
+<p>In attention, each query distributes probability mass over keys. If there are a few image tokens and many text tokens, the image tokens must compete with an ever-growing text history. Even if the image is important, the softmax normalization spreads attention over more positions. As generation gets longer, the model may gradually attend less to the visual evidence and more to its own generated text.</p>
+<p>This creates a simple mechanism: the model does not necessarily “forget” the image in a human sense. The architecture makes visual evidence less accessible because the attention denominator grows. The paper’s proposed persistent visual memory adds a parallel pathway that keeps visual embeddings available without forcing them to compete in the same way with all text tokens.</p>
+<p><strong>Why now:</strong></p>
+<p>LVLMs are being used for long descriptions, video reasoning, UI agents, and multimodal generation. These tasks require sustained grounding, not just initial image recognition. If visual information decays over generation length, then many failures attributed to “reasoning” may actually be attention-allocation failures.</p>
+<p><strong>Why this is a good opportunity for Aman:</strong></p>
+<p>You care about visually clear ML/video demos and distinguishing model-owned output from preprocessing overlays. This is a perfect mechanism-demo topic: show that a model starts grounded, then drifts as text grows. It also mirrors the memory/state theme from the other four signals.</p>
+<p><strong>Mechanism/bottleneck hypothesis:</strong></p>
+<p>Multimodal drift during long generation is partly caused by visual tokens losing attention competition against accumulated text tokens. A small persistent-memory branch or periodic visual-token refresh should improve long-form grounded generation.</p>
+<p><strong>1-3 day experiment:</strong></p>
+<ul>
+<li>Use an open LVLM if available locally or through a lightweight API.</li>
+<li>Create images with small details that matter late in the answer.</li>
+<li>Ask for long multi-step descriptions where the detail must be recalled near the end.</li>
+<li>Compare short vs long answer accuracy on visual details.</li>
+<li>If attention maps are accessible, track visual-token attention over generation length.</li>
+<li>Prototype a simple prompting/control baseline: periodically restate visual facts or insert a compact visual memory summary, then compare drift.</li>
+</ul>
+<p><strong>Artifact:</strong></p>
+<p>A visual blog/demo: “Why Vision-Language Models Stop Looking.” Include attention/accuracy-over-length plots and simple examples where the model’s answer becomes less grounded over time.</p>
+<p><strong>Risks / novelty caveat:</strong></p>
+<p>The paper may already propose the architectural fix. Your opportunity is to make the mechanism intuitive, reproduce the failure on small examples, and connect it to broader state-retention bottlenecks.</p>
+<h2>Cross-signal patterns</h2>
+<ol>
+<li><strong>Hidden state is the bottleneck.</strong> Speech latents, KV cache, quantized weights, procedural variables, and visual tokens are all forms of state.</li>
+<li><strong>Compression creates gradient and retrieval asymmetries.</strong> Rare factors suffer when the interface is too narrow or too discrete.</li>
+<li><strong>Inference systems and model architecture are merging.</strong> KV-cache management is no longer just backend engineering; it shapes what agent and memory systems are feasible.</li>
+<li><strong>The best research angle is controlled diagnostics.</strong> Each opportunity can be tested with a small synthetic or lightweight setup before chasing full-scale models.</li>
+</ol>
+<h2>What to ignore today</h2>
+<ul>
+<li>HN had several high-score items, but most were not directly useful for your ML research direction.</li>
+<li>The HN item “The Hidden Costs of Great Abstractions” is worth keeping as a weak systems signal, but not a top-5 research opportunity by itself.</li>
+<li>Generic eval-cost discourse appeared in the scrape, but it is intentionally not promoted because you said you are not interested in eval-only framing.</li>
+</ul>
+<h2>Source failures / caveats</h2>
+<p>No major source failures in the test scrape. Hugging Face CLI returned papers but not always direct URLs, so I resolved key paper URLs through arXiv title search where possible.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 02:39</p>
+  </footer>
+</body>
+</html>

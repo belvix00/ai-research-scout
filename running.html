@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Running Ideas · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="index.html">Home</a><a class="" href="daily.html">Daily</a><a class="" href="weekly.html">Weekly</a><a class="" href="blog.html">First-principles Blog</a><a class="active" href="running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — Running Ideas</h1>
+<p>Purpose: long-lived research opportunity detector for architectures, training dynamics, theory, inference optimization, mechanistic interpretability, RL, LLMs, and audio ML.</p>
+<p>This file is updated by the daily cron job and synthesized by the weekly cron job.</p>
+<h2>Strong candidate directions</h2>
+<p>&lt;!-- Daily runs append/update ideas here when evidence accumulates. --&gt;</p>
+<h2>Weak signals to watch</h2>
+<h2>Recurring bottlenecks</h2>
+<h2>Missing tools / annoying manual things</h2>
+<h2>Infra improvements that make papers cheap</h2>
+<h2>Mechanism questions</h2>
+<h2>Audio ML / speech signals</h2>
+<h2>Inference optimization signals</h2>
+<h2>User roadmap links</h2>
+<ul>
+<li>SLM weight tying causing rare-token degradation via gradient coupling</li>
+<li>Asymmetric stop-gradient tying / LoRA-split tying</li>
+<li>MTP as gradient-channel widening</li>
+<li>AttnRes-PEFT</li>
+<li>FXA/XSA/PHX self-exclusion</li>
+<li>Agent memory/self-improving agents</li>
+<li>MLX and on-device ML</li>
+<li>Edge/on-device multimodal/perception models</li>
+<li>Audio ML / speech / talking-face systems</li>
+</ul>
+<h2>Daily additions — 2026-05-04</h2>
+<ul>
+<li><strong>Rare-token degradation as a measurable gradient-channel pathology</strong> — Speculation: tied input/output embeddings create asymmetric update pressure where rare-token rows are pulled by decoder logits more than stable contextual usage; MTP may widen or dilute this channel. Experiment: Train 2-4 tiny LMs on a controlled Zipfian corpus with tied, untied, asymmetric stop-gradient tied, and LoRA-split tied embeddings; log per-token row gradient norms, cosine drift, and rare-token next-token accuracy. Evidence: Evidence: <a href="https://arxiv.org/abs/2412.19437v2" target="_blank" rel="noopener">DeepSeek-V3 Technical Report</a> plus Aman&#x27;s running roadmap on weight tying / rare-token degradation.</li>
+<li><strong>KV-cache/quantization stress harness for mechanism experiments on-device</strong> — Evidence-backed opportunity: inference kernels are improving, but mechanism papers rarely report how cache quantization/speculation changes hidden-state trajectories, not just tokens/sec. Experiment: Run the same small model under fp16, low-bit weights, low-bit KV, and speculative decoding; compare activation cosine drift, attention entropy, rare-token failure cases, and SAE feature firing stability. Evidence: Evidence: <a href="https://arxiv.org/abs/2503.16163v1" target="_blank" rel="noopener">SpeCache: Speculative Key-Value Caching for Efficient Generation of LLMs</a> and recent configured repo/HF activity around inference systems.</li>
+<li><strong>Codec-token speech models: where do linguistic vs speaker features separate?</strong> — Speculation: codec language models may have a sharper layerwise split between phonetic content, prosody, and speaker identity than text LMs have for syntax/semantics. Experiment: Use a public speech representation/model checkpoint; fit linear probes and small SAEs on codec-token hidden states for phoneme, speaker, and prosody labels on a tiny dataset. Evidence: Evidence: <a href="https://arxiv.org/abs/2601.15621v1" target="_blank" rel="noopener">Qwen3-TTS Technical Report</a> from audio/speech-focused sources.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Inference settings as mechanistic perturbations remain under-instrumented.</li>
+<li>Rare-token/tokenization pathologies remain a good small-model testbed.</li>
+<li>Audio codec representations need small, disentangled probes before larger talking-face/audio systems.</li>
+</ul>
+<h2>Daily additions — 2026-05-04 test briefing</h2>
+<ul>
+<li><strong>Speech tokenizer as audio LM-head bottleneck</strong> — VibeVoice-like continuous speech tokenizers suggest a clean audio-ML analogue of rare-token degradation: rare speakers/accents/phonetic factors may be compressed into weakly separated latent directions. Experiment: measure factor frequency vs codec reconstruction/prediction error on a small speech set.</li>
+<li><strong>Useful information per KV-cache byte</strong> — PagedAttention/vLLM/SGLang/llama.cpp signals suggest agent memory and long-context research should price hidden-state memory, not just tokens. Experiment: synthetic context utility vs KV-cache cost; artifact: “Context Is Not Free.”</li>
+<li><strong>Low-bit weights as rare-feature gradient starvation</strong> — Ternary quantization may disproportionately trap weak gradients from rare tokens/features. Experiment: tiny Zipfian LM with full precision vs ternary vs ternary+LoRA side-channel.</li>
+<li><strong>Procedural reasoning as lost registers</strong> — Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</li>
+<li><strong>Visual signal dilution in LVLMs</strong> — Long multimodal generation may drift because visual tokens lose attention mass to accumulated text. Experiment: detail-recall accuracy vs generation length, with optional visual-memory refresh baseline.</li>
+</ul>
+<h3>HN source note</h3>
+<ul>
+<li>Hacker News front page added as a weak-signal source. It should mostly surface tooling/infra/manual-work bottlenecks; today’s top HN items were mostly not promoted except as background signals.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 02:39</p>
+  </footer>
+</body>
+</html>
