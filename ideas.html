@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-04 14:37:43</p>
+<p>Generated: 2026-05-04 23:10:46</p>
 <h2>Mechanism</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -103,11 +103,11 @@
 <ul>
 <li>Status: <code>watch</code></li>
 <li>Confidence: <code>low</code></li>
-<li>Tags: <code>audio</code>, <code>training-dynamics</code>, <code>mech-interp</code></li>
+<li>Tags: none</li>
 <li>Score proxy: 12/20</li>
 <li>First seen: 2026-05-04</li>
 <li>Last seen: 2026-05-04</li>
-<li>Evidence count: 3</li>
+<li>Evidence count: 4</li>
 </ul>
 <h3>Thesis</h3>
 <p>LASE shows speaker encoders can leak script/language information with accent-conditional failures; Talker-T2AV supports separating high-level cross-modal semantics from low-level rendering. Experiment: WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</p>
@@ -115,6 +115,7 @@
 <p>WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</p>
 <h3>Evidence</h3>
 <ul>
+<li><code>daily/2026-05-05-1133-IST.md</code> — Text-to-Talk separates AR text from NAR audio diffusion, while LASE shows script/language leakage in speaker identity; this strengthens a tiny factor-probe experiment for speech representations.</li>
 <li><code>running.md</code> — LASE shows speaker encoders can leak script/language information with accent-conditional failures; Talker-T2AV supports separating high-level cross-modal semantics from low-level rendering. Experiment: WavLM/ECAPA/codec probes for speaker, language/script, phoneme, and prosody, with optional gradient-reversal nuisance removal.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a> - Mechanism: - Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak script or accent. Conversely, a joint talking-face generator benefits from coupling high-level semantics while decoupling low-level audio/video rendering. The ke</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</a> - <a href="https://huggingface.co/papers/2604.23586" target="_blank" rel="noopener">Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</a> - <strong>Mechanism</strong> - Speaker identity, phonetic content, script/language, accent, prosody, and channel acoustics are entangled in raw audio. A representation meant to carry “speaker” may still leak script or accent. Conversely, a joint talking-face generator benefits from coupling high-level semantics while decoupling low-level audio/video rendering.</li>
@@ -198,6 +199,50 @@
 <li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
+</ul>
+<h2>Activation-pattern data selection for instruction tuning</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Instruction data may be selected by the internal neurons/paths it activates for target capabilities, not only by text similarity or loss.</p>
+<h3>Mechanism</h3>
+<p>Match candidate instruction data to target capability via activation-pattern similarity, then test interference and sample efficiency.</p>
+<h3>Minimal experiment</h3>
+<p>Small LM with two latent skills; compare random, embedding-similar, and activation-similar data selection.</p>
+<h3>Falsifier</h3>
+<p>Activation similarity collapses to semantic similarity or improves target capability only by increasing off-target degradation.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>resources/2026-05-05-1133-IST.md</code> — Neuron-Aware Data Selection evaluates instruction-tuning examples by similarity of neuron activation patterns between candidate data and target domains.</li>
+</ul>
+<h2>Adaptive compute gates as a cross-domain abstraction</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Fixed token/layer/cache/device budgets waste compute when uncertainty is heterogeneous; gates based on value, posterior stability, entropy, motion, or load may improve accuracy per compute.</p>
+<h3>Mechanism</h3>
+<p>Gate computation or dataflow using measured utility/instability rather than fixed schedules.</p>
+<h3>Minimal experiment</h3>
+<p>Implement a tiny decoding or masked-denoising gate from posterior/entropy stability; measure speed, accuracy, and cascade errors.</p>
+<h3>Falsifier</h3>
+<p>Gate estimation costs more than it saves, or early-locked/skipped positions cause cascading errors on compositional tasks.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-1133-IST.md</code> — Length Value Model, SureLock, MotionCache, HiDrop, StreamingThinker, and RoundPipe all replace fixed budgets/bindings with conditional compute or dispatch signals.</li>
 </ul>
 <h2>Codec-token speech models: where do linguistic vs speaker features separate?</h2>
 <ul>
@@ -361,6 +406,28 @@
 <ul>
 <li><code>running.md</code> — Long step-following failures can be reframed as distributed register-state decay. Experiment: synthetic programs with varying look-back; compare next-token-only vs auxiliary state/MTP-style losses.</li>
 </ul>
+<h2>Safety drift as feature drift after benign fine-tuning</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-04</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Fine-tuning can move refusal, grounding, or routing features even when the domain data is benign; drift should be monitored internally before trusting aggregate safety evals.</p>
+<h3>Mechanism</h3>
+<p>Measure pre/post fine-tune changes in refusal/evidence-use probes, hidden states, and routing patterns.</p>
+<h3>Minimal experiment</h3>
+<p>Fine-tune a small instruct model on a benign domain and compare safety/evidence prompts plus hidden-state probes before/after.</p>
+<h3>Falsifier</h3>
+<p>Observed drift is judge/benchmark wording instability rather than model-internal feature movement.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-1133-IST.md</code> — Safety Drift After Fine-Tuning reports large, heterogeneous safety changes after benign domain adaptation; SeekBench argues agent evals need process-level grounding/recovery/assessment checks.</li>
+</ul>
 <h2>Speech tokenizer as audio interface bottleneck</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -435,7 +502,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 22:16</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:10</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

@@ -65,10 +65,22 @@
 <li>Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems.</li>
 <li>Inference systems should be logged as mechanism perturbations, not just throughput infrastructure.</li>
 <li>HN remained weak/noisy today; no HN item was promoted into a primary opportunity.</li>
+</ul>
+<h2>Daily additions — 2026-05-05</h2>
+<ul>
+<li><strong>Adaptive compute gates as a cross-domain abstraction</strong> — Repeated evidence from Length Value Model, SureLock, MotionCache, HiDrop, StreamingThinker, and RoundPipe: fixed budgets/bindings waste compute under heterogeneous uncertainty. Experiment: define gates by value, entropy/posterior stability, residual motion, layer role, or device-stage load; test one tiny gate in text decoding and log accuracy-per-compute plus cascade failures.</li>
+<li><strong>Audio objectives should separate dependency structure and nuisance factors</strong> — Text-to-Talk argues for AR text plus NAR audio diffusion; LASE shows language/script leakage in speaker identity; SCRAPL makes richer audio losses cheaper. Experiment: probe speaker/language/phoneme/prosody factors in WavLM/ECAPA/codec states, then test gradient-reversal nuisance removal without destroying prosody.</li>
+<li><strong>Activation-pattern data selection may become a tuning primitive</strong> — Neuron-Aware Data Selection, reasoning controllability probes, and Jet decompositions all point toward selecting or steering data by internal computation, not only text similarity. Experiment: small LM with two latent skills; compare random, embedding-similar, and activation-similar instruction subsets for sample efficiency and interference.</li>
+<li><strong>Safety and epistemic behavior drift should be measured as feature drift</strong> — Safety Drift After Fine-Tuning plus process-level search-agent evals suggest benign tuning can move refusal/grounding features. Experiment: pre/post fine-tune probes on refusal, evidence grounding, and routing/hidden-state changes before trusting aggregate safety scores.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Fixed interfaces under heterogeneous uncertainty are the main recurring bottleneck: token budgets, AR objectives, pipeline bindings, data subsets, and safety assumptions all need measurable gates or drift monitors.</li>
+<li>Semantic Scholar and arXiv direct APIs were rate-limited during this run; HF daily papers and OpenReview supplied most paper coverage, with RSS/blogs as supporting breadth.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 22:16</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:10</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

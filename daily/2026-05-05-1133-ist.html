@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-05 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-05</h1>
+<h2>What happened today</h2>
+<p>Today’s strongest signals were not single model launches; they clustered around <strong>adaptive allocation of computation and training signal</strong>. A few papers treat length, streaming thought, converged tokens, and motion as things the model/system can value-estimate or detect online, instead of using fixed budgets. In parallel, OpenReview submissions around Jets, neuron-aware data selection, attention initialization, and reasoning controllability push toward more direct inspection of the internal mechanisms that decide which data, paths, or features matter.</p>
+<p>The audio/speech surface was also healthy: Text-to-Talk argues that forcing audio through the same autoregressive dependency structure as text is the wrong inductive bias, while LASE gives a concrete failure case where speaker identity representations leak script/language. On the systems side, RoundPipe and MotionCache both attack waste from coarse binding: stage-to-GPU binding in training, and chunk-level cache reuse in autoregressive video generation.</p>
+<p>Weak/skeptical signal: safety and agent capability remain fragile under adaptation and evaluation framing. Safety Drift After Fine-Tuning challenges the assumption that benign domain tuning preserves safety behavior; SeekBench-style process evaluation asks whether search agents actually ground, recover, and assess evidence, not merely answer correctly.</p>
+<p>Evidence pool: [Resources note](../resources/2026-05-05-1133-IST.md), <a href="https://huggingface.co/papers/2604.27039" target="_blank" rel="noopener">Length Value Model</a>, <a href="https://huggingface.co/papers/2604.27083" target="_blank" rel="noopener">Co-Evolving Policy Distillation</a>, <a href="https://openreview.net/forum?id=e3XLWHFrnr" target="_blank" rel="noopener">Text-to-Talk</a>, <a href="https://huggingface.co/papers/2604.27085" target="_blank" rel="noopener">RoundPipe</a>, <a href="https://huggingface.co/papers/2605.01725" target="_blank" rel="noopener">MotionCache</a>, <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Jets</a>, <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE</a>.</p>
+<h2>Pattern / mechanism thesis</h2>
+<p>The recurring bottleneck is <strong>fixed interfaces under heterogeneous uncertainty</strong>. Fixed decode budgets overthink easy tokens and underthink hard ones; fixed pipeline-stage ownership wastes heterogeneous GPUs; fixed AR objectives mismatch text/audio dependencies; fixed instruction-tuning datasets may exercise the wrong neurons; fixed safety assumptions drift after adaptation. The opportunity is to make the interface itself conditional: value-estimated length, token convergence locks, motion-weighted cache reuse, neuron-aware data selection, streaming thought, and audio objectives that separate target-target from source-target dependencies.</p>
+<p>A useful daily heuristic: when a paper claims efficiency or controllability, ask whether it introduces a <strong>measurable gate</strong>. What is being gated: tokens, layers, experts, stages, data, retrieval steps, audio timesteps, or reasoning traces? What signal controls the gate: value, entropy, posterior stability, motion, activation similarity, verifier reward, or uncertainty? Can the gate be falsified on a tiny synthetic setup?</p>
+<h2>Five research opportunities</h2>
+<h3>1. Token-level value signals for reasoning cost control</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2604.27039" target="_blank" rel="noopener">Length Value Model</a>, <a href="https://openreview.net/forum?id=K5A2jBmEBK" target="_blank" rel="noopener">DeepCompress</a>, <a href="https://huggingface.co/papers/2605.01032" target="_blank" rel="noopener">StreamingThinker</a>.</li>
+<li><strong>Mechanism:</strong> Reasoning length is treated as an internal state variable with dense value supervision, rather than an external max-token budget. If the model can predict remaining horizon or classify simple vs hard trajectories, it can choose where to spend test-time compute.</li>
+<li><strong>Minimal experiment/probe:</strong> On a small math/code dataset, train a lightweight probe on hidden states to predict remaining solution length and final correctness under partial generations. Compare three policies: fixed token budget, length-value early stop, and adaptive “spend more when confidence/length-value disagree.” Log accuracy per generated token and failure cases where early stop truncates necessary reasoning.</li>
+<li><strong>Falsifier:</strong> If remaining-length probes are no better than prompt-only heuristics, or if adaptive control improves length matching while hurting correctness on hard items, the value signal is mostly cosmetic.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>2. Adaptive compute gates as a shared inference abstraction</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://openreview.net/forum?id=PzhNnMepgl" target="_blank" rel="noopener">SureLock for masked diffusion-LM decoding</a>, <a href="https://huggingface.co/papers/2605.01725" target="_blank" rel="noopener">Motion-Aware Caching</a>, <a href="https://openreview.net/forum?id=2baJBgfr9S" target="_blank" rel="noopener">HiDrop</a>, <a href="https://huggingface.co/papers/2604.27085" target="_blank" rel="noopener">RoundPipe</a>.</li>
+<li><strong>Mechanism:</strong> Several domains are converging on the same idea: compute should follow instability or utility, not position in a fixed schedule. Tokens with stabilized posteriors can be locked; static video regions can reuse cache; visual tokens can be injected/pruned according to layer role; GPU stages can be dispatched to break weight binding.</li>
+<li><strong>Minimal experiment/probe:</strong> Build a toy “adaptive gate taxonomy” table and one small implementation: for a masked diffusion/text denoising toy or autoregressive transformer, skip computation for positions whose prediction entropy changes below a threshold. Measure speed, accuracy, and whether skipped positions later become wrong after context changes.</li>
+<li><strong>Falsifier:</strong> If gate decisions require expensive confidence estimation, or if early-locked tokens cause cascading errors on compositional prompts, the abstraction is less transferable than the papers suggest.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>3. Audio generation needs dependency-factorized objectives</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://openreview.net/forum?id=e3XLWHFrnr" target="_blank" rel="noopener">Text-to-Talk</a>, <a href="https://huggingface.co/papers/2605.00777" target="_blank" rel="noopener">LASE</a>, <a href="https://openreview.net/forum?id=RuYwbd5xYa" target="_blank" rel="noopener">SCRAPL</a>, <a href="https://huggingface.co/blog/nvidia/nemotron-3-nano-omni" target="_blank" rel="noopener">Nemotron 3 Nano Omni blog</a>.</li>
+<li><strong>Mechanism:</strong> Speech systems are bottlenecked by representations that entangle speaker identity, script/language, phonetic content, and prosody, while text and waveform/audio tokens have different dependency structures. Non-autoregressive audio diffusion plus AR text is one architectural claim; adversarial speaker encoders and stochastic scattering losses are complementary probes/tools.</li>
+<li><strong>Minimal experiment/probe:</strong> On a tiny multilingual speech set, compare WavLM/ECAPA/codec embeddings with linear probes for speaker, language/script, phoneme bucket, and prosody proxy. Add a gradient-reversal nuisance head for language/script and measure whether speaker verification and prosody retention survive.</li>
+<li><strong>Falsifier:</strong> If removing script/language signal also destroys speaker identity or prosody, then the factors are not cleanly separable with current encoders and small adversarial heads.</li>
+<li><strong>Confidence:</strong> medium-high.</li>
+</ul>
+<h3>4. Internal activation similarity as a data-selection primitive</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">Neuron-Aware Data Selection</a>, <a href="https://huggingface.co/papers/2604.27251" target="_blank" rel="noopener">Compliance versus Sensibility</a>, <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Decomposing LLM Computation with Jets</a>.</li>
+<li><strong>Mechanism:</strong> Data and behavior may be selected/intervened on by measuring which neurons, paths, or reasoning-type representations are activated, not just by text metadata or loss. This makes instruction tuning and controllability look like a problem of matching internal circuits to target capabilities.</li>
+<li><strong>Minimal experiment/probe:</strong> Fine-tune a small LM on two skills with overlapping surface form but different latent rules. Select data either randomly, by embedding similarity, or by activation-pattern similarity to a held-out target set. Compare sample efficiency and interference. Add a simple linear probe for rule type in middle/late layers.</li>
+<li><strong>Falsifier:</strong> If activation-similarity selection collapses to ordinary semantic similarity, or improves target skill while causing larger off-target degradation, the method is not yet a robust tuning primitive.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>5. Fine-tuning safety drift as a feature-drift measurement problem</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2604.24902" target="_blank" rel="noopener">Safety Drift After Fine-Tuning</a>, <a href="https://openreview.net/forum?id=r0L9GwlnzP" target="_blank" rel="noopener">SeekBench</a>, <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing</a>.</li>
+<li><strong>Mechanism:</strong> Safety and epistemic behavior can drift under benign downstream gradients because the same fine-tuning process that improves domain competence perturbs refusal, grounding, or routing features. MoE routing masks and process-level agent evals suggest observable control surfaces: routes, hidden features, evidence-use steps, and recovery behavior.</li>
+<li><strong>Minimal experiment/probe:</strong> Fine-tune a small instruct model on a benign domain dataset, then measure refusals/unsafe completions and evidence-grounding before/after. If using a MoE checkpoint, log routing changes on safety/evidence prompts; otherwise fit probes on refusal/evidence-use hidden states.</li>
+<li><strong>Falsifier:</strong> If measured drift is dominated by benchmark wording or judge instability, not model-internal changes, then the right project is eval reliability before mechanism intervention.</li>
+<li><strong>Confidence:</strong> medium-low.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:10</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

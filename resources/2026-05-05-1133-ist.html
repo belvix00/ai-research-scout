@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-05 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-05</h1>
+<p>Plain list of resources collected today. Buckets are broad by design: resources should expand taste inside DL/LLMs/training/audio/mech-interp/math/inference/ML-infra, not only echo current projects.</p>
+<p><strong>Bucket: Core DL/LLM research</strong></p>
+<h2>Hugging Face Papers — Length Value Model: Scalable Value Pretraining for Token-Level Length Modeling</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2604.27039</p>
+<p>Summary: Frames generation length as a token-level value-estimation problem by assigning a constant negative reward per generated token and predicting discounted remaining horizon. This is useful because it turns “how long will reasoning continue?” into a dense, annotation-free control signal rather than a coarse sequence-level budget. The mechanism signal is value modeling over the computation horizon: a small auxiliary model may steer cost/accuracy trade-offs before expensive decoding is spent.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Co-Evolving Policy Distillation</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2604.27083</p>
+<p>Summary: Analyzes why mixed RLVR can lose capability through inter-capability divergence, while post-hoc policy distillation can fail because student and teacher behaviors are already too far apart. The proposed CoPD interleaves expert RLVR with bidirectional online distillation so expert behaviors co-evolve. The useful mechanism is synchronization of behavioral patterns during training, not after convergence.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — StreamingThinker: Large Language Models Can Think While Reading</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.01032</p>
+<p>Summary: Introduces a streaming reasoning paradigm where the model begins chain-of-thought while reading input instead of waiting for the full prompt. Collected because long-context reasoning often wastes latency and loses early information; streaming CoT is a concrete architecture/training recipe for re-timing cognition. The mechanism to watch is whether partial reasoning states reduce attention dilution or simply create premature commitments.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Let ViT Speak: Generative Language-Image Pre-training</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.00809</p>
+<p>Summary: Trains a Vision Transformer to predict language tokens directly from visual tokens using a standard language-modeling objective, avoiding contrastive batch construction and an extra text decoder. The signal is a simpler visual-to-autoregressive alignment interface. Mechanistically, it asks whether language-token gradients make the vision tower preserve factors useful for generation, or overfit to nameable/textualized visual features.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Training/RL/math/mech interp</strong></p>
+<h2>OpenReview ICLR 2026 — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: Proposes Jet Expansions, a functional decomposition of model computation into explicit input-output computational paths plus remainders, generalizing truncated Taylor-series style operators. Collected as a mechanistic-interpretability method because it aims to cut through entangled LLM computation at graph/path level. The mechanism signal is a possible bridge between logit lens-like local views and principled path decompositions.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=uq6UWRgzMr</p>
+<p>Summary: Selects instruction-tuning data by comparing neuron activation patterns between candidate data and target capabilities. This is more interesting than generic data filtering because it uses internal activation similarity as the selection criterion. The mechanism signal is that “good data” may be operationalized as data that exercises the right subnetworks, enabling smaller, more targeted tuning sets.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — Conditioned Initialization for Attention</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://openreview.net/forum?id=cKNOCYPo2W</p>
+<p>Summary: Studies how initialization of query/key/value attention weights can bias transformer optimization dynamics, rather than treating initialization as a solved random-default detail. Collected because attention initialization is a cheap and underexplored control knob for training stability and specialization. The learning value is to separate architecture capacity from the trajectory induced by early attention geometry.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — High Probability Bounds for Non-Convex Stochastic Optimization with Momentum</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://openreview.net/forum?id=KirKWFPYJA</p>
+<p>Summary: Gives high-probability convergence and generalization bounds for stochastic gradient descent with momentum in non-convex settings. This is not a model-release signal; it is a useful math resource for understanding why momentum remains hard to reason about in realistic DL objectives. Mechanism value: sharper probabilistic statements about optimizer behavior can guide what to log in small training-dynamics experiments.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Compliance versus Sensibility: On the Reasoning Controllability in Large Language Models</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://huggingface.co/papers/2604.27251</p>
+<p>Summary: Studies reasoning conflicts where contextual instructions intentionally clash with parametric patterns, then probes whether reasoning types are internally detectable. The paper reports middle-to-late layer linear encodings of reasoning types and activation-level steering toward compliance. The mechanism signal is decoupling logical schema from memorized instance patterns through internal control surfaces.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Audio/TTS/speech</strong></p>
+<h2>OpenReview ICLR 2026 — From Text to Talk: Audio-Language Model Needs Non-Autoregressive Joint Training</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://openreview.net/forum?id=e3XLWHFrnr</p>
+<p>Summary: Argues that text and audio should not both be forced through the same autoregressive generation pattern: text depends heavily on target-target relations, while audio depends more on source-target relations. The proposed Text-to-Talk framework combines autoregressive text with non-autoregressive audio diffusion in one Transformer. Collected because it exposes a concrete training-objective mismatch in speech-to-speech systems.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview ICLR 2026 — SCRAPL: Scattering Transform with Random Paths for Machine Learning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://openreview.net/forum?id=RuYwbd5xYa</p>
+<p>Summary: Makes differentiable joint time-frequency scattering transforms cheaper by randomly sampling transform paths during optimization. The signal is broadly useful for audio ML because scattering losses capture spectrotemporal structure but are often too expensive to use inside neural training loops. This is a mechanism/tooling resource: a stochastic loss estimator can make richer audio perceptual losses practical.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://huggingface.co/papers/2605.00777</p>
+<p>Summary: Shows that multilingual speaker encoders can leak script/language information into speaker identity, with accent-conditional failures in cross-script voice cloning. LASE uses supervised contrastive identity learning plus gradient reversal against script classification. The mechanism signal is representation disentanglement under nuisance factors: speaker identity, language/script, accent, phonemes, and prosody can be explicitly probed.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Blog — Introducing NVIDIA Nemotron 3 Nano Omni: Long-Context Multimodal Intelligence for Documents, Audio and Video Agents</h2>
+<p>Type: Model/dataset</p>
+<p>Link: https://huggingface.co/blog/nvidia/nemotron-3-nano-omni</p>
+<p>Summary: Describes an open multimodal model with native audio input, document/video understanding, and token-reduction mechanisms on an efficient 30B-A3B backbone. Collected only for its architecture/training signal, not as a launch recap: audio/video/document agents are increasingly using token compression as the central scaling lever. The useful question is what information survives multimodal token reduction.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Inference/ML infra/GPU</strong></p>
+<h2>Hugging Face Papers — RoundPipe: Efficient Training on Multiple Consumer GPUs with RoundPipe</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://huggingface.co/papers/2604.27085</p>
+<p>Summary: Targets fine-tuning on consumer GPU servers where PCIe and uneven stage weights create pipeline bubbles. RoundPipe treats GPUs as stateless execution workers and dynamically dispatches stages round-robin, reporting 1.48–2.16x speedups and very long-context LoRA feasibility on an 8x RTX 4090 box. The mechanism signal is breaking weight-to-device binding as a training-systems abstraction.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Motion-Aware Caching for Efficient Autoregressive Video Generation</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://huggingface.co/papers/2605.01725</p>
+<p>Summary: Uses inter-frame motion as a proxy for deciding which pixels/tokens need more denoising updates and which can reuse cached computation. This is useful beyond video because it converts cache reuse from a static schedule into a content-adaptive policy. The mechanism signal is “update budget follows residual instability,” which may transfer to LLM KV reuse, diffusion acceleration, or multimodal inference.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — Stopping Computation for Converged Tokens in Masked Diffusion-LM Decoding</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://openreview.net/forum?id=PzhNnMepgl</p>
+<p>Summary: Proposes locking token positions in masked diffusion language models once their posterior stabilizes, skipping future query/FFN computation while caching keys and values for other positions. Collected because it is a clean example of token-wise adaptive compute. The mechanism signal is convergence detection as a decoder-level control policy, not merely a faster kernel.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — HiDrop: Hierarchical Vision Token Reduction in MLLMs via Late Injection, Concave Pyramid Pruning, and Early Exit</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://openreview.net/forum?id=2baJBgfr9S</p>
+<p>Summary: Reinterprets vision-token pruning around the actual function of MLLM layers: delay visual injection until active fusion begins, then prune with a concave schedule and early exit. Collected because it links inference efficiency to representation timing. The mechanism signal is that shallow layers may be passive for cross-modal fusion, so token-budget policies should follow layer roles rather than fixed depth heuristics.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Broad learning / outside current project bubble</strong></p>
+<h2>Hugging Face Blog — AI evals are becoming the new compute bottleneck</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://huggingface.co/blog/eval-compute-bottleneck</p>
+<p>Summary: Argues that evaluation itself is becoming a bottleneck as model training and deployment loops demand larger, more realistic, and more frequent evals. Collected as broad learning because it reframes evals as an infrastructure constraint, not just a scoring ritual. Mechanism value: better eval economics can decide which research loops are feasible, especially for agents and long-context systems.</p>
+<p>Personalization: low</p>
+<h2>Google Research Blog — ReasoningBank: Enabling agents to learn from experience</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://research.google/blog/reasoningbank-enabling-agents-to-learn-from-experience/</p>
+<p>Summary: Presents a memory/resource for agents to store and reuse reasoning traces from prior experience. Collected because it is a broad agent-learning signal rather than a product announcement: the mechanism is whether experience can be compacted into reusable reasoning artifacts without overfitting to stale trajectories. This connects to memory design, skill extraction, and continual improvement loops.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Skeptical or failure signal</strong></p>
+<h2>Hugging Face Papers — Safety Drift After Fine-Tuning: Evidence from High-Stakes Domains</h2>
+<p>Type: Newsletter/critique</p>
+<p>Link: https://huggingface.co/papers/2604.24902</p>
+<p>Summary: Finds that benign fine-tuning can induce large, heterogeneous, and sometimes contradictory changes in measured safety behavior across medical/legal and controlled model adaptations. Collected as a skeptical signal because it challenges the assumption that base-model safety properties persist through downstream adaptation. The mechanism to probe is which features or refusal circuits drift under task-specializing gradients.</p>
+<p>Personalization: low</p>
+<h2>OpenReview ICLR 2026 — Do LLM Agents Know How to Ground, Recover, and Assess? Evaluating Epistemic Competence in Information-Seeking Agents</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://openreview.net/forum?id=r0L9GwlnzP</p>
+<p>Summary: Introduces process-level evaluation of search agents around groundedness, recovery, and evidence assessment rather than final-answer accuracy alone. Collected as a failure-mode signal because many agent gains can be benchmark artifacts if evidence use is not inspected. The mechanism value is an annotation schema for epistemic behavior: when does a search policy actually reduce uncertainty versus narrate confidence?</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:10</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
