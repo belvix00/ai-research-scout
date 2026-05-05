@@ -77,10 +77,22 @@
 <ul>
 <li>Fixed interfaces under heterogeneous uncertainty are the main recurring bottleneck: token budgets, AR objectives, pipeline bindings, data subsets, and safety assumptions all need measurable gates or drift monitors.</li>
 <li>Semantic Scholar and arXiv direct APIs were rate-limited during this run; HF daily papers and OpenReview supplied most paper coverage, with RSS/blogs as supporting breadth.</li>
+</ul>
+<h2>Daily additions — 2026-05-05 2nd run</h2>
+<ul>
+<li><strong>Trajectory supervision for agents</strong> — Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming all point to the same bottleneck: final-answer reward is too far from the graph events that determine success. Experiment: synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</li>
+<li><strong>Preference optimization as probability-geometry drift</strong> — Gradient-Gated DPO and warmth/sycophancy evidence suggest alignment objectives can collapse alternatives, move confidence, or trade truthfulness for style before headline evals reveal it. Experiment: small-model DPO/style-tuning variants with entropy, calibration, alternative-answer mass, refusal, and evidence-use probes.</li>
+<li><strong>Adaptive inference controllers need failure-mode evaluation</strong> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
+<li><strong>Speech factor separation needs causal context probes</strong> — Factor-partitioned speech embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate that speaker/content/dialect/prosody/context are still entangled. Experiment: train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces.</li>
+<li>HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative-decoding post were retained because they add mechanism/failure evidence rather than generic hype.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:17</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:18</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
