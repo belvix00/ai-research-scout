@@ -19,52 +19,34 @@
   </header>
   <main>
     <article class="prose"><h1>AI Research Scout Resources — 2026-05-04</h1>
-<p>Plain list of resources collected today. Keep it scan-friendly.</p>
-<h2>Hugging Face Daily Papers — From Skill Text to Skill Structure: The Scheduling-Structural-Logical Representation for Agent Skills</h2>
-<p>Link: https://huggingface.co/papers/2604.24026</p>
-<p>Summary: Proposes turning text-heavy agent skills into explicit structured representations covering invocation interfaces, execution structure, constraints, and side effects. The signal is not “another agent paper”; it is that skill memory may need a schema more like a program representation than a markdown note. Collected because Aman’s scout itself uses reusable skills and because agent memory/tool-use interfaces are a priority area.</p>
-<h2>Hugging Face Daily Papers — Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</h2>
-<p>Link: https://huggingface.co/papers/2605.00416</p>
-<p>Summary: Describes offline-to-online reinforcement learning for pretrained vision-language-action robot policies using fleet rollouts and human interventions. The useful mechanism is a deployed-policy data flywheel with value-learning stabilization for heterogeneous sparse-reward feedback. Collected as a strong RL/training-dynamics signal for “learning after deployment,” even outside robotics.</p>
-<h2>Hugging Face Daily Papers — Let ViT Speak: Generative Language-Image Pre-training</h2>
-<p>Link: https://huggingface.co/papers/2605.00809</p>
-<p>Summary: GenLIP trains a ViT to predict language tokens directly from visual tokens using a standard language-modeling objective, without contrastive batch construction or an extra text decoder. The signal is a simpler alignment interface between vision encoders and autoregressive LMs. Collected because it suggests a probeable question: what changes when the vision tower receives token-level generative gradients instead of contrastive gradients?</p>
-<h2>Hugging Face Daily Papers — Trees to Flows and Back: Unifying Decision Trees and Diffusion Models</h2>
-<p>Link: https://huggingface.co/papers/2605.00414</p>
-<p>Summary: Establishes a mathematical correspondence between hierarchical decision trees and diffusion processes in limiting regimes, with a shared Global Trajectory Score Matching principle. The practical claims include tabular generation speedups and distilling hierarchical decision logic into neural networks. Collected because it is a theory/mechanism bridge between discrete routing, continuous generative dynamics, and distillation.</p>
-<h2>Hugging Face Daily Papers — End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</h2>
-<p>Link: https://huggingface.co/papers/2605.00503</p>
-<p>Summary: Jointly optimizes a 1D visual tokenizer and autoregressive generator so generation losses directly supervise the tokenizer, instead of using the common two-stage tokenizer-then-generator pipeline. The signal is that tokenizers are becoming trainable interfaces rather than fixed preprocessing. Collected because tokenizer bottlenecks are a recurring mechanism in multimodal and audio models.</p>
-<h2>Hugging Face Daily Papers — LASE: Language-Adversarial Speaker Encoding for Indic Cross-Script Identity Preservation</h2>
-<p>Link: https://huggingface.co/papers/2605.00777</p>
-<p>Summary: Shows that multilingual speaker encoders can leak script/language information into speaker identity, with accent-conditional failures in cross-script voice cloning. LASE uses a frozen WavLM projection head with supervised contrastive identity loss plus gradient reversal against script classification. Collected because it is a concrete audio representation disentanglement problem with a small, testable adversarial-probe setup.</p>
-<h2>Hugging Face Daily Papers — MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</h2>
-<p>Link: https://huggingface.co/papers/2604.27818</p>
-<p>Summary: Proposes configuring MoE model behavior by learning activation/routing steering masks instead of retraining the model. The signal is that sparse expert routing is becoming a control surface, not just an efficiency trick. Collected because Aman has MoE experience and because routing interventions are unusually amenable to small mechanistic probes.</p>
-<h2>Hugging Face Daily Papers — Talker-T2AV: Joint Talking Audio-Video Generation with Autoregressive Diffusion Modeling</h2>
-<p>Link: https://huggingface.co/papers/2604.23586</p>
-<p>Summary: Presents talking audio-video generation with shared high-level cross-modal modeling and modality-specific low-level decoders. The mechanism is explicit separation of semantic coupling from low-level audio/visual rendering details. Collected because it is directly relevant to speech/talking-face systems and to probing where audio and facial-motion representations should couple or decouple.</p>
-<h2>GitHub Releases — MLX v0.31.2</h2>
-<p>Link: https://github.com/ml-explore/mlx/releases/tag/v0.31.2</p>
-<p>Summary: MLX added wider CUDA quantized matmul support, independent multi-threaded computations, CUDA FFT, and JACCL as a standalone library. This is mostly infrastructure, but it changes local experiment economics and makes more quantization/distributed prototypes cheap. Collected as an on-device/local-compute signal rather than a model-release signal.</p>
-<h2>GitHub Releases — vLLM v0.20.1</h2>
-<p>Link: https://github.com/vllm-project/vllm/releases/tag/v0.20.1</p>
-<p>Summary: vLLM’s release focuses on DeepSeek V4 stabilization and performance work: multi-stream pre-attention GEMM, BF16/MXFP8 communication support, FP4 conversion improvements, optimized head computation, and MoE/top-k fixes. The signal is that serving kernels are now deeply architecture-specific. Collected because inference optimizations can become controlled perturbations for mechanism experiments.</p>
-<h2>GitHub Releases — SGLang v0.5.10</h2>
-<p>Link: https://github.com/sgl-project/sglang/releases/tag/v0.5.10</p>
-<p>Summary: SGLang enabled piecewise CUDA graph capture by default, added elastic expert-parallel failure tolerance for MoE serving, GPU staging buffers for disaggregated prefill/decode, and sparse-attention integration. This is a strong systems signal around complex-control-flow serving. Collected because it suggests measuring not only throughput, but how serving layout choices affect model behavior under long context or MoE routing.</p>
-<h2>GitHub Releases — Transformers v5.7.0</h2>
-<p>Link: https://github.com/huggingface/transformers/releases/tag/v5.7.0</p>
-<p>Summary: Transformers added Laguna, an MoE architecture with per-layer head counts sharing the same KV-cache shape and a sigmoid MoE router with auxiliary-loss-free load balancing. The release is model-support infrastructure, but the mechanism is routing/load balancing design. Collected as supporting evidence for MoE routing and KV-cache-shape as architecture control surfaces.</p>
-<h2>Apple ML Research — Reinforced Agent: Inference-Time Feedback for Tool-Calling Agents</h2>
+<p>Plain list of resources collected today. This is intentionally not a synthesis: just source, link, and a short 3-4 line summary so Aman can scan the raw material directly.</p>
+<h2>Hugging Face Papers/arXiv — VibeVoice Technical Report</h2>
+<p>Link: https://arxiv.org/abs/2508.19205v1</p>
+<p>Summary: Audio ML paper about long-form multi-speaker speech synthesis. The key signal is next-token diffusion over continuous speech latents and a continuous speech tokenizer claiming much stronger compression than Encodec-like codecs. Worth scanning for audio tokenizer/interface bottlenecks and codec latent probing ideas.</p>
+<h2>Hugging Face Papers/arXiv — Efficient Memory Management for Large Language Model Serving with PagedAttention</h2>
+<p>Link: https://arxiv.org/abs/2309.06180v1</p>
+<p>Summary: Inference systems paper around KV-cache memory management and fragmentation. The virtual-memory analogy is useful beyond systems throughput: it frames KV cache as a constrained hidden-state storage budget. Good source for experiments on useful information per cache byte and on-device inference stress tests.</p>
+<h2>Hugging Face Papers/arXiv — Tequila: Trapping-free Ternary Quantization for Large Language Models</h2>
+<p>Link: https://arxiv.org/abs/2509.23809v2</p>
+<p>Summary: Quantization paper focused on ternary weights and avoiding optimization traps. Useful as a mechanism source, not just a compression result. The research angle is whether low-bit constraints selectively damage weak or low-frequency features and how adapter/side-channel paths change that.</p>
+<h2>arXiv cs.CL — When LLMs Stop Following Steps: A Diagnostic Study of Procedural Execution in Language Models</h2>
+<p>Link: https://arxiv.org/abs/2605.00817v1</p>
+<p>Summary: Diagnostic paper on procedural execution failures as sequence length/look-back grows. Useful for thinking about procedural reasoning as distributed state/register decay. Could inspire small synthetic tasks comparing next-token-only training against auxiliary state or multi-step prediction losses.</p>
+<h2>arXiv cs.CV — Persistent Visual Memory: Sustaining Perception for Deep Generation in LVLMs</h2>
+<p>Link: https://arxiv.org/abs/2605.00814v1</p>
+<p>Summary: Multimodal mechanism paper about visual signal dilution during long generation. The useful signal is architectural: keep a persistent visual branch/memory so text tokens do not dominate attention mass over time. Good candidate for a first-principles post or small demo measuring visual recall vs generation length.</p>
+<h2>Hacker News — The Hidden Costs of Great Abstractions</h2>
+<p>Link: https://jdgr.net/the-hidden-costs-of-great-abstractions</p>
+<p>Summary: General systems weak signal about abstractions hiding real costs. Not an ML paper, but useful as an infra lens: agent frameworks, inference stacks, and training abstractions often hide bottlenecks until debugging or scaling. Keep as background for missing-tool/bottleneck-dashboard ideas.</p>
+<h2>Hacker News — Using underdrawings for accurate text and numbers</h2>
+<p>Link: https://samcollins.blog/underdrawings/</p>
+<p>Summary: Weak signal around generation with explicit scaffolds/underdrawings. The ML analogy is intermediate plans or constraints that make generation more reliable. Could connect to structured latent planning, visual generation scaffolds, or tool-agent intermediate state.</p>
+<h2>Apple ML — Reinforced Agent: Inference-Time Feedback for Tool-Calling Agents</h2>
 <p>Link: https://machinelearning.apple.com/research/reinforced-agent-inference-feedback</p>
-<p>Summary: Moves agent evaluation into the active execution loop by using a specialized reviewer agent to provide inference-time feedback for tool-calling. The signal is real-time correction rather than post-hoc trajectory grading. Collected because it links agent memory/tool use to RL-style feedback without requiring full retraining.</p>
-<h2>Apple ML Research — STARFlow-V: End-to-End Video Generative Modeling with Normalizing Flows</h2>
-<p>Link: https://machinelearning.apple.com/research/starflow-v-video-modeling</p>
-<p>Summary: Revisits normalizing flows for video generation, emphasizing end-to-end learning, causal prediction, and native likelihood estimation as alternatives to diffusion-only video pipelines. The signal is a renewed likelihood-based generative path for sequential visual data. Collected as a mechanism/theory-adjacent counterpoint to diffusion dominance.</p></article>
+<p>Summary: Apple ML post about inference-time feedback for tool-calling agents. Relevant for agent control and memory because it moves some correction/adaptation into inference rather than training. Worth watching for small reproductions around tool-use feedback loops and provenance/trust in agent memory.</p></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 14:37</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 22:16</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
