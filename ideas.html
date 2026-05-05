@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-04 23:17:36</p>
+<p>Generated: 2026-05-05 11:48:49</p>
 <h2>Mechanism</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -199,6 +199,94 @@
 <li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
+</ul>
+<h2>Adaptive inference controllers need failure-mode evaluation</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-05</li>
+<li>Last seen: 2026-05-05</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Speculation length, thinking budget, and rollout speed should be treated as feedback-control policies with rare-case failure modes, not static speed settings.</p>
+<h3>Mechanism</h3>
+<p>Gate compute with entropy, acceptance history, self-consistency, or posterior stability; evaluate accuracy-per-compute and cascade errors.</p>
+<h3>Minimal experiment</h3>
+<p>Tiny generation controller chooses short/medium/long draft or reasoning budget; log accepted tokens, latency, rare failures, and accuracy-per-token.</p>
+<h3>Falsifier</h3>
+<p>Controller overhead erases gains or average speedups hide systematic failures on compositional/rare prompts.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
+</ul>
+<h2>Preference optimization as probability-geometry drift</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-05</li>
+<li>Last seen: 2026-05-05</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Alignment objectives can move probability mass, confidence, refusal, or truthfulness features before aggregate evals reveal the change.</p>
+<h3>Mechanism</h3>
+<p>Track entropy, calibration, alternative-answer mass, and refusal/evidence-use hidden-state probes across DPO or style-tuning variants.</p>
+<h3>Minimal experiment</h3>
+<p>Fine-tune a small instruct model with standard DPO, gated DPO-like clipping, and warmth/style preferences; compare drift probes and behavior.</p>
+<h3>Falsifier</h3>
+<p>Distributional and hidden-state metrics fail to predict behavioral drift or collapse to judge/prompt wording noise.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-2nd-run.md</code> — Gradient-Gated DPO and warmth/sycophancy evidence suggest preference objectives can squeeze probability geometry and move epistemic behavior.</li>
+</ul>
+<h2>Speech factor separation and causal context use</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-05</li>
+<li>Last seen: 2026-05-05</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Speech models need tests for whether context metadata and factorized embeddings causally affect speaker/content/dialect/prosody subspaces.</p>
+<h3>Mechanism</h3>
+<p>Probe speech encoder or codec states for factor subspaces, then intervene with correct, incorrect, or shuffled metadata/context.</p>
+<h3>Minimal experiment</h3>
+<p>Train linear probes for speaker, phoneme/content, dialect/language, pitch/prosody, and edit location; test subspace shifts under metadata interventions.</p>
+<h3>Falsifier</h3>
+<p>Metadata effects disappear under matched controls or probes learn dataset artifacts rather than causal speech factors.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-2nd-run.md</code> — Factor-partitioned embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate entanglement of speaker/content/dialect/prosody/context.</li>
+</ul>
+<h2>Trajectory supervision for agent orchestration</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-05</li>
+<li>Last seen: 2026-05-05</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Agent systems should train and evaluate the orchestration graph—spawn, delegate, tool use, aggregation, and stopping—not only the final answer.</p>
+<h3>Mechanism</h3>
+<p>Assign credit to logged event traces or rewarded tool trees so coordination failures become localizable training signals.</p>
+<h3>Minimal experiment</h3>
+<p>Synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</p>
+<h3>Falsifier</h3>
+<p>Graph-level reward improves in-distribution coordination but fails to transfer or merely suppresses useful exploration.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-05-2nd-run.md</code> — Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming converge on graph-level credit assignment for agent systems.</li>
 </ul>
 <h2>Activation-pattern data selection for instruction tuning</h2>
 <ul>
@@ -502,7 +590,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:18</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:19</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
