@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-05 2nd run · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-05 2nd run</h1>
+<h3>Core DL/LLM research</h3>
+<h2>arXiv — Reinforcement Learning for LLM-based Multi-Agent Systems through Orchestration Traces</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.02801v1</p>
+<p>Summary: This paper reframes multi-agent LLM systems as temporal orchestration traces: spawn, delegate, communicate, call tools, aggregate, and stop. It is useful because the learning target is not just a final answer but the control graph that produced it. The mechanism signal is credit assignment over agent topology and timing, which is broader than prompt-level agent evaluation.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — SCPRM: A Schema-aware Cumulative Process Reward Model for Knowledge Graph Question Answering</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.02819v1</p>
+<p>Summary: SCPRM targets a risk-compensation failure in process reward models: bad intermediate reasoning can be masked by later plausible steps. It adds schema-aware cumulative scoring for KG reasoning paths, making the intermediate path itself the supervised object. The mechanism signal is stepwise reward decomposition under multiple valid paths, relevant to reasoning supervision beyond final-answer grading.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Perceptual Flow Network for Visually Grounded Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.02730v1</p>
+<p>Summary: PFlowNet argues that ordinary LVLM training and geometric expert priors can still leave visual reasoning biased toward language or low-level geometry. It tries to create interpretable visual trajectories that are optimized for reasoning utility rather than rigid expert alignment. The useful signal is a visual-grounding objective that treats perception as a path/process, not only as static tokens.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Blog — Granite 4.1 LLMs: How They’re Built</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://huggingface.co/blog/ibm-granite/granite-4-1</p>
+<p>Summary: This model-build post is worth scanning for architecture, data, training, and deployment choices rather than benchmark deltas. Granite-family writeups often expose pragmatic decisions around enterprise-sized open models, safety tuning, and inference constraints. The signal is not “new model released” but how a production-oriented LLM stack trades off size, data quality, alignment, and serving cost.</p>
+<p>Personalization: low</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>arXiv — Gradient-Gated DPO: Stabilizing Preference Optimization in Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.02626v1</p>
+<p>Summary: The paper studies a DPO squeezing effect where negative gradients on rejected responses concentrate probability mass on already high-confidence predictions and suppress alternatives. Gradient-gated DPO is proposed as a stabilizer for this preference-optimization pathology. This is a clean mechanism signal: alignment objectives can reshape probability geometry in ways that look like collapse before aggregate metrics expose it.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Trust, but Verify: Peeling Low-Bit Transformer Networks for Training Monitoring</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.02853v1</p>
+<p>Summary: This work proposes a layer-wise peeling framework to monitor whether low-bit transformer layers are actually optimized well. It builds lightweight local probes against intermediate representations, turning “training worked” into a layer-specific diagnostic. The mechanism signal is monitoring hidden optimization quality under quantization or frozen-reuse constraints, not just final loss.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://api2.openreview.net/notes?content.venueid=ICLR.cc%2F2026%2FConference&amp;limit=5</p>
+<p>Summary: The OpenReview ICLR feed surfaced this submission about decomposing LLM computation with “jets.” Even from the abstract-level signal, the target is clear: make entangled post-training computation more modular and attributable. It is worth tracking as a possible bridge between circuit decomposition, feature geometry, and intervention-ready model components.</p>
+<p>Personalization: low</p>
+<h2>OpenReview — Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://api2.openreview.net/notes?content.venueid=ICLR.cc%2F2026%2FConference&amp;limit=5</p>
+<p>Summary: This submission selects instruction-tuning data using neuron activation similarity between candidate examples and target domains. The key signal is that data selection can be driven by internal computation rather than text or embedding similarity alone. It supports a small experiment comparing random, semantic-similar, and activation-similar instruction subsets for sample efficiency and interference.</p>
+<p>Personalization: medium</p>
+<h2>Apple ML Research — PORTool: Importance-Aware Policy Optimization with Rewarded Tree for Multi-Tool-Integrated Reasoning</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://machinelearning.apple.com/research/portool-policy-optimization</p>
+<p>Summary: PORTool attacks outcome-only credit assignment in tool-use agents by building a rewarded tree and assigning step-level importance to tool decisions. This is a strong RL-for-agents signal because the policy gradient is moved closer to the actual tool call that mattered. It complements process reward modeling and orchestration-trace RL: the object to train is the interaction path, not only the final response.</p>
+<p>Personalization: medium</p>
+<h2>Apple ML Research — Adaptive Thinking: Large Language Models Know When to Think in Latent Space</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://machinelearning.apple.com/research/adaptive-thinking</p>
+<p>Summary: The post uses self-consistency as a proxy for deciding when extra latent thinking is needed. This contributes to the recurring adaptive-compute theme: spend reasoning budget when uncertainty or disagreement says the query is hard, not by a fixed token schedule. The mechanism signal is compute gating by internal confidence structure.</p>
+<p>Personalization: medium</p>
+<h3>Audio/TTS/speech</h3>
+<h2>arXiv — Multi-Axis Speech Similarity via Factor-Partitioned Embeddings</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02804v1</p>
+<p>Summary: This paper explicitly partitions speech embeddings into axes such as linguistic content, speaker identity, dialect, and gender, then retrieves by signed weighted similarity across axes. It directly targets the usual single-vector conflation problem in speech representations. The mechanism signal is factorized audio geometry: similarity becomes controllable by speech attribute rather than globally entangled.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — When Audio-Language Models Fail to Leverage Multimodal Context for Dysarthric Speech Recognition</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02782v1</p>
+<p>Summary: This benchmark tests whether audio-language models actually use diagnosis labels, clinical ratings, or descriptions to improve dysarthric speech recognition. The reported signal is skeptical: current models often do not meaningfully exploit the provided multimodal context. This is valuable because it separates “can condition on extra text” from “uses context causally for hard speech.”</p>
+<p>Personalization: low</p>
+<h2>arXiv — Toward Fine-Grained Speech Inpainting Forensics: A Dataset, Method, and Metric for Multi-Region Tampering Localization</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02223v1</p>
+<p>Summary: MIST targets partial speech manipulation where only a few words are replaced while speaker identity is preserved. The task is multi-region localization, not utterance-level fake detection, so it stresses temporal and semantic boundaries in synthesized audio. The mechanism signal is forensic localization over codec/TTS edits, useful for understanding how speech generators hide or reveal local tampering.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Tibetan-TTS: Low-Resource Tibetan Speech Synthesis with Large Model Adaptation</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02496v1</p>
+<p>Summary: This work adapts a large speech synthesis model to low-resource Tibetan using data-quality improvement, Tibetan-specific text/tokenizer handling, and cross-lingual adaptation. The interesting signal is how much of TTS quality comes from representation and tokenizer adaptation rather than model scale alone. It is a practical low-resource speech recipe to compare against codec-token and factor-probe ideas.</p>
+<p>Personalization: low</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>arXiv — SpecKV: Adaptive Speculative Decoding with Compression-Aware Gamma Selection</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.02888v1</p>
+<p>Summary: SpecKV adapts the speculative-decoding draft length per step using signals tied to compression level and generation state. Fixed gamma is treated as a bad default because optimal speculation depends on task and target-model compression. The mechanism signal is inference-time control: speculative decoding becomes a feedback controller rather than a static serving parameter.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — StreamIndex: Memory-Bounded Compressed Sparse Attention via Streaming Top-k</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.02568v1</p>
+<p>Summary: StreamIndex tackles the huge intermediate score tensor in compressed sparse attention by using chunked partition-merge top-k in Triton. The paper is useful because it identifies the hidden memory object that makes sparse attention impractical at long sequence lengths. The mechanism/tooling signal is streaming selection as the bottleneck remover for learned sparse attention.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — SMG: The Case for Disaggregating CPU from GPU in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/lightseek-smg/</p>
+<p>Summary: This serving post argues that CPU-side orchestration can bottleneck large-scale LLM serving and motivates separating CPU gateway work from GPU execution. It is useful as an infra signal because prefill/decode kernels are not the only bottleneck; scheduling, Python/runtime overhead, and request routing also shape effective throughput. The mechanism is serving-stack decomposition under production load.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — Introducing AutoSP</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/introducing-autosp/</p>
+<p>Summary: AutoSP automatically converts ordinary transformer training code into sequence-parallel code for long-context training across GPUs. This lowers the friction of testing long-context models without hand-rewriting the distributed layout. The key tooling signal is compiler/runtime support for sequence parallelism as an experiment enabler, not merely an optimization detail.</p>
+<p>Personalization: medium</p>
+<h2>Together AI Blog — Foundational research powering efficient inference at scale</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.together.ai/blog/foundational-research-powering-efficient-inference-at-scale</p>
+<p>Summary: This blog collects Together’s view of inference bottlenecks at production scale, emphasizing efficient rollout, serving, and hardware-aware execution. It is vendor-authored and should be read skeptically, but it is useful for naming the constraints industrial systems optimize around. The signal is the convergence of research inference tricks with platform economics and reliability.</p>
+<p>Personalization: low</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>Apple ML Research — STARFlow-V: End-to-End Video Generative Modeling with Normalizing Flows</h2>
+<p>Type: Paper</p>
+<p>Link: https://machinelearning.apple.com/research/starflow-v-video-modeling</p>
+<p>Summary: STARFlow-V revisits normalizing flows for video generation, a space dominated by diffusion. The valuable breadth signal is likelihood-based continuous generative modeling for video with causal prediction and end-to-end training. Even if not immediately project-aligned, it expands the architecture palette beyond transformers/diffusion and may offer different diagnostics for temporal generation.</p>
+<p>Personalization: low</p>
+<h2>BAIR — Gradient-based Planning for World Models at Longer Horizons</h2>
+<p>Type: Independent blog</p>
+<p>Link: http://bair.berkeley.edu/blog/2026/04/20/grasp/</p>
+<p>Summary: GRASP is a gradient-based planner for learned dynamics/world models at longer horizons. It is broad but relevant because it studies planning through differentiable learned models rather than only language-token search. The useful concept is optimization-through-the-model as an alternative to discrete reasoning traces, with potential analogies to latent planning and test-time compute.</p>
+<p>Personalization: low</p>
+<h3>Skeptical or failure signal</h3>
+<h2>Nature via HN — Training language models to be warm can reduce accuracy and increase sycophancy</h2>
+<p>Type: Newsletter/critique</p>
+<p>Link: https://www.nature.com/articles/s41586-026-10410-0</p>
+<p>Summary: HN surfaced this Nature paper as a weak signal, but the claim is technical enough to retain: optimizing warmth can reduce accuracy and increase sycophancy. It is a reminder that alignment targets are not independent knobs; style tuning can move epistemic behavior. The mechanism to watch is reward-model or preference-data pressure trading off friendliness against truthfulness.</p>
+<p>Personalization: low</p>
+<h2>Microsoft Research — Red-teaming a network of agents: Understanding what breaks when AI agents interact at scale</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://www.microsoft.com/en-us/research/blog/red-teaming-a-network-of-agents-understanding-what-breaks-when-ai-agents-interact-at-scale/</p>
+<p>Summary: This is a skeptical systems signal: individually acceptable agents may fail when connected into a network with delegated tasks, shared state, and emergent dependencies. It is worth collecting because multi-agent risk is an interaction effect, not just a single-model eval failure. The mechanism is graph-level failure propagation across agent boundaries.</p>
+<p>Personalization: medium</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:17</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

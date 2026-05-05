@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-05 2nd run · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-05 2nd run</h1>
+<h2>What happened today</h2>
+<p>This manual second run used the newer broad-but-scoped resource policy: deep learning, LLMs, training dynamics, RL, mechanistic interpretability, audio/TTS, inference systems, ML infra, and GPUs. It intentionally avoids GitHub issue/release firehoses and broad robotics/control/database drift.</p>
+<p>The collected resources suggest three useful scanning directions: recent papers remain the highest-density source for mechanisms, lab/infra blogs are better for understanding what has become cheap to run, and weak signals should stay weak unless they connect to a concrete model/training/inference failure mode.</p>
+<h2>Pattern / mechanism thesis</h2>
+<p>The recurring pattern is <strong>interface pressure</strong>: modern ML systems are increasingly limited by interfaces between components — tokenizer to model, prefill to decode, training objective to representation, codec to acoustic detail, and interpretability probe to latent feature geometry. For learning, the useful move is not to overfit this to one personal project, but to ask where information, gradients, memory, or compute are being compressed or routed badly.</p>
+<h2>Five research opportunities</h2>
+<h3>1. Compare what paper streams vs lab/infra blogs reveal</h3>
+<ul>
+<li>Evidence / source links:</li>
+<li>[arXiv cs.CL] Reinforcement Learning for LLM-based Multi-Agent Systems through Orchestration Traces — https://arxiv.org/abs/2605.02801v1</li>
+<li>[arXiv cs.CL] When Audio-Language Models Fail to Leverage Multimodal Context for Dysarthric Speech Recognition — https://arxiv.org/abs/2605.02782v1</li>
+<li>[arXiv cs.CL] SpecKV: Adaptive Speculative Decoding with Compression-Aware Gamma Selection — https://arxiv.org/abs/2605.02888v1</li>
+<li>[arXiv cs.CL] FlexSQL: Flexible Exploration and Execution Make Better Text-to-SQL Agents — https://arxiv.org/abs/2605.02815v1</li>
+<li>[Hugging Face Blog] Granite 4.1 LLMs: How They’re Built — https://huggingface.co/blog/ibm-granite/granite-4-1</li>
+<li>[Hugging Face Blog] DeepInfra on Hugging Face Inference Providers 🔥 — https://huggingface.co/blog/inference-providers-deepinfra</li>
+<li>[Hugging Face Blog] Introducing NVIDIA Nemotron 3 Nano Omni: Long-Context Multimodal Intelligence for Documents, Audio and Video Agents — https://huggingface.co/blog/nvidia/nemotron-3-nano-omni-multimodal-intelligence</li>
+<li>[Apple ML Research] PORTool: Importance-Aware Policy Optimization with Rewarded Tree for Multi-Tool-Integrated Reasoning — https://machinelearning.apple.com/research/portool-policy-optimization</li>
+<li>[PyTorch Blog] SMG: The Case for Disaggregating CPU from GPU in LLM Serving — https://pytorch.org/blog/lightseek-smg/</li>
+<li>[PyTorch Blog] Introducing AutoSP — https://pytorch.org/blog/introducing-autosp/</li>
+<li>Mechanism:</li>
+</ul>
+<p>  - Papers expose proposed mechanisms; infra blogs expose what is newly feasible; weak signals expose pain. Treat them as different evidence types, not one ranked feed.</p>
+<ul>
+<li>Minimal experiment / probe:</li>
+</ul>
+<p>  - For one week, label every resource as <code>mechanism</code>, <code>tooling</code>, <code>failure</code>, or <code>math foundation</code>; measure which labels later produce real ideas.</p>
+<ul>
+<li>Falsifier:</li>
+</ul>
+<p>  - If labels do not help weekly synthesis make better decisions, drop the taxonomy.</p>
+<ul>
+<li>Confidence: medium</li>
+</ul>
+<h3>2. Build an inference/GPU reading lane separate from model-paper reading</h3>
+<ul>
+<li>Evidence / source links:</li>
+</ul>
+<p>  - See infra/GPU resources in <code>2026-05-05-2nd-run-2317-IST.md</code>.</p>
+<ul>
+<li>Mechanism:</li>
+</ul>
+<p>  - Inference systems have their own concepts: prefill/decode split, KV-cache layout, kernel fusion, quantization formats, bandwidth ceilings. Mixing these with paper summaries makes them look like implementation details, but they often decide what experiments are cheap.</p>
+<ul>
+<li>Minimal experiment / probe:</li>
+</ul>
+<p>  - Maintain a small <code>inference concepts</code> queue: KV cache, prefill/decode, FlashAttention, FP8/INT4, speculative decoding, batching. Each blog post should connect one concept to a tiny benchmark.</p>
+<ul>
+<li>Falsifier:</li>
+</ul>
+<p>  - If infra concepts do not change experiment choices after two weeks, reduce their quota.</p>
+<ul>
+<li>Confidence: medium</li>
+</ul>
+<h3>3. Add a low-personalization learning lane</h3>
+<ul>
+<li>Evidence / source links:</li>
+</ul>
+<p>  - This run marks most resources as <code>Personalization: low</code>.</p>
+<ul>
+<li>Mechanism:</li>
+</ul>
+<p>  - If every resource is interpreted through past projects, the scout collapses into confirmation bias. Low-personalization resources preserve exploration while staying inside DL/LLM/audio/RL/mech-interp/inference.</p>
+<ul>
+<li>Minimal experiment / probe:</li>
+</ul>
+<p>  - In weekly synthesis, include a section: <code>What did I learn that was not obviously connected to my current projects?</code></p>
+<ul>
+<li>Falsifier:</li>
+</ul>
+<p>  - If this section stays empty or irrelevant for a month, retune source mix.</p>
+<ul>
+<li>Confidence: high</li>
+</ul>
+<h3>4. Separate skeptical/failure signals from opportunities</h3>
+<ul>
+<li>Evidence / source links:</li>
+</ul>
+<p>  - Weak signals and critique/newsletter sources in the resources page.</p>
+<ul>
+<li>Mechanism:</li>
+</ul>
+<p>  - Negative evidence often protects attention better than positive hype. A failed reproduction, benchmark caveat, or infra pain point can be more valuable than another paper title.</p>
+<ul>
+<li>Minimal experiment / probe:</li>
+</ul>
+<p>  - Add a <code>skeptical or failure signal</code> slot to daily resources, but only promote it to daily briefing if it changes what to test or avoid.</p>
+<ul>
+<li>Falsifier:</li>
+</ul>
+<p>  - If skeptical signals become generic negativity, remove the slot.</p>
+<ul>
+<li>Confidence: medium</li>
+</ul>
+<h3>5. Track audio/TTS as a first-class lane, not a side topic</h3>
+<ul>
+<li>Evidence / source links:</li>
+</ul>
+<p>  - See eess.AS / speech-related resources in <code>2026-05-05-2nd-run-2317-IST.md</code>.</p>
+<ul>
+<li>Mechanism:</li>
+</ul>
+<p>  - Audio models have different bottlenecks than text LMs: codec latents, speaker/prosody disentanglement, continuous-vs-discrete acoustic state, latency, and long-form drift.</p>
+<ul>
+<li>Minimal experiment / probe:</li>
+</ul>
+<p>  - Maintain one daily resource slot for audio/TTS when a quality item exists; weekly synthesize whether any representation/training issue repeats.</p>
+<ul>
+<li>Falsifier:</li>
+</ul>
+<p>  - If the lane mostly produces demos without mechanisms, narrow it to papers/technical reports only.</p>
+<ul>
+<li>Confidence: medium</li>
+</ul>
+<h2>Source failures / caveats</h2>
+<p>This was a manual second run under time pressure, so it uses accessible public feeds/APIs and avoids GitHub watching. Some feeds may be sparse or unavailable; the resource validator checked structure, not scientific correctness. Treat the output as a pipeline test plus a scan list, not a final literature review.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:17</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
