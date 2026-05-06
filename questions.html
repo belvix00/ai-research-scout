@@ -71,10 +71,18 @@
 <li>[candidate] Which speech interface choice matters most for rare entity robustness: tokenizer granularity, synthetic entity-dense curriculum, or Thinker/Talker representation split?</li>
 <li>[experiment] How much hidden-state and attention-pattern drift is introduced by low-bit or adaptive KV-cache handoff compared with full re-prefill in multi-hop agent tasks?</li>
 <li>[open] Which aggregate metrics most often hide interface failures: accuracy, WER/CER, final-answer reward, safety pass rate, or tokens/sec?</li>
+</ul>
+<h2>2026-05-07 questions</h2>
+<ul>
+<li>[experiment] Can learned early-layer access gates preserve rare lexical/positional features better than static skip connections without simply increasing parameter count?</li>
+<li>[experiment] Which rollout-lifecycle stage most predicts RL reasoning failure in a toy tool/math sandbox: generation diversity, verifier filtering, compute-control/stopping, replay, or runtime nondeterminism?</li>
+<li>[experiment] Does entity-dense synthetic TTS data improve ASR rare-entity hit rate on real recordings without leaking TTS speaker/prosody artifacts into the adapted model?</li>
+<li>[candidate] Which KV/cache/speculation optimization produces the largest hidden-state or attention-pattern drift on long-context/rare-fact prompts per unit speedup?</li>
+<li>[candidate] What small set of probes best detects style/alignment tuning divergence before accuracy or safety aggregate scores move?</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-06 22:33</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-07 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

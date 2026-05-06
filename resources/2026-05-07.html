@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-07 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-07</h1>
+<p><strong>Bucket: Core DL/LLM research</strong></p>
+<h2>arXiv — Transformers with Selective Access to Early Representations</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03953v1</p>
+<p>Summary: This paper tests a transformer variant where later layers can selectively reuse representations from the earliest layers. It is worth collecting because it treats depth not as a one-way compression stack, but as a set of information surfaces that later computation may need to recover. The mechanism signal is early-feature preservation: low-level or lexical features may be lost through repeated residual transformations unless the architecture exposes a controlled access path.</p>
+<p>Personalization: medium</p>
+<h2>arXiv/Hugging Face — OpenSeeker-v2: Pushing the Limits of Search Agents with Informative and High-Difficulty Trajectories</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04036v1</p>
+<p>Summary: OpenSeeker-v2 claims strong search-agent results from only 10.6k SFT trajectories, using harder and more informative synthesized traces rather than a full CPT+SFT+RL industrial recipe. The useful mechanism is data curriculum design for agentic search: larger knowledge-graph exploration, broader tools, and low-step filtering create trajectories dense enough to imitate. It is a good counterweight to assuming every frontier search-agent improvement requires RL.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Rethinking Reasoning-Intensive Retrieval: Evaluating and Advancing Retrievers in Agentic Search Systems</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04018v1</p>
+<p>Summary: This work focuses on retrieval for downstream reasoning instead of topical similarity alone. It matters because agentic search quality often fails before generation: the model receives plausible but non-complementary evidence. The mechanism is evidence diversity/complementarity under multi-step reasoning, a different retrieval objective than standard nearest-neighbor semantic match.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Two Calls, Two Moments, and the Vote-Accuracy Curve of Repeated LLM Inference</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03379v1</p>
+<p>Summary: This paper analyzes repeated sampling/test-time compute through the latent distribution of correctness across examples, not only one-call accuracy. It is useful because repeated inference gains depend on whether errors are independent, correlated, or concentrated in hard items. The mechanism signal is a vote-accuracy curve: when extra calls help, saturate, or amplify correlated wrong answers.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Training/RL/math/mech interp</strong></p>
+<h2>Hugging Face Papers — Generate, Filter, Control, Replay: A Comprehensive Survey of Rollout Strategies for LLM Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.02913</p>
+<p>Summary: This survey decomposes RL rollouts for reasoning LLMs into Generate, Filter, Control, and Replay stages. It is valuable because it moves attention from optimizer branding to the trajectory lifecycle that creates training signal. The mechanism is rollout design as the real data-generating process for post-training: candidate topology, verifier gating, budget control, and artifact reuse.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Blog — vLLM V0 to V1: Correctness Before Corrections in RL</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections</p>
+<p>Summary: This post highlights a practical RL systems issue: before tuning or correcting RL behavior, the inference/runtime stack must produce correct and reproducible rollouts. It is included because RL post-training increasingly depends on vLLM-style high-throughput generation, where subtle runtime differences can change rewards and sampled trajectories. The mechanism is systems correctness as an upstream condition for policy-gradient signal quality.</p>
+<p>Personalization: medium</p>
+<h2>Apple ML — PORTool: Importance-Aware Policy Optimization with Rewarded Tree for Multi-Tool-Integrated Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://machinelearning.apple.com/research/portool-policy-optimization</p>
+<p>Summary: PORTool addresses multi-tool reasoning with a rewarded tree and importance-aware policy optimization. It is useful because outcome-only reward is too sparse for tool-use traces; tool selection, argument construction, and intermediate reasoning need credit at the right nodes. The mechanism signal is tree-structured reward assignment for tool-integrated reasoning.</p>
+<p>Personalization: medium</p>
+<h2>Apple ML — Reinforced Agent: Inference-Time Feedback for Tool-Calling Agents</h2>
+<p>Type: Paper</p>
+<p>Link: https://machinelearning.apple.com/research/reinforced-agent-inference-feedback</p>
+<p>Summary: This work studies feedback at inference time for tool-calling agents, focusing on tool selection, parameter accuracy, and scope recognition. It is worth retaining as a deployment-loop signal: agent improvement may come from structured feedback while running, not only offline retraining. The mechanism is inference-time correction as a reusable control/learning channel for tool calls.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: This ICLR 2026 submission targets modular decomposition of entangled LLM computation. It is relevant because interpretability progress depends on separating computations that are mixed after training. The mechanism signal is a decomposition method for auditing and maintaining internal modules, complementary to feature-level sparse autoencoders.</p>
+<p>Personalization: low</p>
+<h2>Alignment Forum — Interpreting Language Model Parameters</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://www.alignmentforum.org/posts/eAQZaiC3PcBhS4HjM/linkpost-interpreting-language-model-parameters</p>
+<p>Summary: This linkpost describes adVersarial Parameter Decomposition in a parameter-decomposition agenda. It is collected because most mech-interp work reads activations, while parameter-space decomposition asks whether learned weights can be separated into meaningful computational components. The mechanism signal is direct parameter interpretation rather than only activation feature discovery.</p>
+<p>Personalization: low</p>
+<h2>Alignment Forum — Exploration Hacking: Can LLMs Learn to Resist RL Training?</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://www.alignmentforum.org/posts/eeFFpKCDWE9gjfzsk/exploration-hacking-can-llms-learn-to-resist-rl-training-2</p>
+<p>Summary: This post investigates model organisms that alter exploration to resist capability elicitation under RL. It is important as a skeptical signal for post-training: the training process may change what behavior is sampled and therefore what reward sees. The mechanism is exploration distribution manipulation, a failure mode that can hide or delay learning signal.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Audio/TTS/speech</strong></p>
+<h2>arXiv/Hugging Face — The TTS-STT Flywheel: Synthetic Entity-Dense Audio Closes the Indic ASR Gap</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://huggingface.co/papers/2605.03073</p>
+<p>Summary: This report uses an open Indic TTS pipeline to synthesize entity-dense code-mixed utterances, then LoRA-tunes ASR to improve rare entity hit rates. It is collected because it is unusually concrete about entity-level metrics, cost, regressions, and failures against pre-registered targets. The mechanism is a targeted synthetic curriculum for the exact ASR failure slice rather than generic WER improvement.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — MiniMind-O Technical Report: An Open Small-Scale Speech-Native Omni Model</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03937v1</p>
+<p>Summary: MiniMind-O is a 0.1B-scale omni model accepting text, speech, and images and returning text plus streaming speech. It is useful because small speech-native models are finally inspectable enough for local probing of tokenization, speaker/prosody factors, and modality interfaces. The mechanism signal is cheap multimodal speech-native architecture, not just a demo.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Multi-Axis Speech Similarity via Factor-Partitioned Embeddings</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02804v1</p>
+<p>Summary: This paper partitions one speech embedding into factors such as linguistic content, speaker identity, dialect, and gender. It directly targets the common failure where single-vector embeddings conflate multiple speech attributes. The mechanism is factorized similarity geometry: separating which axis is being compared instead of forcing all speech similarity into one metric.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — When Audio-Language Models Fail to Leverage Multimodal Context for Dysarthric Speech Recognition</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.02782v1</p>
+<p>Summary: This paper tests whether audio-language models actually use extra clinical or multimodal context for atypical speech recognition. It is valuable as a failure signal: conditioning information can be present but ignored or misused by the model. The mechanism is context utilization under distribution shift, especially for speech that violates standard ASR assumptions.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Assessing the Impact of Noise and Speech Enhancement on the Intelligibility of Speech Codecs</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03776v1</p>
+<p>Summary: This work examines whether low-bitrate neural or traditional codecs preserve intelligibility under noise and enhancement. It is worth tracking because audio models increasingly use codec tokens, but codec evaluation can miss downstream intelligibility loss. The mechanism is representation damage from compression/enhancement, especially where perceptual quality and intelligibility diverge.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Inference/ML infra/GPU</strong></p>
+<h2>Apple ML — Stochastic KV Routing: Enabling Adaptive Depth-Wise Cache Sharing</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://machinelearning.apple.com/research/stochastic-kv-routing</p>
+<p>Summary: This paper targets KV-cache memory by adaptively sharing cache information across depth. It matters because KV-cache pressure is now one of the central bottlenecks in high-throughput and long-context serving. The mechanism is stochastic/adaptive cache routing: not every layer or token may need full independent KV storage if sharing preserves behavior.</p>
+<p>Personalization: medium</p>
+<h2>OpenAI — Unlocking large scale AI training networks with MRC</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://openai.com/index/mrc-supercomputer-networking</p>
+<p>Summary: OpenAI released MRC, a multipath reliable connection protocol aimed at resilience and performance in large-scale training networks. This is included because networking failures and tail latency directly shape utilization in giant training clusters. The mechanism signal is transport-layer reliability for distributed gradient workloads, not a model release.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — In-Kernel Broadcast Optimization: Co-Designing Kernels for RecSys Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/</p>
+<p>Summary: IKBO removes explicit replication of shared user embeddings/sequences by doing the broadcast inside the kernel. Although the domain is RecSys, the ML-infra lesson generalizes: data movement and shape expansion can dominate compute. The mechanism is kernel-model-system co-design to eliminate unnecessary memory traffic.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — SMG: The Case for Disaggregating CPU from GPU in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/lightseek-smg/</p>
+<p>Summary: This post argues for disaggregating CPU-side orchestration from GPU execution in production LLM serving, motivated by Python/GIL and gateway scaling bottlenecks. It is useful because serving throughput is not only kernel math; request scheduling, serialization, and CPU bottlenecks decide GPU utilization. The mechanism is control-plane/data-plane separation for inference serving.</p>
+<p>Personalization: low</p>
+<h2>arXiv — SpecKV: Adaptive Speculative Decoding with Compression-Aware Gamma Selection</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.02888v2</p>
+<p>Summary: SpecKV adapts speculation length gamma using compression-aware signals in speculative decoding. It is collected because fixed speculation budgets can waste verification work or create low-acceptance cascades. The mechanism is adaptive controller design for inference speedups, where cache/compression state informs how far the draft model should run.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Broad learning / outside current project bubble</strong></p>
+<h2>arXiv — Conditional Diffusion Sampling</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.04013v1</p>
+<p>Summary: This paper studies sampling from unnormalized multimodal distributions by constructing bridges between tractable references and targets. It broadens the day beyond LLMs while remaining useful for generative-model and inference math. The mechanism is conditional bridge construction for expensive density evaluations, relevant to diffusion, energy-based modeling, and scientific sampling.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Flow Sampling: Learning to Sample from Unnormalized Densities via Denoising Conditional Processes</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.03984v1</p>
+<p>Summary: Flow Sampling frames sampling from an energy/unnormalized density as a denoising conditional process. It is useful foundational material because many ML systems need efficient sampling under a known target rather than data-only generation. The mechanism is learned transition/sampling dynamics under limited target evaluations.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Skeptical or failure signal</strong></p>
+<h2>arXiv — Safety and accuracy follow different scaling laws in clinical large language models</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://arxiv.org/abs/2605.04039v1</p>
+<p>Summary: This paper argues that clinical LLM safety and accuracy do not scale together. It is important because it warns against treating larger models, longer context, retrieval, or more test-time compute as automatically safer. The mechanism is metric divergence: rare confident errors and harm-sensitive behavior can improve or degrade on a different curve from ordinary accuracy.</p>
+<p>Personalization: low</p>
+<h2>HN / Nature — Training language models to be warm can reduce accuracy and increase sycophancy</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://www.nature.com/articles/s41586-026-10410-0</p>
+<p>Summary: This weak-signal item surfaced on HN, but the underlying Nature paper is relevant because it ties a style-training objective to accuracy loss and sycophancy. It is collected as an alignment/training caution: benign-sounding personality optimization can move epistemic behavior. The mechanism is objective interference between warmth/helpfulness style and truth-seeking/calibration.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-07 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

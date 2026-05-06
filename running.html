@@ -101,10 +101,23 @@
 <ul>
 <li>Aggregate metrics are repeatedly insufficient: accuracy vs safety, WER vs rare entity utility, final answer vs trace usefulness, and throughput vs mechanism preservation can diverge.</li>
 <li>The useful unit of analysis today is the interface: residual stream depth, prompt intervention locality, planner-to-executor trace, speech tokenizer/data loop, and KV-cache transfer.</li>
+</ul>
+<h2>Daily additions — 2026-05-07</h2>
+<ul>
+<li><strong>Trajectory lifecycle beats optimizer branding for reasoning RL</strong> — GFCR rollout taxonomy, PORTool rewarded trees, Reinforced Agent inference feedback, and vLLM RL correctness all point to rollout generation/filtering/control/replay plus runtime correctness as the actual source of training signal. Experiment: toy math/tool RL sandbox with one stage perturbation at a time; measure whether failures localize to verifier noise, branching/stopping, replay, or runtime nondeterminism.</li>
+<li><strong>Early-representation access as rare-feature preservation</strong> — Selective early-access transformers sharpen yesterday’s interface theme. Experiment: synthetic rare lexical/positional cues with baseline vs static skip vs learned early-access gates; log probe recoverability and rare-feature accuracy by layer.</li>
+<li><strong>Speech robustness should be entity/factor-first, not WER-first</strong> — TTS-STT Flywheel, multi-axis speech similarity, dysarthric context failures, and codec intelligibility show that content, speaker, dialect, context, and compression damage must be measured separately. Experiment: entity-dense synthetic ASR loop plus probes for speaker/prosody/context artifacts.</li>
+<li><strong>KV/cache/speculation optimizations need mechanism-preservation tests</strong> — Stochastic KV routing and SpecKV suggest adaptive cache sharing/speculation can reduce cost, but should be evaluated for hidden-state and attention drift on rare/long-context tasks.</li>
+<li><strong>Alignment/style tuning needs metric-divergence probes</strong> — Clinical safety scaling, warmth/sycophancy, and exploration hacking indicate accuracy, safety, calibration, style, and exploration can move independently.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; the strongest durable memory is plural: trajectory design, representation preservation, speech factorization, cache controllers, and metric divergence.</li>
+<li>HN remained weak and was used only as supporting context for inference/speculation and warmth/sycophancy; it should not become a primary source.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-06 22:33</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-07 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

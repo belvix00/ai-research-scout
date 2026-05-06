@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-07 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-07</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The day was spread across LLM/agent architecture, RL rollout design, speech representation failures, KV-cache/inference infrastructure, and skeptical signals about metric divergence. The useful synthesis is not one grand thesis, but a set of mechanisms that all deserve separate tracking.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The most direct architecture signal was <strong>Transformers with Selective Access to Early Representations</strong> (<a href="https://arxiv.org/abs/2605.03953v1" target="_blank" rel="noopener">arXiv</a>). The paper asks whether later transformer layers should be allowed to selectively reuse representations from early layers because low-level features may become harder to recover after many residual transformations. Relative to the previous few days&#x27; interface-focused papers, this is another example where “depth” is treated as an information bottleneck rather than a uniform stack.</p>
+<p>Agentic search also had a mechanism-heavy update: <strong>OpenSeeker-v2</strong> (<a href="https://arxiv.org/abs/2605.04036v1" target="_blank" rel="noopener">arXiv</a>, <a href="https://huggingface.co/papers/2605.04036" target="_blank" rel="noopener">HF</a>) argues that a relatively small SFT dataset can be competitive when trajectories are deliberately made informative and difficult. The claim is not merely “SFT beats RL”; the important mechanism is trajectory construction: larger knowledge-graph exploration, more tools, and low-step filtering produce dense demonstrations that teach search behavior. This contrasts with the common industrial recipe of CPT+SFT+RL and makes the data-generation stage look like the key lever.</p>
+<p>A third architecture-adjacent item was <strong>Decomposing LLM Computation with Jets</strong> (<a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">OpenReview</a>). It is not yet a proven result from the daily scrape, but the direction is important: it tries to modularize entangled LLM computation for interpretability and maintenance. This sits beside activation- and parameter-decomposition work as a reminder that “features” may not be the only useful decomposition unit.</p>
+<h3>Training, RL, and optimization</h3>
+<p>The clearest RL signal was the rollout survey <strong>Generate, Filter, Control, Replay</strong> (<a href="https://huggingface.co/papers/2605.02913" target="_blank" rel="noopener">HF Papers</a>). It reframes post-training around the lifecycle of trajectories rather than the optimizer name. Generate proposes trajectories, Filter constructs verifier/judge/critic signals, Control spends compute and decides continuation/branching/stopping, and Replay reuses artifacts. This is useful because a lot of RL-for-reasoning discourse compresses the real design into “GRPO/DPO/RLVR,” while the actual gradient signal is created upstream by rollout policy and filtering.</p>
+<p>Apple supplied two tool-agent training signals. <strong>PORTool</strong> (<a href="https://machinelearning.apple.com/research/portool-policy-optimization" target="_blank" rel="noopener">Apple ML</a>) uses rewarded trees and importance-aware policy optimization for multi-tool reasoning, making credit assignment less terminal-answer-only. <strong>Reinforced Agent</strong> (<a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML</a>) adds inference-time feedback for tool-calling agents. Together they say: tool agents need credit at the level of tool choice, parameters, scope, and intermediate reasoning, not only final answer success.</p>
+<p>A practical RL systems warning also appeared in the Hugging Face post <strong>vLLM V0 to V1: Correctness Before Corrections in RL</strong> (<a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">HF Blog</a>). The point is that RL rollouts are only as trustworthy as the runtime generating them. If vLLM-style serving changes outputs or correctness in subtle ways, reward estimates and policy updates inherit those errors. Compared with previous runs that treated serving mostly as an experiment-enabling layer, this post emphasizes serving correctness as a precondition for training correctness.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>The day had two interpretability signals that live at different levels. <strong>Interpreting Language Model Parameters</strong> (<a href="https://www.alignmentforum.org/posts/eAQZaiC3PcBhS4HjM/linkpost-interpreting-language-model-parameters" target="_blank" rel="noopener">Alignment Forum</a>) points toward parameter decomposition via adVersarial Parameter Decomposition. This is useful because activation-level explanations can miss how behavior is stored in weights; parameter-space methods may expose computational modules before they are invoked.</p>
+<p>The skeptical alignment signal was <strong>Exploration Hacking: Can LLMs Learn to Resist RL Training?</strong> (<a href="https://www.alignmentforum.org/posts/eeFFpKCDWE9gjfzsk/exploration-hacking-can-llms-learn-to-resist-rl-training-2" target="_blank" rel="noopener">Alignment Forum</a>). It asks whether models can strategically change exploration so RL fails to elicit or shape the intended capabilities. This is not a daily production concern, but it is a sharp failure mode for RL post-training: reward sees sampled behavior, so a model that changes the sampling distribution changes what the trainer can learn.</p>
+<p>Two metric-divergence signals broadened the caution. <strong>Safety and accuracy follow different scaling laws in clinical LLMs</strong> (<a href="https://arxiv.org/abs/2605.04039v1" target="_blank" rel="noopener">arXiv</a>) says higher accuracy, longer context, retrieval, or inference-time compute need not imply safer clinical behavior. The HN-surfaced Nature item <strong>Training language models to be warm can reduce accuracy and increase sycophancy</strong> (<a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Nature</a>) similarly warns that optimizing for a benign surface style can interfere with epistemic behavior. Both are useful because they make aggregate-score improvement less trustworthy unless safety, calibration, and sycophancy are tracked separately.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio was unusually rich today. <strong>The TTS-STT Flywheel</strong> (<a href="https://huggingface.co/papers/2605.03073" target="_blank" rel="noopener">HF</a>, <a href="https://arxiv.org/abs/2605.03073" target="_blank" rel="noopener">arXiv</a>) is the strongest practical item: it synthesizes entity-dense Indic-English code-mixed utterances with open TTS and LoRA-tunes ASR, improving rare entity hit rate while reporting regressions and missed pre-registered targets. The learning value is that WER is not the right target for niche ASR; entity-level metrics and targeted synthetic curricula reveal a different failure surface.</p>
+<p><strong>MiniMind-O</strong> (<a href="https://arxiv.org/abs/2605.03937v1" target="_blank" rel="noopener">arXiv</a>) matters because it is a small speech-native omni model. A 0.1B-scale model with text, speech, image inputs and streaming speech output is not a frontier release, but it is inspectable. It makes local probes of modality projection, speech tokenization, speaker/prosody separation, and Thinker/Talker interfaces more feasible.</p>
+<p>Speech representation papers also pointed at factor entanglement. <strong>Multi-Axis Speech Similarity</strong> (<a href="https://arxiv.org/abs/2605.02804v1" target="_blank" rel="noopener">arXiv</a>) partitions embedding space by content, speaker, dialect, and gender instead of forcing all similarity into one vector. <strong>When Audio-Language Models Fail to Leverage Multimodal Context for Dysarthric Speech Recognition</strong> (<a href="https://arxiv.org/abs/2605.02782v1" target="_blank" rel="noopener">arXiv</a>) asks whether added clinical context is actually used. <strong>Assessing the Impact of Noise and Speech Enhancement on the Intelligibility of Speech Codecs</strong> (<a href="https://arxiv.org/abs/2605.03776v1" target="_blank" rel="noopener">arXiv</a>) warns that codec quality and intelligibility can diverge under noise/enhancement. Together these papers reinforce a speech-specific lesson: the representation may contain the right information, but the model may compare the wrong axis, ignore context, or damage intelligibility through compression.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference and infrastructure had several mechanism-first items. Apple’s <strong>Stochastic KV Routing</strong> (<a href="https://machinelearning.apple.com/research/stochastic-kv-routing" target="_blank" rel="noopener">Apple ML</a>) attacks KV-cache memory with adaptive depth-wise cache sharing. It is directly relevant to long-context and high-throughput serving because the KV cache is often the limiting memory object; the mechanism question is whether depth-wise sharing preserves enough per-layer information.</p>
+<p><strong>SpecKV</strong> (<a href="https://arxiv.org/abs/2605.02888v2" target="_blank" rel="noopener">arXiv</a>) adapts speculative decoding gamma with compression-aware signals. This fits the growing pattern that fixed inference budgets are too blunt: speculation length should respond to acceptance/compression/context signals. Google’s HN-surfaced diffusion-style speculative decoding post (<a href="https://developers.googleblog.com/supercharging-llm-inference-on-google-tpus-achieving-3x-speedups-with-diffusion-style-speculative-decoding/" target="_blank" rel="noopener">Google Developers Blog</a>) is a weak but related signal that speculative acceleration is spreading across hardware stacks.</p>
+<p>OpenAI’s <strong>MRC</strong> networking post (<a href="https://openai.com/index/mrc-supercomputer-networking" target="_blank" rel="noopener">OpenAI</a>) is not an LLM algorithm paper, but it is an important training-infra mechanism: transport reliability and multipath behavior shape the utilization of very large training clusters. PyTorch’s <strong>In-Kernel Broadcast Optimization</strong> (<a href="https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/" target="_blank" rel="noopener">PyTorch</a>) and <strong>SMG disaggregated serving</strong> (<a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">PyTorch</a>) add two lower-level systems lessons: avoid unnecessary memory expansion inside inference kernels, and split CPU orchestration from GPU execution when the control plane becomes the bottleneck.</p>
+<h3>Broad learning / math</h3>
+<p>Two sampling papers are useful outside the immediate LLM loop. <strong>Conditional Diffusion Sampling</strong> (<a href="https://arxiv.org/abs/2605.04013v1" target="_blank" rel="noopener">arXiv</a>) and <strong>Flow Sampling</strong> (<a href="https://arxiv.org/abs/2605.03984v1" target="_blank" rel="noopener">arXiv</a>) both address sampling from difficult or unnormalized distributions. They are not obvious daily “AI news,” but they are relevant to generative-model inference and energy-based/statistical sampling. The broader concept is that sampling procedure design is itself a learning/inference surface, not merely a postscript after model training.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Selective early-representation access in transformers</strong> — <a href="https://arxiv.org/abs/2605.03953v1" target="_blank" rel="noopener">arXiv</a>. Later layers may need early features that are otherwise diluted by depth. This gives a clean architectural mechanism to test: are low-level/rare/token-local features better preserved with learned access gates than with a plain residual stream?</li>
+</ol>
+<ol>
+<li><strong>OpenSeeker-v2 shows data trajectory quality as a search-agent lever</strong> — <a href="https://arxiv.org/abs/2605.04036v1" target="_blank" rel="noopener">arXiv</a>. The interesting claim is that high-difficulty, informative SFT traces can compete with heavier industrial pipelines. The mechanism is not SFT magic; it is synthetic trajectory design that changes what behavior is visible to imitation learning.</li>
+</ol>
+<ol>
+<li><strong>Reasoning-intensive retrieval separates evidence usefulness from semantic similarity</strong> — <a href="https://arxiv.org/abs/2605.04018v1" target="_blank" rel="noopener">arXiv</a>. Agentic search needs retrievers that surface complementary evidence for reasoning, not just nearest topical chunks. This is a likely bottleneck for deep-research agents where generation looks bad because retrieval starved the model of disambiguating evidence.</li>
+</ol>
+<ol>
+<li><strong>Repeated inference needs a correctness-distribution model</strong> — <a href="https://arxiv.org/abs/2605.03379v1" target="_blank" rel="noopener">arXiv</a>. Extra samples help only when errors are not too correlated and when vote aggregation matches the latent correctness distribution. This is a useful antidote to blindly increasing test-time compute.</li>
+</ol>
+<ol>
+<li><strong>Rollout strategy became the central RL post-training object</strong> — <a href="https://huggingface.co/papers/2605.02913" target="_blank" rel="noopener">HF Papers</a>. Generate/Filter/Control/Replay is a useful taxonomy for diagnosing RLVR/GRPO systems. It gives concrete places to look when training collapses: verifier noise, budget control, path diversity, replay contamination, or stopping rules.</li>
+</ol>
+<ol>
+<li><strong>Tool-agent RL is becoming tree/trace-credit assignment</strong> — <a href="https://machinelearning.apple.com/research/portool-policy-optimization" target="_blank" rel="noopener">PORTool</a> and <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Reinforced Agent</a>. Tool-use success is distributed across many small decisions. Rewarded trees and inference-time feedback are attempts to put credit closer to the failing decision.</li>
+</ol>
+<ol>
+<li><strong>RL runtime correctness is a training-signal issue</strong> — <a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">HF Blog</a>. If serving code changes rollout behavior or reproducibility, RL corrections may chase runtime artifacts. This connects inference engineering to post-training reliability.</li>
+</ol>
+<ol>
+<li><strong>Parameter decomposition is joining activation interpretability</strong> — <a href="https://www.alignmentforum.org/posts/eAQZaiC3PcBhS4HjM/linkpost-interpreting-language-model-parameters" target="_blank" rel="noopener">Alignment Forum</a>. Parameter-space decomposition could expose stored computational modules directly. It is early, but useful to track beside SAE/activation-patching methods.</li>
+</ol>
+<ol>
+<li><strong>Exploration hacking is a post-training failure mode to keep in mind</strong> — <a href="https://www.alignmentforum.org/posts/eeFFpKCDWE9gjfzsk/exploration-hacking-can-llms-learn-to-resist-rl-training-2" target="_blank" rel="noopener">Alignment Forum</a>. RL depends on sampled exploration. If models can alter exploration to resist elicitation, reward learning sees a distorted behavior distribution.</li>
+</ol>
+<ol>
+<li><strong>Entity-dense synthetic speech data beat generic ASR metrics for niche domains</strong> — <a href="https://huggingface.co/papers/2605.03073" target="_blank" rel="noopener">HF</a>. The TTS-STT flywheel is valuable because it evaluates rare entity hit rate, reports costs, and admits failures. It suggests targeted audio curricula can be more useful than broad WER chasing.</li>
+</ol>
+<ol>
+<li><strong>Small speech-native omni models make audio mechanisms inspectable</strong> — <a href="https://arxiv.org/abs/2605.03937v1" target="_blank" rel="noopener">arXiv</a>. MiniMind-O’s small scale and released artifacts make it a candidate for probing modality projectors, tokenizers, and streaming speech generation interfaces.</li>
+</ol>
+<ol>
+<li><strong>Speech representations need factorized axes</strong> — <a href="https://arxiv.org/abs/2605.02804v1" target="_blank" rel="noopener">Multi-Axis Speech Similarity</a>, <a href="https://arxiv.org/abs/2605.02782v1" target="_blank" rel="noopener">dysarthric context failure</a>, and <a href="https://arxiv.org/abs/2605.03776v1" target="_blank" rel="noopener">codec intelligibility</a>. These papers collectively say that content, speaker, dialect, prosody, context, and compression quality cannot be collapsed into a single score.</li>
+</ol>
+<ol>
+<li><strong>KV-cache optimization remains a mechanism question</strong> — <a href="https://machinelearning.apple.com/research/stochastic-kv-routing" target="_blank" rel="noopener">Stochastic KV Routing</a> and <a href="https://arxiv.org/abs/2605.02888v2" target="_blank" rel="noopener">SpecKV</a>. Cache sharing and speculative gamma control can improve cost, but they may also selectively perturb long-context behavior. Throughput is not enough; hidden-state/attention drift should be measured.</li>
+</ol>
+<ol>
+<li><strong>Training networks and serving control planes are first-order ML infrastructure</strong> — <a href="https://openai.com/index/mrc-supercomputer-networking" target="_blank" rel="noopener">OpenAI MRC</a>, <a href="https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/" target="_blank" rel="noopener">PyTorch IKBO</a>, and <a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">PyTorch SMG</a>. Networking, memory movement, and CPU orchestration decide whether expensive accelerators actually do useful learning/inference work.</li>
+</ol>
+<ol>
+<li><strong>Accuracy, safety, warmth, and truthfulness can move independently</strong> — <a href="https://arxiv.org/abs/2605.04039v1" target="_blank" rel="noopener">clinical scaling laws</a> and <a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Nature warmth/sycophancy</a>. This is a strong reminder to separate behavior dimensions before concluding that a model got “better.”</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Trajectory quality is becoming more important than optimizer labels.</strong> Search agents, RL rollouts, tool-use trees, and inference-time feedback all depend on the structure of trajectories and traces. The optimizer matters, but the day’s evidence says the real levers are what gets generated, filtered, rewarded, and replayed.</li>
+</ol>
+<ol>
+<li><strong>Adaptive interfaces are still a recurring mechanism, but not the only story.</strong> Early-representation gates, KV routing, speculative gamma, speech factor partitions, and retrieval objectives all decide which information survives between modules. This pattern is genuine, but it does not explain the math sampling papers or all skeptical alignment signals.</li>
+</ol>
+<ol>
+<li><strong>Aggregate metrics are repeatedly insufficient.</strong> Accuracy vs safety, WER vs entity hit rate, codec quality vs intelligibility, one-call accuracy vs repeated-inference benefit, and throughput vs rollout correctness all diverged in today’s sources.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Early-representation access as a rare-feature preservation mechanism</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://arxiv.org/abs/2605.03953v1" target="_blank" rel="noopener">Transformers with Selective Access to Early Representations</a>; previous interface signals in [[2026-05-06]].</li>
+<li><strong>Mechanism:</strong> Later layers may lose access to low-level lexical, positional, or rare-feature information. A learned early-representation access gate could preserve useful features without forcing every layer to carry them through the same residual path.</li>
+<li><strong>Minimal experiment/probe:</strong> Train tiny transformers on synthetic tasks with rare lexical cues, shallow syntax cues, and long-range reasoning. Compare baseline, static early-layer skip, learned token/head gate, and value-residual reuse. Log rare-feature accuracy, probe recoverability by layer, gate sparsity, and whether gates fire on the intended feature classes.</li>
+<li><strong>Falsifier:</strong> If learned access does not improve rare-feature/probe retention over a simple residual baseline, or if gains are only parameter-count effects, the mechanism is weak.</li>
+<li><strong>Confidence:</strong> medium-low.</li>
+</ul>
+<h3>2. Rollout lifecycle diagnostics for reasoning RL</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2605.02913" target="_blank" rel="noopener">Generate, Filter, Control, Replay survey</a>, <a href="https://machinelearning.apple.com/research/portool-policy-optimization" target="_blank" rel="noopener">PORTool</a>, <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Reinforced Agent</a>, <a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">vLLM correctness before corrections</a>.</li>
+<li><strong>Mechanism:</strong> RL post-training quality is determined by rollout generation, verifier/filter noise, compute-control decisions, replay reuse, and serving-runtime correctness before gradients are ever applied.</li>
+<li><strong>Minimal experiment/probe:</strong> Build a small math/tool sandbox with logged rollouts. Perturb one GFCR stage at a time: noisy verifier, limited branching, premature stopping, replay contamination, or non-deterministic runtime. Measure final accuracy, reward-model agreement, trajectory diversity, and failure attribution.</li>
+<li><strong>Falsifier:</strong> If stage perturbations do not predict training outcomes better than aggregate reward or pass@k, the lifecycle decomposition may be too coarse for this setting.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>3. Entity-level synthetic curricula for speech robustness</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2605.03073" target="_blank" rel="noopener">TTS-STT Flywheel</a>, <a href="https://arxiv.org/abs/2605.02804v1" target="_blank" rel="noopener">Multi-Axis Speech Similarity</a>, <a href="https://arxiv.org/abs/2605.02782v1" target="_blank" rel="noopener">Dysarthric context failure</a>, <a href="https://arxiv.org/abs/2605.03776v1" target="_blank" rel="noopener">codec intelligibility study</a>, <a href="https://arxiv.org/abs/2605.03937v1" target="_blank" rel="noopener">MiniMind-O</a>.</li>
+<li><strong>Mechanism:</strong> Generic ASR training and WER metrics underweight rare entities, code-mix, dialect, and atypical speech. Synthetic TTS curricula can target the exact slice, but may introduce speaker/prosody/context artifacts.</li>
+<li><strong>Minimal experiment/probe:</strong> Create a tiny entity-dense speech set for one language/accent pair. Fine-tune or adapt a public ASR model with synthetic TTS examples; evaluate EHR, WER regression, speaker/prosody probes, and real-recording sanity checks.</li>
+<li><strong>Falsifier:</strong> If entity gains disappear on small real recordings, or if WER/prosody regressions are too large, the synthetic curriculum is overfitting TTS artifacts.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>4. Mechanism-preserving KV/cache/speculation evaluation harness</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://machinelearning.apple.com/research/stochastic-kv-routing" target="_blank" rel="noopener">Stochastic KV Routing</a>, <a href="https://arxiv.org/abs/2605.02888v2" target="_blank" rel="noopener">SpecKV</a>, <a href="https://developers.googleblog.com/supercharging-llm-inference-on-google-tpus-achieving-3x-speedups-with-diffusion-style-speculative-decoding/" target="_blank" rel="noopener">Google diffusion-style speculative decoding</a>, <a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">PyTorch SMG</a>.</li>
+<li><strong>Mechanism:</strong> KV sharing, compression, and speculative controllers can change attention/hidden trajectories while preserving average outputs. The important question is not only speedup but which contexts or features are damaged.</li>
+<li><strong>Minimal experiment/probe:</strong> Run a small open model under fp16 baseline, low-bit/cache-shared approximation if available, and speculative decoding. Use rare-fact, long-context, and multi-hop prompts; log output agreement, logit drift, attention entropy, acceptance rate, latency, and failure clusters.</li>
+<li><strong>Falsifier:</strong> If optimized paths are indistinguishable under matched seeds and prompts, or if drift is random and not failure-correlated, there is little mechanism story beyond throughput.</li>
+<li><strong>Confidence:</strong> medium-low.</li>
+</ul>
+<h3>5. Metric-divergence probes for alignment/style tuning</h3>
+<ul>
+<li><strong>Evidence links:</strong> <a href="https://arxiv.org/abs/2605.04039v1" target="_blank" rel="noopener">Safety and accuracy follow different scaling laws</a>, <a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Nature warmth/sycophancy</a>, <a href="https://www.alignmentforum.org/posts/eeFFpKCDWE9gjfzsk/exploration-hacking-can-llms-learn-to-resist-rl-training-2" target="_blank" rel="noopener">Exploration Hacking</a>.</li>
+<li><strong>Mechanism:</strong> Alignment/style objectives can improve one visible dimension while damaging calibration, truthfulness, refusal behavior, exploration, or safety. Aggregate accuracy may hide behavior drift.</li>
+<li><strong>Minimal experiment/probe:</strong> On a small instruction model, run small style/warmth/preference-tuning variants. Track accuracy, calibration, sycophancy, refusal, truthfulness under adversarial preference prompts, entropy over alternatives, and feature/logit drift if hooks are available.</li>
+<li><strong>Falsifier:</strong> If tuning shifts style without measurable changes in calibration, truthfulness, refusal, or alternative-answer probability, the risk may be smaller at this scale.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>Reasoning-intensive retrieval</strong> — <a href="https://arxiv.org/abs/2605.04018v1" target="_blank" rel="noopener">arXiv</a>. Worth revisiting if a clear benchmark or retrieval objective emerges for complementary evidence rather than semantic similarity.</li>
+<li><strong>Parameter decomposition / Jets</strong> — <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">OpenReview</a> and <a href="https://www.alignmentforum.org/posts/eAQZaiC3PcBhS4HjM/linkpost-interpreting-language-model-parameters" target="_blank" rel="noopener">Alignment Forum</a>. Track whether parameter decomposition produces stable modules on models larger than toy examples.</li>
+<li><strong>Repeated-inference vote curves</strong> — <a href="https://arxiv.org/abs/2605.03379v1" target="_blank" rel="noopener">arXiv</a>. Could become a practical controller for when to spend test-time compute.</li>
+<li><strong>OpenAI MRC and training-network reliability</strong> — <a href="https://openai.com/index/mrc-supercomputer-networking" target="_blank" rel="noopener">OpenAI</a>. Useful for infra intuition; not yet a small local experiment.</li>
+<li><strong>Conditional diffusion/flow sampling</strong> — <a href="https://arxiv.org/abs/2605.04013v1" target="_blank" rel="noopener">Conditional Diffusion Sampling</a>, <a href="https://arxiv.org/abs/2605.03984v1" target="_blank" rel="noopener">Flow Sampling</a>. Revisit for a math explainer if similar sampling papers recur.</li>
+<li><strong>MiniMind-O as probe target</strong> — <a href="https://arxiv.org/abs/2605.03937v1" target="_blank" rel="noopener">arXiv</a>. Check whether artifacts are easy to run locally and whether speech/projector internals can be hooked.</li>
+<li><strong>HN weak signals</strong> — TokenSpeed and Google speculative decoding surfaced, but only Google’s TPU speculation post had enough direct learning value today. Continue to keep HN low-weight.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-07 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
