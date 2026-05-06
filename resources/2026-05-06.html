@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-06 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-06</h1>
+<p><strong>Bucket: Core DL/LLM research</strong></p>
+<h2>arXiv — Transformers with Selective Access to Early Representations</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03953v1</p>
+<p>Summary: A transformer architecture paper asking whether later layers should recover early low-level representations through selective access rather than static residual value reuse. It is useful because it treats depth as a lossy information pipeline: some token/head/context combinations may need early features more than others. The mechanism signal is adaptive early-representation routing under memory/throughput constraints.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Task Vector Geometry Underlies Dual Modes of Task Inference in Transformers</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03780v1</p>
+<p>Summary: A controlled small-transformer study of task-vector geometry for two modes of in-context learning: recognizing tasks seen during training and adapting to novel tasks. It connects internal representation directions to training distribution structure and OOD behavior. The learning value is a clean synthetic setup for turning interpretability observations into falsifiable geometry claims.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Conditional Diffusion Sampling</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04013v1</p>
+<p>Summary: A diffusion sampling paper about conditioning generative processes rather than only training a new model. It belongs here as a broad generative-model mechanism signal: inference-time sampling choices can change which parts of a learned distribution are reachable or emphasized. Useful for thinking about sampling as an algorithmic control surface, not just a final decoding detail.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Flow Sampling: Learning to Sample from Unnormalized Densities via Denoising Conditional Processes</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03984v1</p>
+<p>Summary: A density/sampling method that frames sampling from unnormalized targets through denoising conditional processes. The DL learning value is mathematical: it gives another bridge between diffusion-style denoising, flow-like transports, and practical sampler construction. It is broad, but relevant to understanding generative training/inference dynamics.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Training/RL/math/mech interp</strong></p>
+<h2>arXiv — Nora: Normalized Orthogonal Row Alignment for Scalable Matrix Optimizer</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03769v1</p>
+<p>Summary: A matrix-optimizer proposal aiming to combine Muon-like preconditioning, scale-invariance stability, and low overhead. This is high-signal for LLM training dynamics because optimizer geometry increasingly matters as much as architecture at fixed compute. The mechanism to track is whether row-orthogonal normalization reduces radial jitter while preserving useful preconditioning.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Steer Like the LLM: Activation Steering that Mimics Prompting</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.03907v1</p>
+<p>Summary: The paper reframes prompt steering as an activation intervention and argues that common steering vectors fail because prompting applies strong, token-specific interventions rather than uniform shifts. It introduces Prompt Steering Replacement models to approximate that tokenwise pattern. The important mechanism is sparsity/locality of control in activation space.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Correct Is Not Enough: Training Reasoning Planners with Executor-Grounded Rewards</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03862v1</p>
+<p>Summary: TraceLift treats reasoning traces as intermediate artifacts consumed by an executor, not as text that merely needs a correct final answer. It rewards planner traces according to executor-grounded utility, targeting right-answer-for-wrong-reason failures. This is useful for RL/RLHF because it moves credit assignment from outcome correctness to trace usefulness.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Agentic-imodels: Evolving agentic interpretability tools via autoresearch</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.03808v1</p>
+<p>Summary: This paper asks a strange but useful question: if agents will analyze data, should tools be interpretable to agents rather than only humans? It evolves scikit-learn-compatible regressors using a predictive metric plus an LLM-based interpretability score. The mechanism signal is tool representation as an interface between automated researchers and statistical structure.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Audio/TTS/speech</strong></p>
+<h2>arXiv / HF Papers — The TTS-STT Flywheel: Synthetic Entity-Dense Audio Closes the Indic ASR Gap</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03073v1</p>
+<p>Summary: A practical speech paper showing that entity-dense Telugu/Indic code-mix ASR failures can be attacked with a cheap synthetic TTS-to-STT data loop and LoRA fine-tuning. The collected mechanism is data curriculum targeted at rare entity classes rather than generic speech pretraining. It is also a good failure signal against relying on WER averages for niche domains.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — MiniMind-O Technical Report: An Open Small-Scale Speech-Native Omni Model</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03937v1</p>
+<p>Summary: MiniMind-O is a 0.1B-scale open omni model with text, speech, and image inputs plus streaming speech output. The report is useful because it exposes a small inspectable Thinker/Talker split, frozen speech/image encoders, modality projectors, and released training data. It makes speech-native multimodal architecture experiments cheaper than frontier-scale omni models.</p>
+<p>Personalization: high</p>
+<h2>arXiv — PHALAR: Phasors for Learned Musical Audio Representations</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03929v1</p>
+<p>Summary: PHALAR uses learned spectral pooling and a complex-valued head to encode pitch- and phase-equivariant biases for musical stem retrieval. It reportedly improves retrieval while reducing parameters and training time. The conceptual signal is that audio representation learning still benefits from explicit symmetry/phase structure rather than generic semantic embeddings alone.</p>
+<p>Personalization: low</p>
+<h2>arXiv — A Comprehensive Analysis of Tokenization and Self-Supervised Learning in End-to-End ASR applied on French</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03696v1</p>
+<p>Summary: This ASR study looks beyond WER/CER to qualitative effects of tokenization and self-supervised choices in French end-to-end speech recognition. It is useful because tokenization decisions can systematically change downstream transcript utility even when headline error rates look similar. The mechanism signal is speech-token granularity as a latent bottleneck.</p>
+<p>Personalization: medium</p>
+<p><strong>Bucket: Inference/ML infra/GPU</strong></p>
+<h2>arXiv — QKVShare: Quantized KV-Cache Handoff for Multi-Agent On-Device LLMs</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.03884v1</p>
+<p>Summary: QKVShare studies quantized KV-cache transfer between on-device agents, with token-level mixed precision, a CacheCard representation, and HuggingFace-compatible cache injection. It is exactly the kind of inference mechanism that changes experiment feasibility: latent context can be shared without full re-prefill. The caveat is that benefits are clearest under deeper-hop/high-budget handoffs.</p>
+<p>Personalization: high</p>
+<h2>PyTorch Blog — In-Kernel Broadcast Optimization: Co-Designing Kernels for RecSys Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/</p>
+<p>Summary: A systems post on eliminating explicit replication of shared embeddings/sequences by fusing broadcast logic into inference kernels. Although framed around recommendation inference, the lesson generalizes to ML serving: remove redundant memory movement at the kernel/model boundary. The mechanism is kernel-level co-design around repeated context rather than only operator speedups.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — Introducing AutoSP</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/introducing-autosp/</p>
+<p>Summary: AutoSP automatically converts standard transformer training code into sequence-parallel code for long-context multi-GPU training. It is useful because it lowers the friction of long-context experiments where memory, communication, and sharding details often dominate the research iteration loop. The mechanism is compiler/tooling automation for sequence dimension partitioning.</p>
+<p>Personalization: medium</p>
+<h2>NVIDIA Developer Blog — NVIDIA NVbandwidth: Your Essential Tool for Measuring GPU Interconnect and Memory Performance</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://developer.nvidia.com/blog/nvidia-nvbandwidth-your-essential-tool-for-measuring-gpu-interconnect-and-memory-performance/</p>
+<p>Summary: A practical GPU measurement post about interconnect and memory bandwidth. It is not a model paper, but it teaches a key infra habit: measure data-transfer ceilings before interpreting kernel or distributed-training behavior. The resource is included as a broad learning item because many inference/training bottlenecks are bandwidth, not FLOPs.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Broad learning / outside current project bubble</strong></p>
+<h2>Hugging Face Blog — Introducing NVIDIA Nemotron 3 Nano Omni: Long-Context Multimodal Intelligence for Documents, Audio and Video Agents</h2>
+<p>Type: Model/dataset</p>
+<p>Link: https://huggingface.co/blog/nvidia/nemotron-3-nano-omni-multimodal-intelligence</p>
+<p>Summary: A model-card/blog resource for an open multimodal model spanning documents, audio, video, and agentic workloads. This is not included as product news; the value is architectural breadth and modality-interface details when available. It helps compare small/open omni designs like MiniMind-O against a larger long-context multimodal stack.</p>
+<p>Personalization: low</p>
+<h2>Lilian Weng — Why We Think</h2>
+<p>Type: Independent blog</p>
+<p>Link: https://lilianweng.github.io/posts/2025-05-01-thinking/</p>
+<p>Summary: A substantial explainer on test-time compute and why chain-of-thought/thinking time can improve performance. It is not brand new, but it is a useful broad-learning anchor for today’s repeated signals around adaptive reasoning budgets, planner traces, and search-agent trajectories. The mechanism is computation allocation during inference.</p>
+<p>Personalization: low</p>
+<p><strong>Bucket: Skeptical or failure signal</strong></p>
+<h2>arXiv — Safety and accuracy follow different scaling laws in clinical large language models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04039v1</p>
+<p>Summary: SaFE-Scale argues that clinical accuracy and safety do not improve identically with model scale, context, retrieval, or inference-time compute. It is a skeptical signal against assuming better average answers imply safer deployment behavior. The transferable mechanism is metric divergence under scale: high-risk errors can follow a different curve from aggregate task accuracy.</p>
+<p>Personalization: low</p>
+<h2>arXiv — MOSAIC-Bench: Measuring Compositional Vulnerability Induction in Coding Agents</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.03952v1</p>
+<p>Summary: MOSAIC-Bench tests coding agents on vulnerability chains assembled from apparently innocuous subtasks, with deterministic exploit oracles. The failure mechanism is compositional compliance: local safety checks can pass while a sequenced end-state becomes malicious. This is a useful guardrail for agent training/evaluation work because it measures trajectory-level risk.</p>
+<p>Personalization: medium</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-06 22:30</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

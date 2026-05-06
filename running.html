@@ -89,10 +89,22 @@
 <ul>
 <li>Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces.</li>
 <li>HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative-decoding post were retained because they add mechanism/failure evidence rather than generic hype.</li>
+</ul>
+<h2>Daily additions — 2026-05-06</h2>
+<ul>
+<li><strong>Adaptive information interfaces as a shared bottleneck</strong> — Evidence from selective early-representation access, prompt-faithful activation steering, executor-grounded trace rewards, speech tokenization/curricula, and KV-cache handoff points to a common mechanism: boundaries decide which information survives. Experiment: for one boundary, measure information retention/probe stability before and after the interface rather than only downstream score.</li>
+<li><strong>Prompt steering should be studied as sparse token-local control</strong> — Steer Like the LLM suggests uniform steering vectors miss prompt mechanics. Experiment: compare global steering vectors with token-conditioned prompt-delta replacements; measure behavior, calibration, refusal/style drift, and intervention sparsity.</li>
+<li><strong>Speech-native small models are now inspectable enough for factor probes</strong> — MiniMind-O plus TTS-STT Flywheel and ASR tokenization work make small speech interface experiments cheap. Experiment: probe phoneme/speaker/language/entity/prosody factors under tokenizer and synthetic curriculum changes.</li>
+<li><strong>Systems optimizations should be treated as mechanism-preserving or mechanism-breaking transformations</strong> — QKVShare, AutoSP, fused broadcast kernels, and bandwidth measurement posts suggest infra choices can enable experiments but may perturb hidden trajectories. Experiment: compare accuracy/latency with activation drift and attention entropy under cache quantization/handoff or long-context sharding.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Aggregate metrics are repeatedly insufficient: accuracy vs safety, WER vs rare entity utility, final answer vs trace usefulness, and throughput vs mechanism preservation can diverge.</li>
+<li>The useful unit of analysis today is the interface: residual stream depth, prompt intervention locality, planner-to-executor trace, speech tokenizer/data loop, and KV-cache transfer.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:19</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-06 22:30</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

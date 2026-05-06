@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-05 11:48:49</p>
+<p>Generated: 2026-05-06 22:30:00</p>
 <h2>Mechanism</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -199,6 +199,72 @@
 <li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
+</ul>
+<h2>Adaptive information interfaces</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-06</li>
+<li>Last seen: 2026-05-06</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Many current DL/LLM/audio/agent/inference papers are really about boundaries that preserve, compress, distort, or reward information: early residual access, prompt-local activation changes, planner traces, speech tokenization/curricula, and KV-cache handoff.</p>
+<h3>Mechanism</h3>
+<p>Interfaces control information survival between modules or stages; average metrics can hide boundary-specific loss.</p>
+<h3>Minimal experiment</h3>
+<p>Pick one interface and log pre/post representation probes, hidden-state drift, downstream behavior, and rare-case failures under baseline vs adaptive interface.</p>
+<h3>Falsifier</h3>
+<p>No measurable interface-local information loss or behavioral difference versus same-parameter baselines.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-06.md</code> — Selective early representations, prompt-faithful activation steering, executor-grounded rewards, speech tokenization/curricula, and KV-cache handoff all point to adaptive interfaces as a recurring bottleneck.</li>
+</ul>
+<h2>Mechanism-preserving KV-cache handoff</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-06</li>
+<li>Last seen: 2026-05-06</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Quantized or adaptive KV-cache transfer can make multi-agent/on-device experiments cheaper, but should be evaluated as a mechanism-preserving transformation, not just a latency optimization.</p>
+<h3>Mechanism</h3>
+<p>Cache compression and injection may preserve enough latent context for downstream agents, or may perturb attention/hidden trajectories selectively.</p>
+<h3>Minimal experiment</h3>
+<p>Compare re-prefill, fp16 KV transfer, uniform low-bit KV, and adaptive KV handoff on multi-hop tasks; log accuracy, latency, cache bytes, activation drift, attention entropy, and rare failures.</p>
+<h3>Falsifier</h3>
+<p>KV handoff either gives no efficiency benefit or introduces drift/failures that erase task gains.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-06.md</code> — QKVShare combines token-level mixed precision, CacheCard representation, and HuggingFace-compatible cache injection for quantized KV-cache handoff between agents.</li>
+</ul>
+<h2>Prompt steering as sparse token-local control</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-06</li>
+<li>Last seen: 2026-05-06</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Prompting appears to induce strong hidden-state changes at selected tokens while leaving others almost untouched; global steering vectors may fail because their intervention geometry is wrong.</p>
+<h3>Mechanism</h3>
+<p>Token-local and layer-local activation deltas, not uniform direction shifts, mediate prompt steering.</p>
+<h3>Minimal experiment</h3>
+<p>Fit sparse token-conditioned steering replacements from prompt-induced deltas and compare against global steering vectors on behavior, calibration, refusal/style drift, and intervention sparsity.</p>
+<h3>Falsifier</h3>
+<p>Global vectors match prompt-delta replacement across behavior and calibration.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-06.md</code> — Steer Like the LLM argues prompt steering applies strong interventions on some tokens and almost none on others, suggesting sparse token-local control.</li>
 </ul>
 <h2>Adaptive inference controllers need failure-mode evaluation</h2>
 <ul>
@@ -590,7 +656,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-04 23:19</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-06 22:30</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
