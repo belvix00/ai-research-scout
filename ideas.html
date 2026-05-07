@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-07 03:07:19</p>
+<p>Generated: 2026-05-08 03:09:41</p>
 <h2>Mechanism</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -199,6 +199,73 @@
 <li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
+</ul>
+<h2>Cheap internal uncertainty probes need failure-overlap maps</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-08</li>
+<li>Last seen: 2026-05-08</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>First-token entropy and attention-divergence probes may reveal different hallucination mechanisms; compare failure overlap before trusting either aggregate score.</p>
+<h3>Mechanism</h3>
+<p>Confidence can be front-loaded in answer logits while factual instability can also appear in middle-layer attention around entities and numbers.</p>
+<h3>Minimal experiment</h3>
+<p>Log first-content-token entropy, attention KL features, semantic self-consistency, correctness, and answer type slices on a small factual QA set.</p>
+<h3>Falsifier</h3>
+<p>The cheap probes add no calibration/AUROC or failure-slice information beyond simple logprob/self-consistency baselines.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.05025v1</code> — Attention-head divergence features, concentrated in middle layers and factual tokens, can predict answer correctness.</li>
+<li><code>https://arxiv.org/abs/2605.05166v1</code> — First-token confidence from a single greedy decode can match or exceed semantic self-consistency for hallucination detection.</li>
+</ul>
+<h2>Agent context operations as an ablatable policy</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-08</li>
+<li>Last seen: 2026-05-08</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Long-horizon agents may improve more from explicit context operations than from blindly expanding context windows.</p>
+<h3>Mechanism</h3>
+<p>Skip, compress, rollback, snippet, and delete operations control which trajectory evidence remains in the working state.</p>
+<h3>Minimal experiment</h3>
+<p>Run controlled search tasks with hidden facts and distractors; ablate each operation under a fixed token budget.</p>
+<h3>Falsifier</h3>
+<p>Full transcript or fixed summarization matches operation policies at the same budget.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.05191v1</code> — Context-ReAct exposes explicit Skip, Compress, Rollback, Snippet, and Delete operations for elastic context orchestration.</li>
+</ul>
+<h2>Runtime paths are training-loop perturbations</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-08</li>
+<li>Last seen: 2026-05-08</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>For RL and agent training, the serving runtime changes the sampled trajectory distribution and therefore can change the optimizer input.</p>
+<h3>Mechanism</h3>
+<p>Speculation, cache lookup, expert prefetch, batching, or runtime nondeterminism can perturb outputs, hidden trajectories, verifier labels, and gradient directions.</p>
+<h3>Minimal experiment</h3>
+<p>Hold model/objective fixed and change serving path; measure rollout distribution, verifier disagreement, rare-feature accuracy, and gradient cosine.</p>
+<h3>Falsifier</h3>
+<p>Serving variants are indistinguishable from baseline on trajectories, probes, and update directions within noise.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections</code> — RL on vLLM rollouts requires establishing runtime correctness before interpreting RL corrections.</li>
 </ul>
 <h2>Early-representation access for rare-feature preservation</h2>
 <ul>
@@ -722,7 +789,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-07 20:34</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-08 03:09</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

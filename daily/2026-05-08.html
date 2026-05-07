@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-08 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-08</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest current papers/blogs were split across long-context theory, agent credit assignment, cheap hallucination probes, activation-steering geometry, audio/voice interfaces, and inference correctness/caching. The useful update relative to yesterday is that the “trajectory/interface” theme did not disappear, but it broadened: today’s signals ask how much information a system can keep, when a cheap internal signal is trustworthy, and whether deployment systems are part of the training loop.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The most foundational architecture signal was <a href="https://arxiv.org/abs/2605.05066v1" target="_blank" rel="noopener">The Impossibility Triangle of Long-Context Modeling</a>, which formalizes a trade-off among efficiency, compactness, and scalable recall for online sequence processors. This is useful because it discourages treating every long-context architecture as a free lunch: if a model claims constant per-token compute and constant state, then recall must be bounded unless it pays somewhere else through memory, retrieval, variable compute, or approximation.</p>
+<p>Apple’s <a href="https://machinelearning.apple.com/research/text-conditional-jepa-visual-representations" target="_blank" rel="noopener">Text-Conditional JEPA</a> moved the self-supervised vision discussion in a different direction. It conditions masked visual feature prediction on captions through sparse cross-attention, which may reduce prediction ambiguity and push representations toward semantic content. The trade-off to watch is whether text conditioning preserves rare visual factors or over-fits to language-nameable ones.</p>
+<p>Two generative-model mechanism papers added texture outside pure LLMs. <a href="https://arxiv.org/abs/2605.05206v1" target="_blank" rel="noopener">Taming Outlier Tokens in Diffusion Transformers</a> suggests high-norm tokens in DiT pipelines are not merely removable anomalies; the local patch semantics around them matter. <a href="https://huggingface.co/papers/2605.05204" target="_blank" rel="noopener">D-OPSD</a>, surfaced through HF daily papers, treats few-step diffusion fine-tuning as on-policy self-distillation so that continuous tuning does not destroy the model’s fast inference regime. Together these say that diffusion transformers now have their own internal-mechanism problems—token outliers, step-distillation stability, and encoder-conditioned rollouts—not just image-quality metrics.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Agent credit assignment remained active. <a href="https://arxiv.org/abs/2605.04984v1" target="_blank" rel="noopener">Self-Induced Outcome Potential</a> proposes turn-level credit assignment without gold labels or stable verifiers by clustering sampled final answers into latent outcome states and using those clusters for potential-based shaping. Relative to yesterday’s rollout-lifecycle notes, this is an important variant: instead of needing a process reward model or explicit verifier, it extracts a weak future-state signal from the model’s own sampled answer distribution.</p>
+<p>Reward-model alignment also produced a skeptical signal. <a href="https://arxiv.org/abs/2605.05003v1" target="_blank" rel="noopener">Misaligned by Reward</a> tests whether reward models prefer socially undesirable responses when social evaluation datasets are turned into pairwise preferences. The mechanism lesson is that reward models can encode local preference failures even before policy optimization, so “alignment” should be audited at the reward-model level rather than only after RLHF/DPO/GRPO.</p>
+<p>The math side supplied two broad learning pieces. <a href="https://arxiv.org/abs/2605.05176v1" target="_blank" rel="noopener">Attention as Featurizer</a> gives a constructive view of transformers doing nonlinear in-context regression by building polynomial/spline-like features through attention. <a href="https://arxiv.org/abs/2605.05179v1" target="_blank" rel="noopener">Estimating the expected output of wide random MLPs more efficiently than sampling</a> asks when distribution propagation can beat Monte Carlo for estimating network behavior. These are not immediate project items, but they are useful foundations for thinking about why examples in context become features and when expected behavior can be computed without brute force.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Several items focused on detecting hidden side effects and internal uncertainty. <a href="https://arxiv.org/abs/2605.05090v1" target="_blank" rel="noopener">Automatically Finding and Validating Unexpected Side-Effects of Interventions on Language Models</a> compares generations before/after an intervention and emits statistically validated natural-language hypotheses about what changed. This is a practical upgrade over fixed eval suites: the system can discover unexpected behavioral deltas from reasoning distillation, editing, unlearning, or fine-tuning.</p>
+<p>Two cheap hallucination probes appeared as a natural pair. <a href="https://arxiv.org/abs/2605.05025v1" target="_blank" rel="noopener">Internal Attention Divergence Signals</a> uses attention-head KL divergence from a uniform reference, with signal concentrated in middle layers and factual tokens. <a href="https://arxiv.org/abs/2605.05166v1" target="_blank" rel="noopener">The First Token Knows</a> uses entropy at the first content-bearing answer token from a single decode. The opportunity is not to pick one immediately, but to compare whether first-token entropy, attention divergence, and sampling-based self-consistency fail on different examples.</p>
+<p>Activation steering also received a geometry upgrade. <a href="https://arxiv.org/abs/2605.04980v1" target="_blank" rel="noopener">Conceptors for Semantic Steering</a> replaces a single steering vector with a soft projection matrix over a multidimensional concept subspace. This matters because many steering failures may come from compressing a concept into one direction when the model actually represents it as a subspace with layer-local separability, polarity, and geometry.</p>
+<p>A useful anti-universalism signal came from <a href="https://arxiv.org/abs/2605.05151v1" target="_blank" rel="noopener">Superposition Is Not Necessary</a>, which applies SAEs to transformer time-series forecasting and argues that the representational story may differ from NLP. The lesson is methodological: mechanistic interpretability tools should not assume that transformer domains share identical internal motifs.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>The speech cluster was smaller but still worth noting. OpenAI’s <a href="https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api" target="_blank" rel="noopener">voice models API post</a> is product-facing, but it signals continued movement toward realtime voice agents that can reason, translate, and transcribe in the same interaction loop. The technical implication is that voice models need representations that preserve content, language, prosody, timing, and speaker cues under latency constraints.</p>
+<p>HF daily papers resurfaced <a href="https://huggingface.co/papers/2508.19205" target="_blank" rel="noopener">VibeVoice</a>, which uses next-token diffusion over continuous speech latents and a compressed continuous tokenizer for long-form multi-speaker synthesis. It also resurfaced <a href="https://huggingface.co/papers/2410.17799" target="_blank" rel="noopener">OmniFlatten</a>, which adapts a text LLM into full-duplex speech-text dialogue using staged post-training and a flattening operation. Relative to yesterday’s speech factorization notes, today’s audio signals emphasize sequence representation and dialogue timing: how to keep long-form coherence and full-duplex behavior without making the speech loop too slow.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>The inference cluster was broad and practical. Hugging Face/ServiceNow’s <a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">vLLM V0 to V1: Correctness Before Corrections in RL</a> was the strongest direct continuation from yesterday: if RL rollouts are generated through vLLM or another serving stack, runtime correctness becomes part of the training signal. A serving bug is no longer just a deployment bug; it can corrupt trajectory distributions and gradients.</p>
+<p>Apple’s <a href="https://machinelearning.apple.com/research/specmd-expert-prefetching" target="_blank" rel="noopener">SpecMD</a> studies speculative expert prefetching for MoE inference. The lesson is that sparsity alone does not guarantee speed: routing, expert cache policies, and hardware memory behavior decide whether MoE activation sparsity becomes actual latency savings.</p>
+<p>HF daily papers highlighted <a href="https://huggingface.co/papers/2602.06036" target="_blank" rel="noopener">DFlash</a>, a block-diffusion draft model for speculative decoding, and HN weakly surfaced <a href="https://arxiv.org/abs/2605.04069" target="_blank" rel="noopener">LAWS</a>, which claims a transform toward cache-lookup-like inference. Alongside recent KV/cache work, these show inference acceleration branching into several mechanisms: parallel drafting, cache/depth sharing, lookup transforms, and expert prefetch. The open question is which ones preserve hidden-state/attention behavior versus merely preserving top-line output text.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>HF daily papers also surfaced agent and memory systems: <a href="https://huggingface.co/papers/2604.17091" target="_blank" rel="noopener">GenericAgent</a>, <a href="https://huggingface.co/papers/2605.03042" target="_blank" rel="noopener">ARIS</a>, <a href="https://huggingface.co/papers/2501.13956" target="_blank" rel="noopener">Zep</a>, and <a href="https://arxiv.org/abs/2605.05191v1" target="_blank" rel="noopener">LongSeeker</a>. These are not all equally novel, but together they show the agent field converging on context density, reusable trajectories, memory graphs, reviewer/critic loops, and explicit context operations such as skip/compress/rollback/snippet/delete. The best research signal here is not “agents are hot”; it is that context and memory policies are becoming concrete enough to ablate.</p>
+<p>The skeptical compute signal was Simon Willison’s <a href="https://simonwillison.net/2026/May/7/xai-anthropic/#atom-everything" target="_blank" rel="noopener">notes on Anthropic using xAI/SpaceX Colossus capacity</a>. This is not a model-mechanism item, but it matters as a constraint: frontier training/inference capacity is increasingly entangled with power infrastructure, permitting, and environmental legitimacy. That affects which experiments scale and who can afford them.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Long-context trade-off formalized.</strong> <a href="https://arxiv.org/abs/2605.05066v1" target="_blank" rel="noopener">The Impossibility Triangle</a> argues that efficiency, compactness, and scalable recall cannot all be simultaneously satisfied in online sequence models. This is a useful theoretical guardrail for evaluating long-context memory, SSM, and compression claims.</li>
+</ol>
+<ol>
+<li><strong>Verifier-free agent turn credit got a new proposal.</strong> <a href="https://arxiv.org/abs/2605.04984v1" target="_blank" rel="noopener">SIOP</a> uses clusters of sampled final answers as latent outcome states for turn-level potential shaping. It is interesting because many useful agent domains lack reliable process verifiers.</li>
+</ol>
+<ol>
+<li><strong>Reward models themselves may encode undesirable preferences.</strong> <a href="https://arxiv.org/abs/2605.05003v1" target="_blank" rel="noopener">Misaligned by Reward</a> audits reward models with pairwise social-preference data. This points to a pre-RL failure mode: the optimization target may already be wrong.</li>
+</ol>
+<ol>
+<li><strong>Intervention side-effect discovery became more automated.</strong> <a href="https://arxiv.org/abs/2605.05090v1" target="_blank" rel="noopener">Automatically Finding and Validating Unexpected Side-Effects</a> turns model-difference auditing into hypothesis generation. This is especially relevant for editing, unlearning, distillation, and fine-tuning where unknown regressions are likely.</li>
+</ol>
+<ol>
+<li><strong>Cheap hallucination probes formed a cluster.</strong> <a href="https://arxiv.org/abs/2605.05025v1" target="_blank" rel="noopener">Attention divergence</a> and <a href="https://arxiv.org/abs/2605.05166v1" target="_blank" rel="noopener">first-token entropy</a> both try to reduce the cost of hallucination detection. The next useful step is a head-to-head failure analysis, not another aggregate AUROC comparison.</li>
+</ol>
+<ol>
+<li><strong>Steering geometry moved beyond one-vector controls.</strong> <a href="https://arxiv.org/abs/2605.04980v1" target="_blank" rel="noopener">Conceptors for Semantic Steering</a> treats concepts as multidimensional subspaces. If this holds up, many activation-steering probes should log subspace rank, layer separability, and polarity instead of only vector strength.</li>
+</ol>
+<ol>
+<li><strong>Mechanistic interpretability tools were tested outside NLP.</strong> <a href="https://arxiv.org/abs/2605.05151v1" target="_blank" rel="noopener">Superposition Is Not Necessary</a> uses SAEs on PatchTST time-series forecasting. Even if the claim is narrow, the methodological value is high: do not assume the NLP superposition story transfers unchanged.</li>
+</ol>
+<ol>
+<li><strong>Self-supervised vision got language-conditioned prediction.</strong> Apple’s <a href="https://machinelearning.apple.com/research/text-conditional-jepa-visual-representations" target="_blank" rel="noopener">TC-JEPA</a> uses sparse cross-attention from captions to reduce masked-patch uncertainty. This is promising but also raises a representation-bias question: does text help visual semantics or suppress unlabeled visual factors?</li>
+</ol>
+<ol>
+<li><strong>Speech systems are emphasizing long-form and full-duplex representation.</strong> <a href="https://huggingface.co/papers/2508.19205" target="_blank" rel="noopener">VibeVoice</a>, <a href="https://huggingface.co/papers/2410.17799" target="_blank" rel="noopener">OmniFlatten</a>, and OpenAI’s <a href="https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api" target="_blank" rel="noopener">voice API update</a> all point toward voice agents where sequence representation, latency, overlap, and prosody matter together.</li>
+</ol>
+<ol>
+<li><strong>Serving correctness is now a training concern for RL.</strong> <a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">Correctness Before Corrections in RL</a> argues that vLLM/runtime correctness must be established before interpreting RL improvements. This directly affects any rollout-heavy RL or tool-agent experiment.</li>
+</ol>
+<ol>
+<li><strong>MoE speed depends on hardware-aware cache policy.</strong> Apple’s <a href="https://machinelearning.apple.com/research/specmd-expert-prefetching" target="_blank" rel="noopener">SpecMD</a> studies speculative expert prefetching. It reframes MoE inference as a joint model-routing/cache/hardware scheduling problem.</li>
+</ol>
+<ol>
+<li><strong>Speculative decoding continues to diversify.</strong> <a href="https://huggingface.co/papers/2602.06036" target="_blank" rel="noopener">DFlash</a> uses block diffusion for parallel drafting, while <a href="https://arxiv.org/abs/2605.04069" target="_blank" rel="noopener">LAWS</a> hints at cache-lookup-like inference. These should be evaluated not only by speedup, but by whether they perturb rare-feature behavior or hidden trajectories.</li>
+</ol>
+<ol>
+<li><strong>Agent memory/context systems are becoming ablatable.</strong> <a href="https://arxiv.org/abs/2605.05191v1" target="_blank" rel="noopener">LongSeeker</a>, <a href="https://huggingface.co/papers/2604.17091" target="_blank" rel="noopener">GenericAgent</a>, and <a href="https://huggingface.co/papers/2605.03042" target="_blank" rel="noopener">ARIS</a> all expose context/memory/reviewer operations. The useful research move is to test operations one at a time rather than accept full harness claims.</li>
+</ol>
+<ol>
+<li><strong>Compute access remains a bottleneck outside algorithms.</strong> Simon Willison’s <a href="https://simonwillison.net/2026/May/7/xai-anthropic/#atom-everything" target="_blank" rel="noopener">data-center critique</a> highlights the infrastructure and environmental constraints around frontier capacity. It is a reminder that algorithmic efficiency work has strategic value because raw scaling has nontechnical limits.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ul>
+<li><strong>Information budgets were the broadest real pattern, but not the only story.</strong> Long-context recall, agent context operations, speech-token compression, KV caches, and MoE expert caches all ask what information is worth keeping under a compute/memory/latency budget.</li>
+<li><strong>Cheap internal signals are proliferating.</strong> First-token entropy, attention divergence, conceptor quota, reward-model pairwise preferences, and outcome-state clusters all try to extract useful supervision or diagnostics without expensive labels or repeated rollouts.</li>
+<li><strong>The serving/runtime layer is becoming part of model behavior.</strong> vLLM correctness, speculative decoding, expert prefetch, and cache transforms can change what trajectories are sampled or preserved, so they need mechanism-preservation tests, not only throughput charts.</li>
+</ul>
+<h2>Five research opportunities</h2>
+<h3>1. Compare first-token entropy vs attention divergence as hallucination probes</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.05166v1" target="_blank" rel="noopener">The First Token Knows</a>, <a href="https://arxiv.org/abs/2605.05025v1" target="_blank" rel="noopener">Internal Attention Divergence Signals</a>.</p>
+<p>Mechanism: Factual instability may appear either before answer generation as high first-content-token entropy or during generation as abnormal middle-layer attention divergence around entities/numbers. These signals may catch different failure modes.</p>
+<p>Minimal experiment/probe: On a small open instruction model and a short factual QA dataset, log first-content-token normalized entropy, middle-layer attention KL features, semantic self-consistency, and correctness. Slice by entity answers, numeric answers, ambiguous questions, and confidently wrong answers.</p>
+<p>Falsifier: Both cheap signals fail on the same examples as each other and add no AUROC/calibration improvement over simple logprob baselines or self-consistency.</p>
+<p>Confidence: medium.</p>
+<h3>2. Treat agent context operations as a policy and ablate them one at a time</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.05191v1" target="_blank" rel="noopener">LongSeeker</a>, <a href="https://huggingface.co/papers/2604.17091" target="_blank" rel="noopener">GenericAgent</a>, <a href="https://huggingface.co/papers/2605.03042" target="_blank" rel="noopener">ARIS</a>.</p>
+<p>Mechanism: Long-horizon agents may improve less from larger context and more from explicit operations that decide which trajectory fragments are skipped, compressed, rolled back, quoted, or deleted.</p>
+<p>Minimal experiment/probe: Build a toy search/research environment with hidden facts and distracting observations. Compare full transcript, fixed summarization, and separate operations: Skip-only, Compress-only, Rollback-enabled, Snippet-enabled, Delete-enabled. Measure success, token use, evidence citation accuracy, and stale-context errors.</p>
+<p>Falsifier: A simple full-transcript or fixed-summary baseline matches all operation policies at the same token budget.</p>
+<p>Confidence: medium.</p>
+<h3>3. Test whether concept subspaces outperform single-vector steering on calibration and side effects</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.04980v1" target="_blank" rel="noopener">Conceptors for Semantic Steering</a>, <a href="https://arxiv.org/abs/2605.05090v1" target="_blank" rel="noopener">Automatically Finding and Validating Unexpected Side-Effects</a>.</p>
+<p>Mechanism: A concept may occupy a multidimensional activation subspace, so single-vector steering can over-rotate behavior and create unintended side effects. Conceptor-style soft projections may preserve more geometry.</p>
+<p>Minimal experiment/probe: Choose one behavior dimension such as refusal style, verbosity, or evidence-grounding. Build single-vector and conceptor interventions on a small model, then run a contrastive side-effect detector plus calibration/truthfulness probes.</p>
+<p>Falsifier: Conceptor interventions produce no better target-control/side-effect frontier than tuned single-vector baselines.</p>
+<p>Confidence: medium-low.</p>
+<h3>4. Measure whether inference accelerators preserve rare-feature mechanisms</h3>
+<p>Evidence: <a href="https://huggingface.co/papers/2602.06036" target="_blank" rel="noopener">DFlash</a>, <a href="https://arxiv.org/abs/2605.04069" target="_blank" rel="noopener">LAWS</a>, <a href="https://machinelearning.apple.com/research/specmd-expert-prefetching" target="_blank" rel="noopener">SpecMD</a>, <a href="https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections" target="_blank" rel="noopener">Correctness Before Corrections in RL</a>.</p>
+<p>Mechanism: Speculation, cache lookup transforms, expert prefetch, and serving-stack changes can preserve average text outputs while perturbing rare facts, hidden states, attention distributions, or rollout trajectories.</p>
+<p>Minimal experiment/probe: For one open model and a reproducible serving stack, compare baseline decoding vs one acceleration method where available. Log output match, rare-fact accuracy, activation cosine drift if accessible, attention entropy, and tool/RL rollout reproducibility.</p>
+<p>Falsifier: Accelerated and baseline paths are indistinguishable on rare-feature and hidden-trajectory probes within measurement noise.</p>
+<p>Confidence: medium.</p>
+<h3>5. Probe whether text-conditioned visual SSL preserves non-nameable factors</h3>
+<p>Evidence: Apple <a href="https://machinelearning.apple.com/research/text-conditional-jepa-visual-representations" target="_blank" rel="noopener">Text-Conditional JEPA</a>, <a href="https://arxiv.org/abs/2605.05206v1" target="_blank" rel="noopener">Taming Outlier Tokens in Diffusion Transformers</a>.</p>
+<p>Mechanism: Captions can reduce uncertainty in masked visual prediction, but they may bias representations toward semantic factors expressed in language while dropping local or non-nameable visual details. Outlier-token work suggests local patch semantics can degrade even when global generation looks good.</p>
+<p>Minimal experiment/probe: Create or reuse a synthetic image dataset with factors split into captioned/nameable and uncaptioned/non-nameable attributes. Compare visual SSL, text-conditioned SSL, and caption-randomized controls using linear probes and patch-level reconstruction/semantic corruption metrics.</p>
+<p>Falsifier: Text conditioning improves or preserves both nameable and non-nameable factor probes equally, with no local-factor degradation.</p>
+<p>Confidence: medium-low.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><a href="https://huggingface.co/papers/2605.05204" target="_blank" rel="noopener">D-OPSD</a>: on-policy self-distillation for few-step diffusion models may matter if step-distilled image/video models become a common local fine-tuning target.</li>
+<li><a href="https://huggingface.co/papers/2508.19205" target="_blank" rel="noopener">VibeVoice</a>: revisit for a speech-tokenizer/factor-probe day; continuous compressed latents are directly relevant to long-form audio generation.</li>
+<li><a href="https://huggingface.co/papers/2410.17799" target="_blank" rel="noopener">OmniFlatten</a>: worth rereading if full-duplex dialogue becomes an active audio direction; the flattening representation may be a simple but powerful interface.</li>
+<li><a href="https://arxiv.org/abs/2605.05151v1" target="_blank" rel="noopener">Superposition Is Not Necessary</a>: check whether the claim holds across more forecasting datasets/models; if true, it is a useful warning against overgeneralizing NLP SAE intuitions.</li>
+<li><a href="https://arxiv.org/abs/2605.05003v1" target="_blank" rel="noopener">Misaligned by Reward</a>: useful for a future reward-model audit harness that compares RM preferences before policy optimization.</li>
+<li><a href="https://machinelearning.apple.com/research/specmd-expert-prefetching" target="_blank" rel="noopener">SpecMD</a>: revisit if running MoE models locally; expert-cache traces could become an interpretability surface.</li>
+<li><a href="https://simonwillison.net/2026/May/7/xai-anthropic/#atom-everything" target="_blank" rel="noopener">Simon Willison on data-center capacity</a>: keep as a nontechnical compute constraint signal, not a daily technical source.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-08 03:09</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

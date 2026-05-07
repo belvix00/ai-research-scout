@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-08 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-08</h1>
+<p><strong>Core DL/LLM research</strong></p>
+<h2>arXiv — The Impossibility Triangle of Long-Context Modeling</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05066v1</p>
+<p>Summary: A theoretical paper formalizing a three-way trade-off for online sequence processors: constant per-step compute, constant state size, and recall that scales with sequence length cannot all be achieved. It is useful because it frames Transformers, SSMs, linear recurrent models, and hybrids under one abstraction rather than treating long-context tricks as independent hacks. Mechanism signal: long-context systems need to pay somewhere—external memory, larger state, non-constant compute, or bounded recall.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Understanding In-Context Learning for Nonlinear Regression with Transformers: Attention as Featurizer</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.05176v1</p>
+<p>Summary: This paper extends in-context-learning theory from mostly linear regression settings to nonlinear regression by constructing attention mechanisms that act as feature builders for polynomial/spline-like bases. It was collected because it gives a concrete mechanism for how attention can transform examples into a usable regression feature space. The learning value is mathematical: ICL can be read as learned feature construction plus finite-sample generalization, not only mysterious prompt magic.</p>
+<p>Personalization: low</p>
+<h2>Apple ML — Text-Conditional JEPA for Learning Semantically Rich Visual Representations</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://machinelearning.apple.com/research/text-conditional-jepa-visual-representations</p>
+<p>Summary: Apple describes TC-JEPA, a masked-feature prediction setup that conditions patch prediction on captions through sparse cross-attention over text tokens. It is relevant because it changes the JEPA question from “predict missing visual features under uncertainty” to “use language to reduce visual prediction ambiguity.” Mechanism signal: text can act as a semantic conditioner for self-supervised representation learning, but may also bias representations toward nameable factors.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Taming Outlier Tokens in Diffusion Transformers</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05206v1</p>
+<p>Summary: This paper studies high-norm/outlier tokens in diffusion-transformer image pipelines, including both pretrained representation encoders and denoisers. The useful part is that simply masking high-norm tokens does not solve the issue, suggesting the pathology is tied to corrupted local patch semantics rather than only extreme magnitudes. Mechanism signal: token norms, attention attraction, and local semantic degradation need to be measured together in generative transformer pipelines.</p>
+<p>Personalization: low</p>
+<p><strong>Training/RL/math/mech interp</strong></p>
+<h2>arXiv — Self-Induced Outcome Potential: Turn-Level Credit Assignment for Agents without Verifiers</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04984v1</p>
+<p>Summary: SIOP assigns credit to intermediate agent turns without gold answers or stable process verifiers by clustering sampled final answers into latent outcome states and using them for potential-based shaping. It was collected because it directly attacks the long-horizon agent bottleneck: final-answer reward is too far from the turns that gathered useful information. Mechanism signal: semantic future-state clusters can serve as a weak, label-free credit signal.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Misaligned by Reward: Socially Undesirable Preferences in LLMs</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05003v1</p>
+<p>Summary: The paper converts social evaluation datasets into pairwise preference tests to check whether reward models prefer undesirable responses across bias, safety, morality, and ethical reasoning. It is useful as a failure signal: reward models may look fine on broad instruction-following while encoding bad local preferences. Mechanism signal: alignment failures can live inside the preference model before the policy is even optimized against it.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Automatically Finding and Validating Unexpected Side-Effects of Interventions on Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05090v1</p>
+<p>Summary: This work proposes an automated contrastive pipeline that compares free-form generations before and after an intervention and produces statistically validated natural-language hypotheses about behavioral differences. It matters because reasoning distillation, editing, unlearning, and fine-tuning can create broad side effects that fixed evals miss. Mechanism signal: intervention auditing can be turned into hypothesis discovery rather than a checklist of known regressions.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Conceptors for Semantic Steering</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.04980v1</p>
+<p>Summary: Instead of representing a steering concept as one vector, this paper uses conceptors: soft projection matrices over a multidimensional activation subspace. It was collected because it directly challenges single-direction activation steering and offers layer-selection diagnostics via conceptor quota. Mechanism signal: concepts may be subspaces with geometry, polarity, and layer-local separability, not scalar knobs.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Superposition Is Not Necessary: A Mechanistic Interpretability Analysis of Transformer Representations for Time Series Forecasting</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.05151v1</p>
+<p>Summary: A mechanistic interpretability analysis of PatchTST for time-series forecasting using SAEs on FFN activations. The striking claim is that sparse superposed feature structure may not be necessary for the competitive forecasting behavior observed in this setting. Mechanism signal: not every transformer domain uses the same representational tricks as NLP; mechanistic claims should be domain-tested.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Detecting Hallucinations in Large Language Models via Internal Attention Divergence Signals</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05025v1</p>
+<p>Summary: This paper proposes a single-pass hallucination detector using KL divergence between attention-head distributions and a uniform reference, with signal concentrated in middle layers and factual tokens. It is useful because it offers an internal, cheap uncertainty probe rather than expensive sampling or retrieval. Mechanism signal: attention dynamics around named entities and numbers may expose factual instability.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — The First Token Knows: Single-Decode Confidence for Hallucination Detection</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05166v1</p>
+<p>Summary: This paper reports that normalized entropy at the first content-bearing answer token can match or exceed semantic self-consistency for closed-book factual QA hallucination detection. It is collected as a cheap-eval signal: uncertainty may be visible before the model writes the answer. Mechanism signal: answer-trajectory confidence can be front-loaded, so first-token probes deserve comparison against attention-divergence probes.</p>
+<p>Personalization: low</p>
+<p><strong>Audio/TTS/speech</strong></p>
+<h2>OpenAI — Advancing voice intelligence with new models in the API</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://openai.com/index/advancing-voice-intelligence-with-new-models-in-the-api</p>
+<p>Summary: OpenAI announced new realtime voice API models for reasoning, translation, and transcription in speech interactions. The post is product-facing, but it was collected because it signals more pressure on end-to-end speech reasoning loops rather than ASR→text→TTS pipelines alone. Mechanism signal: voice agents increasingly need latency-aware speech representations that preserve content, prosody, language, and conversational timing.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Daily Papers — VibeVoice Technical Report</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://huggingface.co/papers/2508.19205</p>
+<p>Summary: VibeVoice proposes long-form multi-speaker speech synthesis using next-token diffusion over continuous speech latents, backed by a highly compressed continuous tokenizer. It is older than today’s arXiv drop but resurfaced strongly on HF daily papers, and is useful because it ties speech-token compression directly to long-context voice generation. Mechanism signal: audio language models may shift from discrete codec tokens toward continuous latent diffusion when long-form coherence matters.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Daily Papers — OmniFlatten: An End-to-end GPT Model for Seamless Voice Conversation</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://huggingface.co/papers/2410.17799</p>
+<p>Summary: OmniFlatten adapts a text LLM backbone into a speech-text dialogue model with a staged post-training scheme and a flattening operation that unifies modalities/tasks. It was included as a speech architecture reference because full-duplex dialogue requires modeling interruptions, overlap, and backchannels, not just single-turn TTS quality. Mechanism signal: data representation and training stages may matter more than architectural novelty for low-latency speech agents.</p>
+<p>Personalization: low</p>
+<p><strong>Inference/ML infra/GPU</strong></p>
+<h2>Hugging Face Blog — vLLM V0 to V1: Correctness Before Corrections in RL</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://huggingface.co/blog/ServiceNow-AI/correctness-before-corrections</p>
+<p>Summary: The post argues that RL training on top of vLLM should first establish serving correctness before trying to patch RL outcomes. It is important because RL rollouts are generated by an inference system, so nondeterminism, cache bugs, or scheduler behavior can silently become training signal corruption. Mechanism signal: serving-stack correctness is part of the optimizer loop for RL, not merely deployment engineering.</p>
+<p>Personalization: high</p>
+<h2>Apple ML — SpecMD: A Comprehensive Study on Speculative Expert Prefetching</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://machinelearning.apple.com/research/specmd-expert-prefetching</p>
+<p>Summary: SpecMD benchmarks expert caching/prefetching policies for MoE inference across hardware settings. It is useful because MoE sparsity only becomes practical if routing decisions and cache policies align with hardware costs. Mechanism signal: expert routing is not just a model-side choice; deployment-time prefetch/caching can determine whether sparsity produces real latency gains.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Daily Papers — DFlash: Block Diffusion for Flash Speculative Decoding</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2602.06036</p>
+<p>Summary: DFlash uses a lightweight block diffusion model to draft tokens in parallel for speculative decoding, conditioning on context features from the target model. It was collected because it suggests diffusion-style drafting can attack the sequential bottleneck of autoregressive draft models. Mechanism signal: draft acceptance depends on how well a non-AR parallel generator can imitate local target-model token distributions.</p>
+<p>Personalization: medium</p>
+<h2>HN Algolia — LAWS: turning LLM inference into cheap cache lookups</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://arxiv.org/abs/2605.04069</p>
+<p>Summary: HN surfaced LAWS as a claim about transforming LLM inference into cache lookup-like operations. It is retained only as a weak signal because the discussion itself is small, but the linked paper is directly in scope for inference-cost mechanisms. Mechanism signal: if the transform preserves behavior, it belongs in the family of cache/speculation/lookup approximations that should be measured for hidden-state drift, not just speed.</p>
+<p>Personalization: low</p>
+<h2>HN Algolia — LLM Inference Series: KV caching, a deeper look</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://medium.com/@plienhar/llm-inference-series-4-kv-caching-a-deeper-look-4ba9a77746c8</p>
+<p>Summary: A low-engagement HN item pointing to a KV-cache explainer. It is included as a broad learning resource rather than evidence of a new result. Mechanism signal: KV cache mechanics remain a necessary foundation for judging recent depth-wise cache sharing, speculative decoding, and cache-lookup proposals.</p>
+<p>Personalization: low</p>
+<p><strong>Broad learning / outside current project bubble</strong></p>
+<h2>arXiv — Estimating the expected output of wide random MLPs more efficiently than sampling</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.05179v1</p>
+<p>Summary: This paper estimates expected outputs of wide random MLPs over Gaussian inputs using approximate activation distributions, cumulants, and Hermite expansions rather than Monte Carlo samples. It is a useful outside-bubble math resource because it asks when sampling is not the best way to estimate neural behavior. Mechanism signal: distribution-propagation approximations may make rare-event estimates cheaper for sufficiently wide networks.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Continual Knowledge Updating in LLM Systems: Learning Through Multi-Timescale Memory Dynamics</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05097v1</p>
+<p>Summary: Memini proposes external associative memory with coupled fast/slow variables inspired by Benna-Fusi synaptic consolidation. It is useful because it replaces manual memory management with dynamics that make new associations immediately usable while gradually consolidating repeated ones. Mechanism signal: agent memory can be modeled as multi-timescale graph dynamics, not only retrieval plus summarization.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — LongSeeker: Elastic Context Orchestration for Long-Horizon Search Agents</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05191v1</p>
+<p>Summary: LongSeeker/Context-ReAct introduces operations such as Skip, Compress, Rollback, Snippet, and Delete to reshape an agent’s working context during long-horizon search. It was collected because it treats context as an actively controlled resource rather than a passive growing transcript. Mechanism signal: context operations can be studied as a policy over memory granularity and relevance.</p>
+<p>Personalization: medium</p>
+<p><strong>Skeptical or failure signal</strong></p>
+<h2>Simon Willison — Notes on the xAI/Anthropic data center deal</h2>
+<p>Type: Newsletter/critique</p>
+<p>Link: https://simonwillison.net/2026/May/7/xai-anthropic/#atom-everything</p>
+<p>Summary: Simon Willison discusses Anthropic’s agreement to use xAI/SpaceX Colossus data-center capacity and emphasizes the environmental/power externalities around that facility. This is not a technical research mechanism, but it is a useful skeptical compute signal: scaling frontier training and inference is constrained by power, permitting, and public legitimacy. Mechanism signal: compute availability is not only chips and algorithms; energy infrastructure can redirect what experiments are feasible.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-08 03:09</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
