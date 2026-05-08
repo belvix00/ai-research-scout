@@ -126,10 +126,23 @@
 <ul>
 <li>No single dominant pattern today; durable updates were plural: information budgets, cheap internal diagnostics, side-effect discovery, speech representation, and runtime-as-training-loop.</li>
 <li>Text-conditioned representation learning may preserve semantic factors while suppressing non-nameable factors; needs synthetic-factor probes before becoming a confident thesis.</li>
+</ul>
+<h2>Daily additions — 2026-05-09</h2>
+<ul>
+<li><strong>Agentic RL should be studied as rollout-lifecycle engineering</strong> — StraTA, A^2TGPO, and LoPE all modify different lifecycle points: strategy priors, per-turn information-gain advantages/adaptive clipping, and prompt-space exploration. Experiment: fixed toy tool/math RL environment with one perturbation at a time; log trajectory distribution, zero-advantage rate, verifier error, and gradient cosine.</li>
+<li><strong>MoE expert capacity is becoming a global allocation problem</strong> — UniPool and EMO suggest expert parameters/routing should be probed as reusable modular capacity, not assumed layer-private. Experiment: tiny MoE with known domain/rare-feature factors; compare layer-local vs shared-pool experts via router entropy, causal expert ablations, and rare-feature retention.</li>
+<li><strong>Long-context interfaces need cost-normalized evidence-retention tests</strong> — MiA-Signature, Direct Corpus Interaction, and million-token serving posts point to several competing interfaces: concept signatures, dense retrieval, raw corpus tools, and full context. Experiment: exact-constraint/sparse-clue local corpus benchmark under equal token/time/tool budgets.</li>
+<li><strong>Latent language models should be probed for controllable global semantics</strong> — Cola DLM separates semantic prior transport from local text realization. Experiment: synthetic planning/story data; compare AR/token-diffusion/latent-diffusion models for probeable plan variables and surface-form invariance.</li>
+<li><strong>LLM-generated GPU kernels need correctness-speed audits</strong> — KernelBench-X indicates repair loops can improve correctness while hurting performance, with task structure dominating failure. Experiment: small Triton task suite logging compile, semantic correctness, speed, bandwidth, and repair-step regressions.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across RL rollout lifecycle, MoE capacity allocation, long-context interfaces, latent semantic modeling, and GPU-kernel auditing.</li>
+<li>Audio signals were taxonomy/data-quality heavy rather than new TTS architecture-heavy; keep factorized audio probes alive but do not overclaim from today’s evidence.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-08 03:09</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 03:08</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

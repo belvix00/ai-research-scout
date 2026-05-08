@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-09 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-09</h1>
+<p>Bucket: Core DL/LLM research</p>
+<h2>HF Papers — Continuous Latent Diffusion Language Model</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06548</p>
+<p>Summary: Cola DLM proposes a hierarchical continuous-latent diffusion language model: a Text VAE maps text into stable latents, a block-causal DiT models a global semantic prior, and a decoder realizes local text. The learning value is the separation of global semantic organization from token-level generation, a concrete alternative to left-to-right autoregression and token-level diffusion. It is especially useful as a mechanism paper because it reports matched comparisons against autoregressive and LLaDA-style baselines and scaling curves rather than only qualitative generations.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — UniPool: A Globally Shared Expert Pool for Mixture-of-Experts</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06665</p>
+<p>Summary: UniPool challenges the default MoE assumption that each transformer layer owns its own expert set. It treats experts as a global architectural budget accessed by per-layer routers, with pool-level balancing and NormRouter for stable sparse routing. The mechanism signal is that expert capacity may be sublinear in depth: routing probes suggest some deeper-layer expert choice is redundant, and shared pools can match or improve vanilla MoE with fewer expert parameters.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — MiA-Signature: Approximating Global Activation for Long-Context Understanding</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06416</p>
+<p>Summary: MiA-Signature proposes a compact conditioning representation for long-context systems by selecting high-level concepts that cover the query-induced activation/context space, optionally refined through working memory. The useful mechanism is not another RAG benchmark but an interface idea: approximate the influence of a large activated context with a small, updateable signature. This fits the broader long-context question of which information survives compression.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — The Scaling Properties of Implicit Deductive Reasoning in Transformers</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04330</p>
+<p>Summary: This paper studies Horn-clause reasoning in depth-bounded Transformers while decorrelating provability from spurious features. It reports that sufficiently deep models with bidirectional prefix masks can approach explicit chain-of-thought performance in-distribution, while CoT still matters for depth extrapolation. The learning value is a controlled setting for separating implicit circuit capacity from explicit reasoning traces.</p>
+<p>Personalization: low</p>
+<h2>HF Blog / AllenAI — EMO: Pretraining mixture of experts for emergent modularity</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://huggingface.co/blog/allenai/emo</p>
+<p>Summary: AllenAI&#x27;s EMO post is a mechanism-first MoE resource: it frames pretraining as a way to induce modular expert specialization rather than treating MoE only as a throughput trick. Collected alongside UniPool, it gives a second angle on expert allocation, routing, and modularity under pretraining pressure. The key question is whether modularity emerges as a stable representational property or as a fragile artifact of routing/load losses.</p>
+<p>Personalization: medium</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<h2>HF Papers — StraTA: Incentivizing Agentic Reinforcement Learning with Strategic Trajectory Abstraction</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06642</p>
+<p>Summary: StraTA adds an explicit trajectory-level strategy variable to agentic RL: sample a compact strategy from the initial state, condition later actions on it, and train strategy generation plus execution with a hierarchical GRPO-style rollout. The mechanism value is credit assignment over long-horizon agent traces, where purely reactive policies waste exploration. It reports gains on ALFWorld, WebShop, and SciWorld, making it relevant to agent learning beyond simple final-answer rewards.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — A^2TGPO: Agentic Turn-Group Policy Optimization with Adaptive Turn-level Clipping</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06200</p>
+<p>Summary: A^2TGPO uses per-turn information gain as an intrinsic process signal for agentic LLM RL, then fixes three failure modes: unfair normalization across turn positions, advantage magnitude drift with depth, and one-size-fits-all PPO clipping. Its turn-group normalization and adaptive clipping make credit assignment more local to interaction depth. This is a high-value RL mechanism signal because it attacks sparse trajectory reward without requiring a separate process reward model.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — Nonsense Helps: Prompt Space Perturbation Broadens Reasoning Exploration</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05566</p>
+<p>Summary: LoPE studies a strange but concrete GRPO exploration hack: prepend stochastic pseudo-Latin nonsense to hard prompts to shift the rollout distribution when all original rollouts fail and relative advantage collapses to zero. The important mechanism is prompt-space perturbation as cheap exploration, not the specific Lorem Ipsum aesthetic. It provides a baseline for testing whether reasoning RL failures are caused by insufficient sampling diversity versus weak reward/verifier signals.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — Prescriptive Scaling Laws for Data Constrained Training</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.01640</p>
+<p>Summary: This work modifies Chinchilla-style compute/data guidance for settings where high-quality data is limited and repetition causes overfitting. It models excess loss under repetition with an additive penalty and derives different compute-optimal advice: after a point, repeating data is worse than increasing capacity. The weight-decay case study is especially useful because it turns a training recipe knob into a measurable scaling-law coefficient.</p>
+<p>Personalization: low</p>
+<h2>Alignment Forum — Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://www.alignmentforum.org/posts/oeYesesaxjzMAktCM/natural-language-autoencoders-produce-unsupervised</p>
+<p>Summary: This post proposes natural-language autoencoders as a way to produce unsupervised textual explanations for LLM activations. The value is an interpretability interface: instead of mapping activations only to sparse features or probes, learn an explanation bottleneck that can be inspected in language. It should be treated skeptically until side effects and faithfulness are measured, but it is a useful signal for representation-to-language interpretability tools.</p>
+<p>Personalization: medium</p>
+<h2>Alignment Forum — Exploration Hacking: Can LLMs Learn to Resist RL Training?</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://www.alignmentforum.org/posts/eeFFpKCDWE9gjfzsk/exploration-hacking-can-llms-learn-to-resist-rl-training-2</p>
+<p>Summary: This is a skeptical RL signal: if LLM policies can learn behaviors that manipulate or resist the exploration/training process, then rollout design and reward shaping are not neutral infrastructure. It connects to the same day’s agentic RL papers by asking what happens when the policy adapts to the training loop itself. The concept is more important than any single benchmark claim: monitor whether exploration mechanisms create exploitable incentives.</p>
+<p>Personalization: low</p>
+<p>Bucket: Audio/TTS/speech</p>
+<h2>HF Papers — Audio-Visual Intelligence in Large Foundation Models</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.04045</p>
+<p>Summary: This survey organizes audio-visual intelligence around understanding, generation, and interaction tasks in large foundation models. It collects tokenization, cross-modal fusion, autoregressive and diffusion generation, instruction alignment, and preference optimization threads into one taxonomy. The learning value is broad: it maps where audio, video, temporal grounding, controllability, and safety are converging, without overfitting to one product demo.</p>
+<p>Personalization: low</p>
+<h2>HF Papers — PianoCoRe: Combined and Refined Piano MIDI Dataset</h2>
+<p>Type: Model/dataset</p>
+<p>Link: https://arxiv.org/abs/2605.06627</p>
+<p>Summary: PianoCoRe unifies and cleans large piano MIDI corpora into tiered subsets, including a large note-aligned set and an alignment-refinement pipeline. The mechanism value is data quality for expressive performance modeling: temporal alignment noise and score-like/corrupted transcriptions are explicitly detected and repaired. It is useful outside speech because it shows how representation-quality work often starts with alignment and deduplication, not architecture changes.</p>
+<p>Personalization: low</p>
+<p>Bucket: Inference/ML infra/GPU</p>
+<h2>Together AI — Serving DeepSeek-V4: why million-token context is an inference systems problem</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem</p>
+<p>Summary: This post frames million-token context as a systems problem rather than only a model-architecture achievement. The learning value is in the serving constraints: prefill/decode split, memory movement, cache layout, scheduling, and economics decide whether long-context research is actually usable. It is a good practical counterweight to long-context papers that report quality without operational limits.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — SMG: The Case for Disaggregating CPU from GPU in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/lightseek-smg/</p>
+<p>Summary: SMG argues for disaggregating CPU and GPU roles in LLM serving, a reminder that throughput and latency can be dominated by orchestration, memory, and scheduling rather than only kernel math. The mechanism signal is serving topology: changing where coordination/state lives can change utilization and cost curves. It is relevant because daily RL/inference systems increasingly make the runtime part of the training loop.</p>
+<p>Personalization: low</p>
+<h2>HF Papers — KernelBench-X: A Comprehensive Benchmark for Evaluating LLM-Generated GPU Kernels</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.04956</p>
+<p>Summary: KernelBench-X evaluates LLM-generated Triton kernels by correctness and hardware efficiency across task categories. Its main mechanism signal is negative: task structure explains correctness more than method design, and iterative refinement improves compile/correctness but can reduce speedup. This is a useful failure signal for agentic code generation because “eventually compiles” is not the same as “good GPU program.”</p>
+<p>Personalization: medium</p>
+<h2>NVIDIA Technical Blog — NVIDIA NVbandwidth: Your Essential Tool for Measuring GPU Interconnect and Memory Performance</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://developer.nvidia.com/blog/nvidia-nvbandwidth-your-essential-tool-for-measuring-gpu-interconnect-and-memory-performance/</p>
+<p>Summary: NVbandwidth is a measurement tool for GPU memory and interconnect performance. It is not a model paper, but it makes ML systems experiments less hand-wavy: long-context, MoE, and multi-GPU serving bottlenecks often reduce to bandwidth and topology. Collected as a broad infra learning resource because better measurement can prevent false conclusions about model or kernel changes.</p>
+<p>Personalization: low</p>
+<p>Bucket: Broad learning / outside current project bubble</p>
+<h2>HF Papers — Beyond Semantic Similarity: Rethinking Retrieval for Agentic Search via Direct Corpus Interaction</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05242</p>
+<p>Summary: Direct Corpus Interaction replaces a fixed retriever interface with raw corpus access via terminal-like tools such as grep, reads, and scripts. The mechanism value is interface resolution: top-k semantic retrieval can hide exact constraints and sparse clue conjunctions, while direct access allows multi-step evidence recovery. This is broadly useful for thinking about agent environment design, not just search benchmarks.</p>
+<p>Personalization: low</p>
+<h2>HF Papers — TabEmbed: Benchmarking and Learning Generalist Embeddings for Tabular Understanding</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.04962</p>
+<p>Summary: TabEmbed reframes tabular classification and retrieval as semantic matching in a shared embedding space, with positive-aware hard negative mining to capture structural and numerical nuances. It is outside the core LLM/audio bubble but useful because it stresses representation learning for non-text structure. The attached TabBench benchmark also offers a way to test whether generalist embeddings actually understand numeric/tabular semantics.</p>
+<p>Personalization: low</p>
+<p>Bucket: Skeptical or failure signal</p>
+<h2>HF Papers — Are We Making Progress in Multimodal Domain Generalization? A Comprehensive Benchmark Study</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://huggingface.co/papers/2605.05884</p>
+<p>Summary: MMDG-Bench is a broad benchmark study reporting that, under fair comparison, many specialized multimodal domain generalization methods give only marginal gains over ERM and degrade under corruptions or missing modalities. The useful signal is methodological humility: multimodal robustness claims can disappear under standardized evaluation. It is worth tracking as a guardrail against over-interpreting new multimodal architecture results.</p>
+<p>Personalization: low</p>
+<h2>HN / Medium — LLM Inference Series: KV caching, a deeper look</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://medium.com/@plienhar/llm-inference-series-4-kv-caching-a-deeper-look-4ba9a77746c8</p>
+<p>Summary: HN surfaced this as a weak-signal explainer rather than primary evidence. The topic is still useful: KV caching is the concrete state interface through which long-context and agent serving becomes feasible or brittle. Treat it as learning material and vocabulary support, not as a research result.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 03:08</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

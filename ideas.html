@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-08 03:09:41</p>
+<p>Generated: 2026-05-09 03:08:15</p>
 <h2>Mechanism</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -99,6 +99,27 @@
 <li><code>daily/2026-05-04.md</code> — Aman has trained MoE models. A small MoE routing lab could produce publishable mechanistic results faster than full model training: expert specialization, routing stability, rare-token routing, safety/reasoning path differences, and whether steering masks act like low-rank adapters in route space.</li>
 <li><code>daily/2026-05-04.md</code> — This is directly relevant to TTS and talking-face work, and it is small enough to test without training a giant model. Aman can reuse public speech encoders/codecs and build a probing harness.</li>
 </ul>
+<h2>Measure serving-stack choices as perturbations to model mechanisms</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-04</li>
+<li>Last seen: 2026-05-09</li>
+<li>Evidence count: 4</li>
+</ul>
+<h3>Thesis</h3>
+<p>MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between s</p>
+<h3>Minimal experiment</h3>
+<p>compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN item was promoted into a primary opportunity.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-09.md</code> — KernelBench-X shows LLM kernel repair can improve correctness while reducing speedup; Together/PyTorch serving posts emphasize cache, topology, and scheduling as research-validity constraints.</li>
+<li><code>running.md</code> — MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN</li>
+<li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - Mechanism: - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior. - Why it matters for Aman: - This bridges inference optim</li>
+<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - <strong>Mechanism</strong> - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior. - <strong>Why it matters for Aman</strong> - This bridges infere</li>
+</ul>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -140,26 +161,6 @@
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a> - Mechanism: - Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For tool agents, the analogous signal is not a robot intervention but a reviewer/controller deciding whether the current tool call and arguments are safe, scope</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00416" target="_blank" rel="noopener">Learning while Deploying: Fleet-Scale Reinforcement Learning for Generalist Robot Policies</a> - <a href="https://machinelearning.apple.com/research/reinforced-agent-inference-feedback" target="_blank" rel="noopener">Apple ML Research: Reinforced Agent</a> - <a href="https://huggingface.co/papers/2604.24026" target="_blank" rel="noopener">From Skill Text to Skill Structure</a> - <strong>Mechanism</strong> - Offline datasets miss the long tail. Deployment produces corrections, interventions, and failed trajectories. For tool agents, the analogous signal is not a robot intervention but a reviewer/controller deciding whether the current tool call and arguments are safe,</li>
 </ul>
-<h2>Measure serving-stack choices as perturbations to model mechanisms</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>audio</code>, <code>inference</code>, <code>mech-interp</code>, <code>agent-memory</code>, <code>on-device</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-04</li>
-<li>Last seen: 2026-05-04</li>
-<li>Evidence count: 3</li>
-</ul>
-<h3>Thesis</h3>
-<p>MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between s</p>
-<h3>Minimal experiment</h3>
-<p>compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN item was promoted into a primary opportunity.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>running.md</code> — MLX/vLLM/SGLang activity around quantized matmuls, CUDA graphs, MoE serving, and prefill/decode layout suggests serving choices are experimental perturbations. Experiment: compare logits/activations/failures under baseline vs optimized low-bit/graph/cache paths on rare-fact and long-context prompts. ### Weak signals / bottlenecks - Interfaces are the recurring bottleneck today: tokenizers, speaker encoders, MoE routers, skill schemas, and serving caches decide what information survives between subsystems. - Inference systems should be logged as mechanism perturbations, not just throughput infrastructure. - HN remained weak/noisy today; no HN</li>
-<li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - Mechanism: - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior. - Why it matters for Aman: - This bridges inference optim</li>
-<li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://github.com/ml-explore/mlx/releases/tag/v0.31.2" target="_blank" rel="noopener">MLX v0.31.2</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1</a> - <a href="https://github.com/sgl-project/sglang/releases/tag/v0.5.10" target="_blank" rel="noopener">SGLang v0.5.10</a> - <strong>Mechanism</strong> - Quantized matmuls, FP4/MXFP8 communication, piecewise CUDA graphs, prefill/decode disaggregation, sparse attention, and MoE expert-parallel recovery are normally evaluated by throughput and memory. But these choices also perturb numerical precision, batch composition, cache layout, route timing, and long-context behavior. - <strong>Why it matters for Aman</strong> - This bridges infere</li>
-</ul>
 <h2>Treat multimodal tokenizers as measurable gradient gates</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -200,6 +201,29 @@
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
 </ul>
+<h2>Rollout lifecycle diagnostics for reasoning RL</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-07</li>
+<li>Last seen: 2026-05-09</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Reasoning-RL quality is governed by rollout generation, filtering, compute control, replay, and runtime correctness before optimizer choice.</p>
+<h3>Mechanism</h3>
+<p>GFCR rollout stages and serving correctness determine what rewards and gradients see.</p>
+<h3>Minimal experiment</h3>
+<p>Toy math/tool RL sandbox with controlled perturbations to verifier noise, branching/stopping, replay contamination, and runtime nondeterminism.</p>
+<h3>Falsifier</h3>
+<p>Stage perturbations do not predict failures better than aggregate reward or pass@k.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-09.md</code> — 2026-05-09: StraTA changes the strategy prior, A^2TGPO changes per-turn information-gain advantages/clipping, and LoPE changes prompt-space exploration; test each rollout-lifecycle intervention under a fixed toy tool/math environment.</li>
+<li><code>daily/2026-05-07.md</code> — GFCR rollout taxonomy, tool-agent rewarded trees, inference-time feedback, and vLLM correctness all point to rollout lifecycle plus runtime correctness as the real source of RL training signal.</li>
+</ul>
 <h2>Cheap internal uncertainty probes need failure-overlap maps</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -222,6 +246,72 @@
 <ul>
 <li><code>https://arxiv.org/abs/2605.05025v1</code> — Attention-head divergence features, concentrated in middle layers and factual tokens, can predict answer correctness.</li>
 <li><code>https://arxiv.org/abs/2605.05166v1</code> — First-token confidence from a single greedy decode can match or exceed semantic self-consistency for hallucination detection.</li>
+</ul>
+<h2>Cost-normalized long-context interface benchmark</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-09</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Dense retrieval, concept signatures, raw corpus access, and full-context prompting should be compared as information interfaces under equal token/time/tool budgets.</p>
+<h3>Mechanism</h3>
+<p>The access interface decides whether exact constraints, sparse clue conjunctions, and globally activated concepts survive into downstream reasoning.</p>
+<h3>Minimal experiment</h3>
+<p>Create a corpus with exact lexical constraints, sparse clues, distractors, and long dependencies; compare dense retrieval, concept signatures, direct grep/read access, and full-context prompting under equalized cost.</p>
+<h3>Falsifier</h3>
+<p>Raw/direct access only wins by spending more tool calls or wall-clock and loses when cost-normalized.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-09.md</code> — MiA-Signature proposes compact concept signatures; Direct Corpus Interaction replaces top-k retrieval with raw corpus operations; Together frames million-token context as a serving/cost problem.</li>
+</ul>
+<h2>Latent language models as semantic-planning probes</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-09</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Continuous latent language models should be evaluated by whether their latents expose controllable global plan variables, not only by generated text quality.</p>
+<h3>Mechanism</h3>
+<p>Text VAE plus latent diffusion prior separates global semantic transport from local token realization.</p>
+<h3>Minimal experiment</h3>
+<p>Use synthetic story/planning data to compare AR, token-diffusion, and latent-diffusion variants for linear probeability/control of plan variables and surface-form invariance.</p>
+<h3>Falsifier</h3>
+<p>Latent variables are no more controllable or probeable than autoregressive hidden states.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-09.md</code> — Cola DLM uses a Text VAE, block-causal DiT latent prior, and decoder to separate global semantic organization from local textual realization.</li>
+</ul>
+<h2>Shared MoE expert pools as measurable modular capacity</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-09</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Expert capacity may be a globally shared resource rather than a per-layer allocation; shared pools need causal feature/routing probes, not only perplexity.</p>
+<h3>Mechanism</h3>
+<p>Global expert pool accessed by per-layer routers; routing/load losses determine whether reusable modular features survive across depth.</p>
+<h3>Minimal experiment</h3>
+<p>Train tiny layer-local and shared-pool MoEs on synthetic domain/rare-feature factors; compare router entropy, expert ablations, feature probes, and rare-feature accuracy.</p>
+<h3>Falsifier</h3>
+<p>Shared-pool MoE matches loss but loses causal rare/domain-specific expert specialization relative to layer-local MoE.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-09.md</code> — UniPool treats expert capacity as a global architectural budget and reports that reduced-pool variants can match or outperform layer-wise MoE; EMO frames pretraining MoE as emergent modularity.</li>
 </ul>
 <h2>Agent context operations as an ablatable policy</h2>
 <ul>
@@ -310,28 +400,6 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>daily/2026-05-07.md</code> — TTS-STT Flywheel improves rare Indic entity hit rates with targeted synthetic data, making entity-level ASR metrics more useful than aggregate WER.</li>
-</ul>
-<h2>Rollout lifecycle diagnostics for reasoning RL</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: none</li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-07</li>
-<li>Last seen: 2026-05-07</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>Reasoning-RL quality is governed by rollout generation, filtering, compute control, replay, and runtime correctness before optimizer choice.</p>
-<h3>Mechanism</h3>
-<p>GFCR rollout stages and serving correctness determine what rewards and gradients see.</p>
-<h3>Minimal experiment</h3>
-<p>Toy math/tool RL sandbox with controlled perturbations to verifier noise, branching/stopping, replay contamination, and runtime nondeterminism.</p>
-<h3>Falsifier</h3>
-<p>Stage perturbations do not predict failures better than aggregate reward or pass@k.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>daily/2026-05-07.md</code> — GFCR rollout taxonomy, tool-agent rewarded trees, inference-time feedback, and vLLM correctness all point to rollout lifecycle plus runtime correctness as the real source of RL training signal.</li>
 </ul>
 <h2>Adaptive information interfaces</h2>
 <ul>
@@ -789,7 +857,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-08 03:09</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 03:08</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
