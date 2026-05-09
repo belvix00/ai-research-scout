@@ -177,10 +177,23 @@
 <ul>
 <li>No single dominant pattern today; durable memory splits across RL rollout lifecycle, MoE capacity allocation, long-context interfaces, latent semantic modeling, and GPU-kernel auditing.</li>
 <li>Audio signals were taxonomy/data-quality heavy rather than new TTS architecture-heavy; keep factorized audio probes alive but do not overclaim from today’s evidence.</li>
+</ul>
+<h2>Daily additions — 2026-05-10</h2>
+<ul>
+<li><strong>Treat MoE capacity as global allocation, not layer-local plumbing</strong> — UniPool plus EMO provide independent evidence that expert parameters may be reusable modular capacity. Experiment: compare layer-local and globally shared expert pools on synthetic domain/rare-feature factors; log routing matrices, cross-layer reuse, expert-ablation specificity, and rare-feature retention.</li>
+<li><strong>Agent-RL memory and exploration need lifecycle probes</strong> — StraTA, Skill1, SkillOS, Nonsense Helps, and positive-only RLVR all modify different parts of the learning lifecycle: strategic abstraction, skill selection/distillation, skill curation, prompt perturbation, and contrast construction. Experiment: fixed toy agent environment with one lifecycle perturbation at a time; measure trajectory diversity, zero-advantage rate, verifier disagreement, and update-direction proxy.</li>
+<li><strong>Long-context interfaces should be compared as evidence-access mechanisms</strong> — MiA-Signature, direct corpus interaction, and million-token serving posts expose competing interfaces: compact signatures, raw corpus tools, retrieval, and full-context KV. Experiment: equal-budget local corpus benchmark with exact constraints, sparse clues, distractors, and negative evidence.</li>
+<li><strong>Audio compression and unified speech representations are factor-survival tests</strong> — Task-aware answer preservation and WavCube sharpen the audio bottleneck: content, speaker/acoustic detail, prosody, timing, and rare entities can fail independently. Experiment: run raw/compressed speech through public encoders or LALMs and probe entity, speaker, phoneme, prosody, and downstream-answer preservation.</li>
+<li><strong>Interpretability bottlenecks need capacity audits</strong> — SoftSAE and Natural Language Autoencoders both change explanation capacity: adaptive sparse features vs verbal reconstruction. Experiment: compare fixed-k SAE, SoftSAE, and NLA-style explanations on held-out activation interventions, not just reconstruction or explanation plausibility.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable updates split across MoE allocation, agent-RL lifecycle, long-context evidence access, audio factor survival, and interpretability capacity audits.</li>
+<li>Runtime systems remain experimental conditions: KV layout, prefix caching, CPU/GPU orchestration, kernel broadcast placement, and compression can change what information survives or what experiments are cheap.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 21:36</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-10 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

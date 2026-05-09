@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-10 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-10</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest signals were MoE modularity/capacity allocation, rollout and skill-lifecycle RL for agents, long-context access interfaces, speech/audio factor preservation, and runtime infrastructure becoming part of the experimental condition.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>MoE work had the clearest architecture signal. <a href="https://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">UniPool</a> challenges the layer-private expert convention by proposing a globally shared expert pool, while <a href="https://arxiv.org/abs/2605.06663v1" target="_blank" rel="noopener">EMO</a> frames MoE pretraining as a route to emergent modularity. Together, they shift the question from “does sparse compute save FLOPs?” to “does expert capacity become reusable, interpretable, and causally separable across layers or domains?” That is different from earlier MoE release chatter because both papers invite direct probes: expert usage matrices, router entropy, cross-layer reuse, and rare-feature ablation losses.</p>
+<p>Latent/non-autoregressive language modeling also stayed alive. <a href="https://arxiv.org/abs/2605.06548v1" target="_blank" rel="noopener">Continuous Latent Diffusion Language Model</a> separates text generation from strict left-to-right decoding by operating in continuous latent space. Relative to last week’s latent-language signal, this gives a more explicit probe target: can a latent plan variable be measured, controlled, and held invariant while surface form changes?</p>
+<h3>Training, RL, and optimization</h3>
+<p>Agentic RL was active, but in several distinct ways rather than one unified method. <a href="https://arxiv.org/abs/2605.06642v1" target="_blank" rel="noopener">StraTA</a> tries to reward strategic trajectory abstractions, <a href="https://arxiv.org/abs/2605.06130v1" target="_blank" rel="noopener">Skill1</a> jointly optimizes skill selection, utilization, and distillation, <a href="https://arxiv.org/abs/2605.06614v1" target="_blank" rel="noopener">SkillOS</a> focuses on skill curation for self-evolving agents, and <a href="https://arxiv.org/abs/2605.05566v1" target="_blank" rel="noopener">Nonsense Helps</a> uses prompt-space perturbation to broaden GRPO exploration. The common learning value is not “agents are better”; it is that the optimizer now sees a lifecycle: prompt distribution, trajectory abstraction, memory selection, skill reuse, and distillation.</p>
+<p>A smaller but important RL signal came from <a href="https://arxiv.org/abs/2605.06650v1" target="_blank" rel="noopener">Beyond Negative Rollouts</a>, which studies positive-only policy optimization with implicit negative gradients. This matters because RLVR pipelines often waste samples on all-correct/all-wrong groups or depend on the presence of explicit bad completions. If positive-only updates can still create useful contrast, it changes how one designs cheap reasoning-RL experiments.</p>
+<p>Theory/optimization also had a clean in-context learning item: <a href="https://arxiv.org/abs/2605.06609v1" target="_blank" rel="noopener">Transformers Efficiently Perform In-Context Logistic Regression via Normalized Gradient Descent</a>. It is valuable because it proposes an algorithmic computation transformer blocks can implement, not just another empirical ICL curve.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Sparse autoencoder tooling is moving toward adaptive capacity. <a href="https://arxiv.org/abs/2605.06610v1" target="_blank" rel="noopener">SoftSAE</a> proposes dynamic top-k selection rather than fixed sparsity, which matters because fixed-k explanations can make every input/layer fit the same feature budget. That is a concrete failure mode for interpretability: apparent feature clarity may come from an arbitrary capacity cap.</p>
+<p>There was also an interpretability-method signal from Alignment Forum: <a href="https://www.alignmentforum.org/posts/oeYesesaxjzMAktCM/natural-language-autoencoders-produce-unsupervised" target="_blank" rel="noopener">Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations</a>. Instead of only asking whether a natural-language explanation sounds plausible, the method uses activation reconstruction as an objective. This is interesting because it creates a measurable bottleneck between activation, verbal explanation, and reconstructed activation.</p>
+<p>The skeptical/failure signal came from the Nature/HN item on <a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">warmth training reducing accuracy and increasing sycophancy</a>. This should not dominate the day, but it reinforces a recurring metric-divergence point: style, truthfulness, calibration, and evidence use can move independently.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio signals were mostly about preserving task-relevant factors rather than a splashy TTS architecture. <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression for Large Audio Language Models</a> asks whether compression preserves answers needed by downstream audio-language reasoning, not merely perceptual quality. That is exactly the kind of failure slice aggregate WER or MOS can hide.</p>
+<p><a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a> tries to unify speech understanding and generation through semantic-acoustic joint modeling. Its significance is representational: speech systems need content, prosody, speaker/acoustic detail, and generation-friendly structure to coexist without collapsing into one latent. Relative to last week, the audio story remains “factor survival across interfaces,” but today’s examples are cleaner compression/representation cases.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Long-context inference remained a systems problem. Together’s <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">million-token context post</a> highlights compressed KV layouts, prefix caching, kernel maturity, and endpoint profiling. The important change is that long-context capability is increasingly a runtime/memory-layout story, not just a context-window number in a model card.</p>
+<p>PyTorch’s <a href="https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/" target="_blank" rel="noopener">In-Kernel Broadcast Optimization</a> is RecSys-specific, but the transferable lesson is model-kernel co-design: remove repeated data movement by changing where broadcast happens. PyTorch’s <a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">SMG serving post</a> adds that CPU orchestration and gateway design can become bottlenecks even when GPU kernels are strong. These are useful because they make “runtime path” a variable to log in any mechanism experiment.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>The strongest tooling/source-surface signals were not generic model launches. <a href="https://arxiv.org/abs/2605.06416v1" target="_blank" rel="noopener">MiA-Signature</a> proposes compact long-context signatures that approximate global activation, while <a href="https://arxiv.org/abs/2605.05242v1" target="_blank" rel="noopener">Direct Corpus Interaction</a> argues that retrieval should be an interactive corpus tool when exact constraints and sparse clues matter. These two papers are complementary interfaces: one compresses global context, the other exposes raw corpus operations.</p>
+<p>Hugging Face and blog feeds were useful as discovery surfaces, but the promoted items here were those with mechanism content: MoE modularity, skill-learning agents, latent diffusion LMs, long-context signatures, and inference-system details. HN remained a weak signal only; only the warmth/sycophancy failure mode was worth keeping as supporting evidence.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Globally shared MoE experts became a concrete architecture question.</strong> <a href="https://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">UniPool</a> argues that per-layer expert ownership unnecessarily couples depth with expert-parameter growth. The experiment to run is not just throughput: measure whether the same expert is reused for the same latent factor across layers and whether rare features survive better or worse under shared pools.</li>
+</ol>
+<ol>
+<li><strong>MoE modularity got a second independent signal.</strong> <a href="https://arxiv.org/abs/2605.06663v1" target="_blank" rel="noopener">EMO</a> treats MoE pretraining as a path to emergent modularity, suggesting that selected experts may represent narrower skills or domains. The key question is whether this modularity is causal and extractable, or merely an artifact of router statistics.</li>
+</ol>
+<ol>
+<li><strong>SAE feature capacity became adaptive.</strong> <a href="https://arxiv.org/abs/2605.06610v1" target="_blank" rel="noopener">SoftSAE</a> replaces rigid fixed top-k SAE activation with dynamic top-k selection. That matters because interpretability tools often hide their own allocation policy; adaptive sparsity should be tested for reconstruction, feature stability, and over-explanation.</li>
+</ol>
+<ol>
+<li><strong>Transformer ICL received a normalized-gradient-descent explanation.</strong> <a href="https://arxiv.org/abs/2605.06609v1" target="_blank" rel="noopener">Transformers Efficiently Perform In-Context Logistic Regression via Normalized Gradient Descent</a> is useful as a small theoretical bridge from architecture to algorithm. It suggests a toy setup where one can compare learned attention computations to explicit optimization traces.</li>
+</ol>
+<ol>
+<li><strong>Agentic RL shifted further toward trajectory abstraction.</strong> <a href="https://arxiv.org/abs/2605.06642v1" target="_blank" rel="noopener">StraTA</a> incentivizes strategic trajectory abstraction for long-horizon agents. This is a stronger mechanism than final-answer reward because it targets the intermediate structure of a plan.</li>
+</ol>
+<ol>
+<li><strong>Skill memory became a trainable RL object.</strong> <a href="https://arxiv.org/abs/2605.06130v1" target="_blank" rel="noopener">Skill1</a> and <a href="https://arxiv.org/abs/2605.06614v1" target="_blank" rel="noopener">SkillOS</a> both treat skill libraries as evolving agent memory. The interesting failure mode is curation: which experiences are distilled into reusable skills, which are merged, and which poison the library?</li>
+</ol>
+<ol>
+<li><strong>Prompt perturbations were proposed as reasoning exploration control.</strong> <a href="https://arxiv.org/abs/2605.05566v1" target="_blank" rel="noopener">Nonsense Helps</a> reports that prompt-space perturbation can broaden exploration in GRPO-style reasoning RL. The practical question is whether perturbation increases useful trajectory diversity or merely adds noise that a verifier filters away.</li>
+</ol>
+<ol>
+<li><strong>Positive-only RLVR may reduce dependence on bad samples.</strong> <a href="https://arxiv.org/abs/2605.06650v1" target="_blank" rel="noopener">Beyond Negative Rollouts</a> studies implicit negative gradients from positive-only policy optimization. If robust, this would change how small reasoning-RL batches are built when all sampled answers collapse to the same reward.</li>
+</ol>
+<ol>
+<li><strong>Continuous latent diffusion LMs stayed technically interesting.</strong> <a href="https://arxiv.org/abs/2605.06548v1" target="_blank" rel="noopener">Continuous Latent Diffusion Language Model</a> is notable because it offers a possible global planning representation before token realization. The right evaluation is whether latent variables correspond to controllable semantics, not just whether generations look fluent.</li>
+</ol>
+<ol>
+<li><strong>Long-context access split into signatures vs direct corpus interaction.</strong> <a href="https://arxiv.org/abs/2605.06416v1" target="_blank" rel="noopener">MiA-Signature</a> compresses global activation into signatures, while <a href="https://arxiv.org/abs/2605.05242v1" target="_blank" rel="noopener">Direct Corpus Interaction</a> argues for exposing corpus operations to agents. This creates a clean comparison: compressed summary, retrieval, raw corpus tools, and full context under equal budget.</li>
+</ol>
+<ol>
+<li><strong>Audio compression was reframed as answer preservation.</strong> <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation</a> asks whether compressed audio keeps the facts needed by a downstream audio-language model. This is more useful than generic compression metrics because it exposes semantic and entity-level failures.</li>
+</ol>
+<ol>
+<li><strong>Unified speech representation stayed a factorization problem.</strong> <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a> aims to combine understanding and generation representations. The important thing to probe is which factors are preserved where: phoneme, speaker, prosody, acoustic detail, and task semantics.</li>
+</ol>
+<ol>
+<li><strong>Million-token context looked like runtime engineering.</strong> Together’s <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">DeepSeek-V4 serving post</a> emphasizes KV layout, prefix caching, and kernel maturity. For research use, the caveat is that runtime optimizations may change what evidence remains accessible.</li>
+</ol>
+<ol>
+<li><strong>Kernel/gateway design remained a hidden experimental variable.</strong> PyTorch’s <a href="https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/" target="_blank" rel="noopener">IKBO</a> and <a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">SMG</a> posts show that data movement and CPU/GPU orchestration can dominate inference behavior. That means tokens/sec alone is not enough; log memory movement, runtime path, correctness, and drift.</li>
+</ol>
+<ol>
+<li><strong>Warmth/sycophancy remained a useful skeptical warning.</strong> The Nature item surfaced via HN, <a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Training language models to be warm can reduce accuracy and increase sycophancy</a>, is not an architecture paper, but it is a mechanism warning. Style optimization can move calibration and truthfulness in different directions from user satisfaction.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ul>
+<li><strong>Capacity allocation is becoming explicit.</strong> MoE experts, SAE features, speech latents, prompt perturbations, and long-context signatures all allocate limited representational or compute capacity. The recurring question is which rare or task-relevant factors survive the allocation policy.</li>
+<li><strong>Agent training is now a lifecycle problem.</strong> Today’s agent papers touched prompt distribution, strategic abstraction, skill selection, skill curation, and memory distillation. This supports continuing the rollout-lifecycle harness rather than testing isolated RL algorithms.</li>
+<li><strong>Runtime systems are experimental conditions.</strong> Long-context serving, kernel fusion, CPU/GPU disaggregation, compression, and KV layout all change what is affordable and possibly what is preserved.</li>
+</ul>
+<h2>Five research opportunities</h2>
+<h3>1. Test global vs layer-local MoE expert pools as causal capacity allocation</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06665v1" target="_blank" rel="noopener">UniPool</a>, <a href="https://arxiv.org/abs/2605.06663v1" target="_blank" rel="noopener">EMO</a>.</p>
+<p>Mechanism: Expert capacity may be a reusable cross-layer resource rather than layer-private modules. If so, factor-specific experts should show consistent usage and causal effects across depths.</p>
+<p>Minimal experiment/probe: Train tiny MoEs on synthetic tasks with known domain and rare-feature factors. Compare layer-local experts, globally shared experts, and EMO-like modular pretraining under matched active compute. Log router entropy, usage matrix $$U_{\ell,g}$$, factor mutual information $$I(G;F\mid\ell)$$, expert ablation losses, overflow/drop rate, and rare-feature accuracy.</p>
+<p>Falsifier: Shared pools give no more factor consistency or causal ablation specificity than layer-local MoE, or they improve perplexity while hurting rare-feature retention.</p>
+<p>Confidence: medium.</p>
+<h3>2. Build a fixed toy agent-RL lifecycle lab</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06642v1" target="_blank" rel="noopener">StraTA</a>, <a href="https://arxiv.org/abs/2605.06130v1" target="_blank" rel="noopener">Skill1</a>, <a href="https://arxiv.org/abs/2605.06614v1" target="_blank" rel="noopener">SkillOS</a>, <a href="https://arxiv.org/abs/2605.05566v1" target="_blank" rel="noopener">Nonsense Helps</a>, <a href="https://arxiv.org/abs/2605.06650v1" target="_blank" rel="noopener">Beyond Negative Rollouts</a>.</p>
+<p>Mechanism: Reasoning/agent RL updates depend on trajectory distribution, verifier labels, abstraction level, prompt perturbations, and skill-memory curation. Optimizer names alone do not explain learning.</p>
+<p>Minimal experiment/probe: Create a small deterministic math/tool environment. Hold model and verifier fixed, then perturb one lifecycle stage at a time: prompt perturbation, trajectory abstraction reward, skill library retrieval, skill distillation, and positive-only updates. Measure trajectory diversity, zero-advantage rate, verifier disagreement, tool success, and gradient-cosine proxy versus a wide clean sampler.</p>
+<p>Falsifier: Lifecycle perturbations do not change trajectory distribution or update direction after controlling for sample count and reward rate.</p>
+<p>Confidence: high.</p>
+<h3>3. Compare long-context interfaces under equal cost</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06416v1" target="_blank" rel="noopener">MiA-Signature</a>, <a href="https://arxiv.org/abs/2605.05242v1" target="_blank" rel="noopener">Direct Corpus Interaction</a>, Together’s <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">million-token serving post</a>.</p>
+<p>Mechanism: Context access can be exposed as full-context KV, compact signatures, top-k retrieval, or direct corpus tools. Each interface preserves different evidence and fails on different clue types.</p>
+<p>Minimal experiment/probe: Construct a local corpus with exact constraints, sparse clues, contradictory distractors, and negative evidence. Compare dense retrieval, MiA-style signatures/summaries, direct grep/read corpus tools, and full context under equal token/time/KV budgets. Measure answer accuracy, evidence citation correctness, missed negative evidence, latency, and memory.</p>
+<p>Falsifier: A simple retrieval baseline dominates all other interfaces across exact, sparse, and negative-evidence tasks at equal budget.</p>
+<p>Confidence: medium-high.</p>
+<h3>4. Probe speech/audio factor survival under compression and unified representation</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression</a>, <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a>, <a href="https://arxiv.org/abs/2605.04045v1" target="_blank" rel="noopener">Audio-Visual Intelligence in Large Foundation Models</a>.</p>
+<p>Mechanism: Audio systems must preserve content, speaker/acoustic detail, prosody, timing, and rare entities through compression or semantic-acoustic representations. Aggregate audio quality or WER can hide task-specific damage.</p>
+<p>Minimal experiment/probe: Use a small public speech dataset with labeled speaker/entity/prosody slices. Run raw audio and compressed variants through a speech encoder or LALM; fit probes for entity, speaker, phoneme, prosody, and task answer preservation. Add shuffled-metadata and codec-bitrate controls.</p>
+<p>Falsifier: Compression level or representation type affects only perceptual quality and does not differentially damage entity/prosody/task-answer slices.</p>
+<p>Confidence: medium.</p>
+<h3>5. Audit adaptive interpretability bottlenecks: SoftSAE vs natural-language activation autoencoders</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06610v1" target="_blank" rel="noopener">SoftSAE</a>, <a href="https://www.alignmentforum.org/posts/oeYesesaxjzMAktCM/natural-language-autoencoders-produce-unsupervised" target="_blank" rel="noopener">Natural Language Autoencoders</a>.</p>
+<p>Mechanism: Interpretability methods allocate explanation capacity differently: sparse features allocate numerical dictionary slots, while natural-language bottlenecks allocate verbal concepts with reconstruction pressure. Both can hide or fabricate structure if the bottleneck is mis-specified.</p>
+<p>Minimal experiment/probe: On a small open transformer and a controlled prompt set, compare fixed-k SAE, SoftSAE, and NLA-style explanations. Score reconstruction, stability under paraphrase, feature/explanation sparsity, and whether discovered explanations predict held-out activation interventions.</p>
+<p>Falsifier: Adaptive sparsity and natural-language reconstruction do not improve held-out intervention prediction over fixed-k SAE baselines, despite better-looking explanations.</p>
+<p>Confidence: medium-low.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2605.06548v1" target="_blank" rel="noopener">Continuous Latent Diffusion Language Model</a>: revisit if code or small checkpoints appear; the key test is controllable latent semantics, not generation demos.</li>
+<li><a href="https://arxiv.org/abs/2605.06650v1" target="_blank" rel="noopener">Positive-Only Policy Optimization</a>: watch for ablations showing when implicit negative gradients fail, especially on all-correct/all-wrong verifier groups.</li>
+<li><a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Warmth/sycophancy failure signal</a>: useful for style-vs-truthfulness probe design, but do not overgeneralize from a weak HN surface.</li>
+<li><a href="https://pytorch.org/blog/lightseek-smg/" target="_blank" rel="noopener">SMG CPU/GPU disaggregation</a>: revisit if there are public traces or reproducible serving benchmarks; it may matter for rollout reproducibility.</li>
+<li><a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Audio Compression</a>: track for datasets or metrics that can plug into a speech factor-survival notebook.</li>
+<li><a href="https://www.alignmentforum.org/posts/oeYesesaxjzMAktCM/natural-language-autoencoders-produce-unsupervised" target="_blank" rel="noopener">Natural Language Autoencoders</a>: revisit after seeing whether reconstruction correlates with causal intervention usefulness.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-10 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

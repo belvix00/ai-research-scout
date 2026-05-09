@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-10 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-10</h1>
+<h2>arXiv — UniPool: A Globally Shared Expert Pool for Mixture-of-Experts</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06665v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: UniPool questions the default MoE assumption that every transformer layer should own a private expert set. The useful mechanism signal is expert capacity as a globally shared pool, which turns routing into a cross-layer allocation problem rather than a layer-local sparse-compute trick. Collected because it gives concrete probes for expert reuse, layer specialization, rare-feature retention, and parameter growth under matched active compute.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / Hugging Face Blog — EMO: Pretraining Mixture of Experts for Emergent Modularity</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06663v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: EMO frames MoE pretraining as a way to obtain emergent modularity, not merely cheaper inference. The mechanism value is that domains or skills may become separable enough to activate or extract subsets of experts. This pairs well with UniPool as a second view on whether MoE capacity is actually modular or only sparsely used.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — SoftSAE: Dynamic Top-K Selection for Adaptive Sparse Autoencoders</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06610v1</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: SoftSAE targets a practical SAE bottleneck: a fixed top-k sparsity level may be too rigid when different inputs or layers need different feature budgets. The mechanism signal is adaptive feature allocation inside dictionary learning, which matters for interpreting activations without forcing every example through the same sparse capacity. It is useful as a failure-mode probe for over-sparse or under-sparse explanations.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Transformers Efficiently Perform In-Context Logistic Regression via Normalized Gradient Descent</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.06609v1</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: This paper gives a mechanistic/theoretical account of transformer in-context learning as an efficient normalized-gradient-descent-like computation for logistic regression. It was collected because it connects architecture, optimization dynamics, and context learning in a testable small-model setting. The learning value is not a benchmark claim but an algorithmic hypothesis about what attention blocks can implement.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Beyond Negative Rollouts: Positive-Only Policy Optimization with Implicit Negative Gradients</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06650v1</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: This RLVR paper studies whether reasoning policies can be improved from positive rollouts while still obtaining useful implicit negative gradients. The mechanism signal is credit assignment under sparse verifier feedback and reduced dependence on explicitly bad samples. It is relevant to GRPO-style zero-advantage and rollout-distribution questions without being just another leaderboard result.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — StraTA: Incentivizing Agentic Reinforcement Learning with Strategic Trajectory Abstraction</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06642v1</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: StraTA attacks long-horizon agent RL by rewarding strategic trajectory abstractions rather than only reactive step-level behavior. The mechanism is a higher-level credit-assignment interface: the model gets signal about plans and subgoals, not just final outcomes. It extends the week’s rollout-lifecycle theme with a concrete way to shape exploration and abstraction.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — Skill1: Unified Evolution of Skill-Augmented Agents via Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06130v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: Skill1 treats persistent skill libraries as trainable agent state: select a skill, use it, and distill new skills from experience. The mechanism value is coupling memory, action, and distillation under RL rather than treating skills as static prompts. It was collected because skill curation is a concrete agent-memory interface with measurable failure modes.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — SkillOS: Learning Skill Curation for Self-Evolving Agents</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06614v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: SkillOS focuses on the curation layer for self-evolving agents handling streams of tasks. The key mechanism is deciding which experiences become reusable skills and which should be forgotten or merged. It complements Skill1 by emphasizing memory quality control rather than only using a library during execution.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — Nonsense Helps: Prompt Space Perturbation Broadens Reasoning Exploration</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05566v1</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: This paper reports that prompt-space perturbations can broaden reasoning exploration under GRPO-like RL with verifiable rewards. The mechanism signal is that exploration can be moved into the prompt distribution, potentially reducing zero-advantage batches when sampled completions are too homogeneous. It is worth tracking as a cheap perturbation for toy reasoning RL experiments.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — Continuous Latent Diffusion Language Model</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06548v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: This paper explores language generation without strict left-to-right autoregression by operating in continuous latent diffusion space. The mechanism signal is separation between global semantic planning and local token realization. It is useful because latent language models can be probed for controllable plan variables and surface-form invariance, instead of only decoding accuracy.</p>
+<p>Personalization: low</p>
+<h2>arXiv / HF Papers — MiA-Signature: Approximating Global Activation for Long-Context Understanding</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06416v1</p>
+<p>Bucket: Core DL/LLM research</p>
+<p>Summary: MiA-Signature proposes compact signatures that approximate global activation over long contexts. The mechanism value is a middle interface between full-context prompting and retrieval: compress activated memory while preserving enough evidence for later reasoning. It is a good candidate for cost-normalized long-context access tests.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — Beyond Semantic Similarity: Rethinking Retrieval for Agentic Search via Direct Corpus Interaction</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.05242v1</p>
+<p>Bucket: Broad learning / outside current project bubble</p>
+<p>Summary: This paper argues that fixed top-k lexical or semantic retrieval is a bottleneck for agentic search when exact constraints, sparse clues, or negative evidence matter. The mechanism is corpus access as an interactive tool interface instead of one compressed similarity operation. It broadens the scout beyond model internals into how agents expose evidence to reasoning loops.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Task-Aware Answer Preservation under Audio Compression for Large Audio Language Models</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.06631v1</p>
+<p>Bucket: Audio/TTS/speech</p>
+<p>Summary: This audio paper studies compression not just by perceptual quality but by whether a large audio language model preserves task-relevant answers. The mechanism signal is that lossy audio codecs may keep aggregate accuracy high while damaging rare entities, timing, or semantic details needed by downstream reasoning. It is a direct audio analogue of mechanism-preserving inference tests.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — WavCube: Unifying Speech Representation for Understanding and Generation via Semantic-Acoustic Joint Modeling</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.06407v1</p>
+<p>Bucket: Audio/TTS/speech</p>
+<p>Summary: WavCube targets the representation mismatch between speech understanding and speech generation by jointly modeling semantic and acoustic factors. The mechanism value is factor survival across a unified speech interface: phonetic content, speaker/acoustic detail, and generation-friendly structure. It is useful for designing probes that ask where speech models separate content from nuisance factors.</p>
+<p>Personalization: low</p>
+<h2>Alignment Forum — Natural Language Autoencoders Produce Unsupervised Explanations of LLM Activations</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://www.alignmentforum.org/posts/oeYesesaxjzMAktCM/natural-language-autoencoders-produce-unsupervised</p>
+<p>Bucket: Training/RL/math/mech interp</p>
+<p>Summary: Natural Language Autoencoders use an activation verbalizer and activation reconstructor to produce unsupervised natural-language explanations of LLM activations. The mechanism signal is an interpretable bottleneck that can be scored by reconstruction, not just by whether an explanation sounds plausible. It is a skeptical-but-useful direction for auditing explanation faithfulness.</p>
+<p>Personalization: low</p>
+<h2>Together AI Blog — Serving DeepSeek-V4: why million-token context is an inference systems problem</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem</p>
+<p>Bucket: Inference/ML infra/GPU</p>
+<p>Summary: Together’s post frames million-token context as a serving problem involving compressed KV layouts, prefix caching, kernel maturity, and endpoint profiling. The mechanism value is that long-context behavior depends on runtime memory layout and cache policy, not just the model checkpoint. Collected because it makes full-context experiments cheaper while raising correctness and evidence-retention questions.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — In-Kernel Broadcast Optimization: Co-Designing Kernels for RecSys Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/</p>
+<p>Bucket: Inference/ML infra/GPU</p>
+<p>Summary: The PyTorch post describes eliminating explicit replication of shared embeddings by broadcasting inside the kernel. Even though it is RecSys-focused, the general mechanism is model-kernel co-design: move repeated data motion out of the graph and into a fused implementation. It is useful as an example of infrastructure changing feasible experiment budgets by reducing memory bandwidth waste.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — SMG: The Case for Disaggregating CPU from GPU in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/lightseek-smg/</p>
+<p>Bucket: Inference/ML infra/GPU</p>
+<p>Summary: SMG argues for separating CPU orchestration from GPU serving in high-scale LLM systems after hitting Python and GIL bottlenecks. The mechanism signal is that scheduler and gateway architecture can dominate end-to-end serving behavior even when kernels are fast. This is useful background for measuring runtime path as part of an experimental condition.</p>
+<p>Personalization: low</p>
+<h2>HN / Nature — Training language models to be warm can reduce accuracy and increase sycophancy</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://www.nature.com/articles/s41586-026-10410-0</p>
+<p>Bucket: Skeptical or failure signal</p>
+<p>Summary: This weak-signal item points to a concrete alignment failure mode: optimizing models to feel warmer can trade away factual accuracy and increase sycophancy. The mechanism value is metric divergence between style, truthfulness, calibration, and evidence use. It was collected cautiously because the HN surface is noisy, but the underlying failure mode is technically useful.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-10 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
