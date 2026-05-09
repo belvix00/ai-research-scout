@@ -40,6 +40,44 @@
 <li>Edge/on-device multimodal/perception models</li>
 <li>Audio ML / speech / talking-face systems</li>
 </ul>
+<h2>Weekly synthesis — 2026-05-09</h2>
+<h3>Durable belief updates</h3>
+<ul>
+<li><strong>Promote rollout-lifecycle diagnostics for reasoning/tool RL.</strong> The repeated signal from GFCR, PORTool, Reinforced Agent, vLLM correctness, StraTA, A^2TGPO, LoPE, and SIOP is that the optimizer sees a trajectory distribution, not a benchmark. Treat generation, filtering, control, replay, and runtime as parts of the objective. Minimal next step: toy math/tool environment with controlled lifecycle perturbations and gradient-cosine proxy against a wide/clean sampler.</li>
+<li><strong>Promote mechanism-preserving inference and context-budget harnesses.</strong> KV cache, speculation, cache handoff, expert prefetch, serving backend, and long-context access are experimental conditions. Measure output/logit/activation drift, rare-feature failures, rollout reproducibility, cache bytes, latency, bandwidth, and evidence retention per cost. Fold “useful KV bytes,” “KV handoff,” “serving perturbations,” and “runtime correctness” into this umbrella.</li>
+<li><strong>Test shared MoE expert pools as causal modular capacity.</strong> UniPool and EMO move MoE from sparse-compute framing to allocation/gradient-sharing geometry. Tiny layer-local vs global-pool MoE experiment should measure usage matrices $U_{\ell,g}$, router entropy, $I(G;F\mid\ell)$, expert ablation losses $\Delta_{g,F}$, cross-layer gradient cosine, overflow/drop rate, and rare-feature retention.</li>
+<li><strong>Promote speech factor survival probes.</strong> Audio evidence converged on factor entanglement: speaker/script/accent leakage, phoneme/content, prosody, rare entities, context metadata, codec intelligibility, and long-form/full-duplex timing. Merge codec-token, speaker leakage, entity-dense ASR, and speech-context questions into one probing harness.</li>
+<li><strong>Watch intervention auditing as a future harness.</strong> Prompt-local steering, conceptors, automatic side-effect discovery, reward-model misalignment, safety drift, warmth/sycophancy, and preference geometry all point to intervention side-effect audits, but the local setup still needs narrowing.</li>
+<li><strong>Watch visual/nameability bottlenecks.</strong> Persistent visual memory, TC-JEPA, GenLIP, end-to-end semantic tokenizers, MMDG-Bench, and diffusion outlier tokens suggest multimodal factor tests: visual persistence over generation length and nameable vs non-nameable factor retention.</li>
+</ul>
+<h3>Recurring bottlenecks</h3>
+<ul>
+<li><strong>Gradient allocation:</strong> routers, quantizers, preference objectives, and data selection decide which weak/rare signals receive usable updates.</li>
+<li><strong>State accessibility:</strong> KV cache, long context, procedural registers, agent memory, visual memory, and speech latents are only useful if accessible at the relevant decision point.</li>
+<li><strong>Trajectory distribution:</strong> RL/tool-agent performance depends on what trajectories are generated, filtered, controlled, replayed, and served correctly.</li>
+<li><strong>Factor entanglement:</strong> speech/audio/vision/style/safety signals repeatedly collapse independent factors into one score or representation.</li>
+<li><strong>Aggregate metric camouflage:</strong> perplexity, WER, final-answer reward, tokens/sec, compile success, safety pass rate, and broad accuracy hide slice-level mechanism failures.</li>
+<li><strong>Cost normalization:</strong> long context, inference acceleration, agent context operations, repeated inference, and kernel generation need equal token/time/tool/memory/bandwidth budgets.</li>
+</ul>
+<h3>Missing tools / annoying manual things</h3>
+<ul>
+<li>Unified runtime-perturbation logger for small models: prompt matrix in, serving paths out, output/logit/activation drift, latency/memory/cache/bandwidth, rare-slice errors.</li>
+<li>Rollout-lifecycle logger for toy agents: trajectories, tools, verifier labels, branch/stop decisions, replay age, runtime backend, and update-direction proxy.</li>
+<li>MoE routing probe toolkit: $U_{\ell,g}$ heatmaps, factor MI, causal expert ablations, cross-layer gradient cosine, rare-feature overflow/drop reports.</li>
+<li>Speech factor probe boilerplate: manifest labels for speaker/script/accent/phoneme/prosody/entity/context, extractor wrappers, probes, gradient reversal, EHR/WER/prosody metrics.</li>
+<li>Cost-normalized corpus interface benchmark: dense retrieval, raw grep/read access, signatures/summaries, context operations, and full context under one budget API.</li>
+<li>Intervention side-effect audit template: before/after contrastive generations, natural-language side-effect hypotheses, and validation slices.</li>
+<li>Kernel repair audit harness: compile/correctness/speed/bandwidth logged at every repair step.</li>
+</ul>
+<h3>Cheap-paper opportunities</h3>
+<ul>
+<li><strong>Rollout lifecycle lab:</strong> small deterministic math/tool sandbox; perturb lifecycle stage; log gradient-cosine proxy and failure localization.</li>
+<li><strong>Shared-pool MoE probe:</strong> tiny synthetic-factor MoE; compare layer-local vs global-pool experts under matched active compute.</li>
+<li><strong>Mechanism-preserving inference harness:</strong> one small model, two runtime paths, rare-feature/long-context prompts, drift-vs-speed plots.</li>
+<li><strong>Speech factor survival notebook:</strong> public WavLM/ECAPA/codec states, factor probes, shuffled metadata, gradient-reversal nuisance removal.</li>
+<li><strong>Long-context access benchmark:</strong> local corpus with exact constraints and distractors; compare retrieval/signature/raw-tool/full-context interfaces under equal budget.</li>
+<li><strong>KernelBench-X mini reproduction:</strong> small Triton task suite with repair-loop correctness-speed tradeoff logging.</li>
+</ul>
 <h2>Daily additions — 2026-05-04</h2>
 <ul>
 <li><strong>Gradient-channel bottlenecks as measurable small-model pathology</strong> — General theme: some training signals get compressed, diluted, or routed through narrow interfaces before they become robust behavior. Experiment: train tiny models on controlled skewed data and log per-feature gradient norms, cosine drift, and downstream accuracy under several auxiliary-objective or adapter variants. Keep this broad; do not force new ideas through a single prior hypothesis.</li>
@@ -142,7 +180,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 21:36</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

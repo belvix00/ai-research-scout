@@ -30,82 +30,45 @@
 </ul>
 <h2>Open questions</h2>
 <ul>
-<li><code>open</code> How should useful information per KV-cache byte be measured for long-context agents?</li>
-<li><code>candidate</code> Can audio codec/tokenizer representations be probed for a clean separation between phonetic content, prosody, speaker identity, and acoustic detail?</li>
-<li><code>candidate</code> Do low-bit inference/training settings preserve average benchmark behavior while selectively damaging weak or low-frequency features?</li>
-<li><code>open</code> Which recurring ML infrastructure improvements make previously expensive mechanism experiments cheap enough for a small local study?</li>
-<li><code>experiment</code> Do end-to-end trained multimodal tokenizers preserve rare visual factors better than frozen reconstruction/contrastive tokenizers, or do they merely amplify text-nameable factors?</li>
-<li><code>experiment</code> Can a tiny audio probe separate speaker identity from script/language/accent while preserving prosody-sensitive information?</li>
-<li><code>candidate</code> Are MoE routing masks a causal control surface for rare-feature behavior, or do they mostly steer superficial style/safety patterns?</li>
-<li><code>candidate</code> Does inference-time reviewer feedback for tool agents become reusable memory when skill interfaces are structured rather than plain text?</li>
-<li><code>open</code> Which serving optimizations measurably perturb logits, activations, routing, or long-context failures rather than only changing latency?</li>
-<li><code>experiment</code> Can token-level remaining-horizon/value probes control reasoning cost without truncating genuinely hard problems?</li>
-<li><code>candidate</code> What confidence or posterior-stability signal is reliable enough to lock/skip token computation without creating cascading errors?</li>
-<li><code>experiment</code> Can activation-pattern similarity select instruction-tuning data better than embedding/text similarity while reducing interference between latent skills?</li>
-<li><code>candidate</code> Which parts of safety drift after benign fine-tuning are visible as refusal/grounding feature drift before they appear in aggregate eval scores?</li>
-<li><code>experiment</code> Can logged agent orchestration graphs provide better credit assignment than final-answer reward or per-tool-call reward in synthetic multi-agent tasks?</li>
-<li><code>experiment</code> Does DPO/style tuning produce measurable entropy, calibration, or alternative-answer probability drift before sycophancy/truthfulness behavior changes?</li>
-<li><code>candidate</code> Which uncertainty signal is safest for adaptive speculation/thinking control: token entropy, draft acceptance history, self-consistency, posterior stability, or task features?</li>
-<li><code>experiment</code> Do correct vs shuffled speech-context metadata causally move speaker/content/dialect/prosody subspaces in audio encoder or codec representations?</li>
+<li><code>candidate</code> Which recurring ML infrastructure improvements make previously expensive mechanism experiments cheap enough for a small local study?</li>
+<li><code>candidate</code> Which aggregate metrics most often hide interface failures: accuracy, WER/CER, final-answer reward, safety pass rate, perplexity, compile success, or tokens/sec?</li>
+<li><code>candidate</code> Can continuous latent language models expose controllable global plan variables more cleanly than autoregressive hidden states?</li>
+<li><code>candidate</code> Does text-conditioned visual representation learning preserve non-nameable visual factors, or does it preferentially amplify caption-nameable semantics?</li>
+<li><code>candidate</code> Can prompt-induced activation deltas be compressed into sparse token-local steering rules that outperform global steering vectors on behavior and calibration?</li>
+<li><code>candidate</code> Do conceptor/subspace steering methods reduce unintended calibration, truthfulness, or style side effects compared with single-vector activation steering?</li>
+<li><code>candidate</code> Which parts of safety/style/preference drift are visible as entropy, calibration, refusal, evidence-use, routing, or hidden-state drift before aggregate evals move?</li>
+<li><code>candidate</code> Can activation-pattern similarity select instruction-tuning data better than embedding/text similarity while reducing interference between latent skills?</li>
 </ul>
 <h2>Candidate experiments</h2>
-<p>&lt;!-- Promote questions here when the daily/weekly notes identify a minimal experiment. --&gt;</p>
+<ul>
+<li><code>experiment</code> <strong>Rollout-lifecycle diagnostics for reasoning/tool RL.</strong> In a fixed toy math/tool environment, perturb strategy priors, generation diversity, verifier noise, per-turn information-gain shaping, prompt-space perturbations, stopping/control, replay age, and runtime path one at a time. Measure trajectory distribution $$q(\tau)$$, zero-advantage rate, verifier errors, tool success, and gradient cosine against a wide/clean reference sampler. See [[2026-05-07-rollout-lifecycle-gradient]] and [[2026-05-09#1. Compare agentic RL lifecycle interventions under a fixed toy environment]].</li>
+<li><code>experiment</code> <strong>Shared MoE expert pools and route masks as causal capacity probes.</strong> Train tiny layer-local and globally shared expert-pool MoEs on synthetic domain/rare-feature factors. Measure usage matrices $$U_{\ell,g}$$, router entropy, $$I(G;F\mid\ell)$$, expert ablation losses $$\Delta_{g,F}$$, cross-layer gradient cosine, rare-feature retention, and overflow/drop rate. See [[2026-05-09-moe-expert-allocation]].</li>
+<li><code>experiment</code> <strong>Cost-normalized long-context access benchmark.</strong> Compare dense retrieval, compact concept signatures/summaries, raw corpus grep/read/script access, explicit context operations, and full-context prompting on a local corpus with exact constraints, sparse clues, and distractors under equal token/time/tool/KV budgets.</li>
+<li><code>experiment</code> <strong>Mechanism-preserving inference/runtime harness.</strong> Run the same small model/task under baseline and one optimized path: low-bit weights, low-bit/adaptive KV, speculative decoding, cache handoff, expert prefetch, or different serving backend. Measure output agreement, logit/activation drift where possible, attention entropy, rare-feature accuracy, rollout reproducibility, verifier disagreement, latency, memory, and bandwidth.</li>
+<li><code>experiment</code> <strong>Speech factor survival probe.</strong> Use WavLM/ECAPA/codec states or a small speech-native stack to probe speaker, script/language/accent, phoneme/content, prosody, entity identity, and context metadata. Test correct vs shuffled metadata, gradient-reversal nuisance removal, entity-dense synthetic curricula, EHR/WER regression, and real-recording sanity checks.</li>
+<li><code>experiment</code> <strong>Cheap hallucination/uncertainty probe overlap map.</strong> On one small factual QA set, log first-content-token entropy, ordinary logprob, middle-layer attention divergence/KL, semantic self-consistency, answer type, and correctness. Cluster failures by which signal catches them.</li>
+<li><code>experiment</code> <strong>Visual grounding persistence / attention dilution demo.</strong> Create simple images with late-needed details; compare short answer, long answer, and long answer with visual refresh/memory summary. Measure detail accuracy vs generation length and attention-to-image fraction if available.</li>
+<li><code>experiment</code> <strong>Text-conditioned visual SSL nameability probe.</strong> Create/reuse synthetic images with nameable/captioned and non-nameable/uncaptioned factors. Compare visual SSL, text-conditioned SSL, end-to-end tokenizer, and caption-randomized controls with linear probes and local-factor corruption metrics.</li>
+</ul>
 <h2>Answered / killed</h2>
-<p>&lt;!-- Move resolved questions here with date, evidence, and decision. --&gt;</p>
+<ul>
+<li><code>answered 2026-05-09</code> Which source type produces the most useful research opportunities? This week, papers plus lab/infra blogs produced nearly all strong opportunities. HN was useful only as a weak supporting signal for infra/skepticism and should remain low-weight.</li>
+<li><code>answered 2026-05-09</code> Which inference/GPU concepts should become first-principles posts? Best candidates: rollout distribution design, MoE expert allocation, context/KV cost, mechanism-preserving inference, and kernel correctness-speed audits.</li>
+<li><code>answered 2026-05-09</code> What audio/TTS representation bottleneck appears repeatedly? Factor survival across tokenizer/encoder/context/curriculum boundaries: speaker vs script/accent, phoneme/content, prosody, rare entities, and codec/intelligibility damage.</li>
+<li><code>answered 2026-05-09</code> Which aggregate metrics hide interface failures? WER hides rare entity/prosody issues; final-answer reward hides broken traces; tokens/sec hides drift/correctness; perplexity hides rare-feature MoE damage; compile success hides slow kernels; accuracy/safety pass rates hide calibration/sycophancy drift.</li>
+<li><code>killed 2026-05-09</code> Standalone duplicates for KV bytes, KV handoff, serving optimizations, speculation drift, and runtime correctness. These are now merged into <strong>Mechanism-preserving inference/runtime harness</strong> and <strong>Cost-normalized long-context access benchmark</strong>.</li>
+<li><code>killed 2026-05-09</code> Standalone duplicates for audio codec separation, speaker/script leakage, speech context metadata, entity-dense ASR, and tokenizer choice. These are now merged into <strong>Speech factor survival probe</strong>.</li>
+<li><code>killed 2026-05-09</code> Generic “which source type is useful?” as a continuing research question. Keep source-quality monitoring operationally, but do not treat it as a research direction.</li>
+</ul>
 <h2>Update rules for cron jobs</h2>
 <ul>
 <li>Daily runs may append 2–5 new questions, but should deduplicate against existing ones.</li>
 <li>Weekly runs should triage the inbox: promote, merge, answer, or kill questions.</li>
 <li>Monthly synthesis should choose the few questions that deserve actual work next month.</li>
-</ul>
-<h2>2026-05-05 2nd run questions</h2>
-<ul>
-<li>[open] Which source type produces the most useful research opportunities: papers, lab blogs, infra posts, or skeptical/failure signals?</li>
-<li>[open] Which inference/GPU concepts should become first-principles blog posts because they change experiment feasibility?</li>
-<li>[open] What audio/TTS representation bottleneck appears repeatedly across speech papers rather than demos?</li>
-</ul>
-<h2>2026-05-06 questions</h2>
-<ul>
-<li>[experiment] Does a learned token/head gate over early transformer representations preserve rare low-level features better than static value-residual reuse?</li>
-<li>[experiment] Can prompt-induced activation deltas be compressed into sparse token-local steering rules that outperform global steering vectors on behavior and calibration?</li>
-<li>[candidate] Which speech interface choice matters most for rare entity robustness: tokenizer granularity, synthetic entity-dense curriculum, or Thinker/Talker representation split?</li>
-<li>[experiment] How much hidden-state and attention-pattern drift is introduced by low-bit or adaptive KV-cache handoff compared with full re-prefill in multi-hop agent tasks?</li>
-<li>[open] Which aggregate metrics most often hide interface failures: accuracy, WER/CER, final-answer reward, safety pass rate, or tokens/sec?</li>
-</ul>
-<h2>2026-05-07 questions</h2>
-<ul>
-<li>[experiment] Can learned early-layer access gates preserve rare lexical/positional features better than static skip connections without simply increasing parameter count?</li>
-<li>[experiment] Which rollout-lifecycle stage most predicts RL reasoning failure in a toy tool/math sandbox: generation diversity, verifier filtering, compute-control/stopping, replay, or runtime nondeterminism?</li>
-</ul>
-<p>  - Clarified in [[2026-05-07-rollout-lifecycle-gradient]]: measure each stage by how it changes the sampled trajectory distribution $q(\tau)$, advantage assignment $\widehat{A}_t$, and gradient direction $\widehat{g}_q$ relative to a wider/cleaner reference sampler.</p>
-<ul>
-<li>[experiment] Can lifecycle-stage ablations predict update-direction changes before aggregate RL scores move? Minimal probe: hold optimizer/model fixed, perturb generation/filter/control/replay/runtime one at a time, then compare gradient cosine, verifier error, trajectory diversity, and final tool/math accuracy.</li>
-<li>[experiment] Does entity-dense synthetic TTS data improve ASR rare-entity hit rate on real recordings without leaking TTS speaker/prosody artifacts into the adapted model?</li>
-<li>[candidate] Which KV/cache/speculation optimization produces the largest hidden-state or attention-pattern drift on long-context/rare-fact prompts per unit speedup?</li>
-<li>[candidate] What small set of probes best detects style/alignment tuning divergence before accuracy or safety aggregate scores move?</li>
-</ul>
-<h2>2026-05-08 questions</h2>
-<ul>
-<li>[experiment] Do first-content-token entropy and middle-layer attention-divergence signals catch different hallucination failures, or are they redundant with ordinary logprob and self-consistency baselines?</li>
-<li>[experiment] Which explicit agent context operation—skip, compress, rollback, snippet, or delete—improves evidence retention per token most in a controlled long-horizon search task?</li>
-<li>[candidate] Do conceptor/subspace steering methods reduce unintended calibration, truthfulness, or style side effects compared with single-vector activation steering?</li>
-<li>[experiment] When an inference path changes through speculation, cache lookup, expert prefetch, or runtime scheduling, which changes first: output text, attention/activation drift, rare-feature accuracy, or rollout gradient direction?</li>
-<li>[candidate] Does text-conditioned visual representation learning preserve non-nameable visual factors, or does it preferentially amplify caption-nameable semantics?</li>
-</ul>
-<h2>2026-05-09 questions</h2>
-<ul>
-<li>[experiment] In a fixed agentic RL sandbox, do strategy priors, per-turn information-gain shaping, and prompt-space perturbations move the rollout distribution in distinguishable ways, or are they all proxies for more samples?</li>
-<li>[experiment] Does a globally shared MoE expert pool preserve rare/domain-specific feature causality as well as layer-local experts, or does shared routing blur specialization while keeping perplexity low?</li>
-</ul>
-<p>  - Clarified in [[2026-05-09-moe-expert-allocation]]: treat global expert pooling as gradient-sharing geometry plus causal feature dependence. Measure usage matrices $U_{\ell,g}$, factor-routing mutual information $I(G;F\mid\ell)$, expert ablation losses $\Delta_{g,F}$, cross-layer gradient cosine for shared experts, and rare-feature retention under matched active compute.</p>
-<ul>
-<li>[experiment] Which long-context access interface retains exact constraints best under equal cost: dense retrieval, compact concept signatures, raw corpus tool access, or full-context prompting?</li>
-<li>[candidate] Can continuous latent language models expose controllable global plan variables more cleanly than autoregressive hidden states?</li>
-<li>[experiment] During LLM-generated Triton kernel repair, which regresses first when correctness improves: memory bandwidth, occupancy, fusion quality, or end-to-end speedup?</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 21:36</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

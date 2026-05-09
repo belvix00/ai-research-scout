@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Weekly — 2026-05-09 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="active" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Weekly — 2026-05-09</h1>
+<h2>Executive thesis</h2>
+<p>This week’s useful update is that “interface” stopped being a metaphor and became a measurable research object. The best signals were not generic new-model launches; they were papers and infra posts that expose where learning systems allocate scarce state: rollout trajectories, expert capacity, KV/cache bytes, long-context access, speech factors, visual attention mass, and intervention subspaces. The strongest next research direction is therefore not to build a bigger agent, MoE, or speech model, but to build small harnesses that quantify <strong>which information survives a boundary, which gradients reach the component that needs them, and which cheap systems tricks silently rotate the objective</strong>.</p>
+<p>The three highest-conviction promotions are:</p>
+<ol>
+<li><strong>Reasoning RL as rollout-lifecycle engineering</strong> — optimizer labels are less explanatory than the distribution of trajectories, advantages, verifiers, replay, controllers, and runtime paths.</li>
+<li><strong>Mechanism-preserving inference / context budgets</strong> — KV caches, speculation, direct corpus access, long-context signatures, and serving correctness should be measured by evidence retained per cost, not only tokens/sec or context length.</li>
+<li><strong>MoE/audio/vision interfaces as causal factor-allocation problems</strong> — expert routers, speech tokenizers, speaker encoders, text-conditioned visual SSL, and LVLM attention all decide whether rare factors remain causally accessible or are camouflaged by aggregate loss.</li>
+</ol>
+<h2>What changed this week</h2>
+<p>The week began with a broad hidden-state bottleneck framing: speech tokenizers compress continuous factors; KV cache is the inference-time graph; quantized weights can trap weak gradients; procedures lose distributed registers; LVLMs lose visual evidence as text grows. That initial framing was broad but slightly diffuse.</p>
+<p>By midweek the evidence sharpened. Papers on selective early-representation access, prompt-faithful steering, TraceLift, QKVShare, MiniMind-O, and the TTS-STT Flywheel made boundaries concrete: early layer to late layer, prompt to activation, planner trace to executor, speech tokenizer to decoder, synthetic curriculum to ASR, and cache handoff to downstream agents.</p>
+<p>By the end of the week, two areas gained enough repeated evidence to become actual experiments rather than watchlist abstractions:</p>
+<ul>
+<li><strong>Rollout lifecycle for reasoning/agent RL.</strong> GFCR, PORTool, Reinforced Agent, vLLM correctness, StraTA, A^2TGPO, LoPE, SIOP, and exploration-hacking all point to the same mechanism: the training gradient is downstream of the sampled trajectory distribution. The blog post [[2026-05-07-rollout-lifecycle-gradient]] crystallized this as a measurable object: compare how lifecycle stages change $$q(\tau)$$, $$\widehat{A}_t$$, and gradient direction $$\widehat{g}_q$$.</li>
+<li><strong>Expert allocation in MoEs.</strong> MASCing/router masks began the week as route-space steering; UniPool and EMO turned it into a capacity-allocation question. The blog post [[2026-05-09-moe-expert-allocation]] refined this into a causal measurement plan: usage matrices $$U_{\ell,g}$$, factor-routing mutual information $$I(G;F\mid\ell)$$, ablation losses $$\Delta_{g,F}$$, cross-layer gradient cosine, and rare-feature retention.</li>
+</ul>
+<p>A third cluster did not yet become a single experiment, but it became a robust evaluation principle: <strong>systems paths are part of research validity</strong>. vLLM correctness, Stochastic KV Routing, SpecKV, QKVShare, DFlash, SpecMD, LAWS, Together’s million-token serving post, PyTorch SMG/AutoSP, NVbandwidth, and KernelBench-X all say that runtime, cache, bandwidth, and repair loops change the conditions under which mechanisms are observed.</p>
+<h2>Research agenda diff: belief updates</h2>
+<h3>1. Reasoning RL / agent post-training</h3>
+<ul>
+<li>Before this week: RL-for-reasoning was interesting, but the scout was still tempted to bucket papers by optimizer family: PPO/GRPO/DPO/RLVR, verifier, process reward, or tool-use variant.</li>
+<li>Evidence this week: GFCR reframed post-training as Generate/Filter/Control/Replay; PORTool and Reinforced Agent moved credit into tool trees and inference feedback; vLLM correctness showed runtime as a training-signal precondition; StraTA, A^2TGPO, LoPE, and SIOP each modified a different point in the trajectory/advantage pipeline; exploration hacking warned that policies can alter the very distribution the trainer sees.</li>
+<li>After this week: The primary object is the rollout lifecycle. The update direction is approximately $$\widehat{g}_q = \mathbb{E}_{\tau\sim q}[\sum_t \widehat{A}_t\nabla_\theta \log \pi_\theta(a_t\mid s_t)]$$, where $$q$$ is produced by generation, filtering, control, replay, and runtime. Optimizer branding is secondary.</li>
+<li>Decision: <strong>promote</strong>. Build or specify a toy math/tool RL sandbox and measure lifecycle-stage-induced gradient rotation.</li>
+</ul>
+<h3>2. MoE routing and expert capacity</h3>
+<ul>
+<li>Before this week: MoE routing masks were a plausible mechanistic intervention surface, but the question was mostly “can route masks steer behavior?”</li>
+<li>Evidence this week: MASCing/router masks and Laguna/vLLM MoE serving kept routing salient; UniPool challenged layer-local expert ownership; AllenAI EMO framed MoE as emergent modularity; the MoE blog derived why routers allocate both compute and gradient and why global pools can create reuse or cross-layer interference.</li>
+<li>After this week: The sharper question is not whether MoE is sparse compute. It is whether expert capacity is allocated in a way that preserves causal rare/domain features under matched active compute. Perplexity alone can camouflage modularity loss.</li>
+<li>Decision: <strong>test</strong>. Tiny layer-local vs global-pool MoE with synthetic factors is now a cheap, well-specified experiment.</li>
+</ul>
+<h3>3. Long-context / agent memory / retrieval interfaces</h3>
+<ul>
+<li>Before this week: “useful information per KV-cache byte” was a good phrase, but it risked staying a systems blog idea.</li>
+<li>Evidence this week: Long-context impossibility results formalized efficiency/compactness/recall trade-offs; Context-ReAct/LongSeeker exposed explicit skip/compress/rollback/snippet/delete operations; MiA-Signature proposed compact concept signatures; Direct Corpus Interaction argued for raw corpus tools over fixed top-k retrieval; Together reframed million-token context as serving economics.</li>
+<li>After this week: The right benchmark should compare access interfaces under equal cost: dense retrieval, concept signatures, raw corpus operations, explicit context operations, and full-context prompting. The target metric is exact evidence/constraint retention per token, tool call, wall-clock, and KV/cache cost.</li>
+<li>Decision: <strong>promote</strong>. Cost-normalized long-context interface benchmark becomes a top small-project candidate.</li>
+</ul>
+<h3>4. Inference optimization as mechanism perturbation</h3>
+<ul>
+<li>Before this week: Serving-stack perturbation was a watch item: compare fp16/eager with optimized low-bit/cache/speculative paths and measure drift.</li>
+<li>Evidence this week: QKVShare, Stochastic KV Routing, SpecKV, DFlash, LAWS, SpecMD, vLLM correctness, SMG, AutoSP, NVbandwidth, and KernelBench-X all reinforced that optimized runtime paths can change cache layout, numerical behavior, expert prefetch, sampling distribution, repair/correctness trade-offs, or hardware bottlenecks.</li>
+<li>After this week: Treat runtime path as an experimental condition. For RL/tool agents, it can change $$q(\tau)$$; for long-context or rare-feature probes, it can preserve outputs while moving hidden states or failures.</li>
+<li>Decision: <strong>promote</strong>. Merge scattered KV/cache/serving ideas into a “mechanism-preserving inference harness” direction.</li>
+</ul>
+<h3>5. Speech/audio factorization</h3>
+<ul>
+<li>Before this week: Audio tokenizers and speaker encoders were plausible factor-bottleneck targets, with uncertainty about whether the week would bring architecture evidence or mostly demos.</li>
+<li>Evidence this week: LASE showed speaker encoders leaking script/language; Text-to-Talk separated AR text from NAR audio diffusion; SCRAPL made richer audio losses cheaper; TTS-STT Flywheel improved rare entity ASR with targeted synthetic data while reporting regressions; Multi-Axis Speech Similarity separated content/speaker/dialect/gender axes; dysarthric ASR context work showed context may not be used; codec intelligibility work separated codec quality from intelligibility; MiniMind-O gave a small inspectable speech-native target; VibeVoice/OmniFlatten/OpenAI voice API emphasized long-form/full-duplex sequence representation.</li>
+<li>After this week: The speech opportunity is not “build a TTS model.” It is to probe factor survival: phoneme/content, speaker, script/language/accent, prosody, entity identity, context, timing, and codec damage under tokenization, curricula, and representation choices.</li>
+<li>Decision: <strong>promote</strong>. The audio identity-leakage/factor probe and entity-level synthetic curriculum should be merged into one speech-factor harness.</li>
+</ul>
+<h3>6. Activation steering / intervention auditing</h3>
+<ul>
+<li>Before this week: Steering and safety drift were watch items: measure whether tuning or steering moves refusal/grounding/style features before aggregate metrics move.</li>
+<li>Evidence this week: Steer Like the LLM argued prompt effects are sparse and token-local; Conceptors replaced single steering vectors with multidimensional subspaces; automatic side-effect discovery can propose behavior-delta hypotheses after interventions; Misaligned by Reward and warmth/sycophancy showed reward/style objectives can encode or induce epistemic failures.</li>
+<li>After this week: The main opportunity is an intervention audit loop: choose an intervention geometry, discover side effects automatically, then validate on calibration/truthfulness/style/refusal slices. This is less mature than RL/MoE but has good tool leverage.</li>
+<li>Decision: <strong>watch</strong>. Keep until a minimal local setup is chosen.</li>
+</ul>
+<h3>7. Visual/multimodal representation bottlenecks</h3>
+<ul>
+<li>Before this week: Persistent visual memory / attention dilution was a clean demo idea; multimodal tokenizers as gradient gates were plausible.</li>
+<li>Evidence this week: Persistent Visual Memory gave the attention-denominator mechanism; TC-JEPA raised the caption-conditioning bias question; GenLIP/end-to-end semantic tokenizers suggested downstream generative loss can reshape visual tokenization; MMDG-Bench warned specialized multimodal methods may barely beat ERM and degrade under corruption/missing-modality; diffusion outlier-token work suggested local patch semantics matter.</li>
+<li>After this week: Multimodal claims need factorized stress tests: nameable vs non-nameable factors, local details vs global semantics, visual attention over generation length, corruption/missing modality, and whether a side-channel/refresh preserves grounding.</li>
+<li>Decision: <strong>watch / test later</strong>. Valuable but lower priority than RL/MoE/inference/audio this week.</li>
+</ul>
+<h3>8. Low-bit / quantization / weak-feature gradient starvation</h3>
+<ul>
+<li>Before this week: Ternary quantization as weak-feature gradient starvation was a compelling small-model training dynamics idea.</li>
+<li>Evidence this week: The week added stronger serving/cache/speculation evidence than direct quantization-training evidence. Low-bit remained part of the systems perturbation theme but did not accumulate enough new independent training-dynamics papers.</li>
+<li>After this week: Keep the low-bit idea, but fold it into the broader mechanism-preserving inference/training harness unless a new quantization-training paper appears.</li>
+<li>Decision: <strong>watch</strong>. Do not kill; deprioritize relative to RL/MoE/audio/context.</li>
+</ul>
+<h2>Major features</h2>
+<h3>1. Reasoning RL is no longer an optimizer story; it is rollout distribution design</h3>
+<p>The most important mechanistic update of the week is that reasoning RL should be analyzed by the distribution of trajectories it trains on. For a tool/reasoning agent, a trajectory is $$\tau=(s_0,a_0,o_1,s_1,\ldots,s_T,a_T)$$ and the policy/runtime induce</p>
+<div class="math-block">$$p_\theta(\tau)=p(s_0)\prod_t \pi_\theta(a_t\mid s_t)P(s_{t+1}\mid s_t,a_t).$$</div>
+<p>The practical update direction is not “GRPO” in isolation. It is closer to</p>
+<div class="math-block">$$\widehat{g}_q = \mathbb{E}_{\tau\sim q}\left[\sum_t \widehat{A}_t\nabla_\theta\log\pi_\theta(a_t\mid s_t)\right],$$</div>
+<p>where $$q$$ is the trajectory distribution created by the rollout pipeline. GFCR provided the vocabulary: generate, filter, control, replay. PORTool and Reinforced Agent add tree/trace credit and inference feedback. vLLM correctness adds the uncomfortable systems point: if the runtime changes sampled outputs or logprobs, the training loop is optimizing against the wrong environment.</p>
+<p>The late-week agentic RL papers are useful because they perturb different lifecycle stages:</p>
+<ul>
+<li><strong>StraTA</strong> changes the high-level strategy prior, so the support of trajectories changes before actions are sampled.</li>
+<li><strong>A^2TGPO</strong> changes turn-level advantage assignment via information gain and adaptive clipping.</li>
+<li><strong>LoPE</strong> perturbs prompt space to reopen exploration when group-relative advantages collapse to zero.</li>
+<li><strong>SIOP</strong> extracts potential-like turn credit from clusters of final outcomes without a gold process verifier.</li>
+<li><strong>Exploration hacking</strong> asks whether the policy can distort what the training process observes.</li>
+</ul>
+<p>A small experiment is now obvious: make a deterministic math/tool sandbox with known failure classes. Hold model, task set, verifier, and optimizer fixed. Perturb one lifecycle stage at a time: low vs high generation diversity, verifier false positives/negatives, premature stopping, replay staleness, runtime nondeterminism, strategy-conditioned prompts, per-turn IG shaping, and prompt perturbations. Measure final success, tool-call success, trajectory diversity, verifier error, zero-advantage rate, and gradient cosine against a wide/clean reference sampler.</p>
+<p>The point is not to prove one new RL method wins. The point is to produce a failure localization map: this task fails because generation lacks support; that one fails because verifier noise is style-correlated; another fails because the controller removes hard states; another fails because the serving path changes trajectories.</p>
+<h3>2. MoE expert capacity is a gradient-sharing and causal-modularity problem</h3>
+<p>The MoE story became sharper this week. MASCing made route masks a possible control surface. UniPool challenged the default assumption that each layer needs a private expert set. EMO argued that MoE pretraining can produce emergent modularity. The weekly synthesis should promote a stricter operational definition: an expert is modular only if routing correlation and causal dependence both hold.</p>
+<p>For a global expert pool, a token at layer $$\ell$$ chooses from shared experts $$E_g$$:</p>
+<div class="math-block">$$y_{\ell,t}=\sum_{g\in S_{\ell,t}}\alpha_{\ell,t,g}E_g(h_{\ell,t}).$$</div>
+<p>The usage matrix</p>
+<div class="math-block">$$U_{\ell,g}=\frac{1}{BT}\sum_{b,t}A_{b,\ell,t,g}$$</div>
+<p>becomes the object to inspect. Balance alone is not enough: an expert can be evenly used and still non-causal, or rarely used and genuinely specialized.</p>
+<p>The key router-gradient intuition from the blog is:</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}}{\partial z_g}
+= p_g\langle\nabla_y\mathcal{L}, E_g(h)-\bar{E}(h)\rangle.$$</div>
+<p>An expert receives more routing probability when its output differs from the mixture in a loss-reducing direction. If a rare feature appears infrequently, the router/expert pair may never enter the mutual bootstrapping regime where the expert becomes useful and the router learns to send the rare examples to it. Hard top-k routing also makes the router a <strong>gradient allocator</strong>: unselected experts receive no main-loss gradient for that token.</p>
+<p>The small project is unusually clean. Train a tiny decoder-only MoE on synthetic sequences with known factors: common grammar, domain-specific code/arithmetic/prose modes, rare exception tokens, and position-dependent rules. Compare dense baseline, layer-local MoE, global-pool MoE, and global-pool with protected rare routing or rare-slice loss weighting under matched active compute. Measure validation loss, per-factor accuracy, $$U_{\ell,g}$$ heatmaps, router entropy by factor/layer, $$I(G;F\mid\ell)$$, expert ablation loss $$\Delta_{g,F}$$, cross-layer gradient cosine, and overflow/drop rate by factor.</p>
+<p>The falsifier is equally useful: if global pooling matches perplexity but loses factor-routing MI, weakens causal ablation effects, damages rare-feature accuracy, or shows negative cross-layer gradient alignment, then parameter savings are hiding modularity loss.</p>
+<h3>3. Long context should be evaluated as access-interface competition, not context-length bragging</h3>
+<p>The long-context cluster matured from “KV cache is expensive” into a broader access-interface benchmark. The week supplied several competing interfaces:</p>
+<ul>
+<li><strong>Full context</strong>: put everything in the prompt and pay KV/cache cost.</li>
+<li><strong>Dense retrieval</strong>: top-k chunks, often biased toward semantic similarity.</li>
+<li><strong>Concept/signature compression</strong>: MiA-Signature-style compact activation/concept state.</li>
+<li><strong>Raw corpus operations</strong>: Direct Corpus Interaction with grep/read/script-like tools.</li>
+<li><strong>Agent context operations</strong>: skip, compress, rollback, snippet, delete in LongSeeker/Context-ReAct-like systems.</li>
+<li><strong>Serving-level long context</strong>: Together’s million-token post, where memory layout and prefill/decode scheduling decide whether the capability is usable.</li>
+</ul>
+<p>The Impossibility Triangle of Long-Context Modeling acts as the theoretical guardrail: online systems cannot get efficiency, compactness, and scalable recall for free. Some cost is paid in memory, retrieval, variable compute, approximation, or failure.</p>
+<p>The experiment to run is not “can a model use long context?” It is: under equal token/time/tool/KV budgets, which interface retains exact constraints and sparse clue conjunctions? Create a local corpus with distractors, exact lexical constraints, cross-document dependencies, and sparse facts that dense embedding retrieval is likely to miss. Compare full-context prompting, dense retrieval, concept signatures/summaries, direct corpus tools, and explicit context operations. Score answer correctness, evidence citation accuracy, exact constraint retention, tool calls, tokens, wall-clock, and cache/memory cost.</p>
+<p>This connects directly to agent memory: a memory policy is not good because it stores more; it is good if it keeps decision-relevant evidence accessible at lower cost. “Useful information per KV-cache byte” remains a good metric, but now it should sit inside a broader access-interface benchmark.</p>
+<h3>4. Runtime path correctness is part of the mechanism, especially for RL and agents</h3>
+<p>The inference/systems evidence this week was too strong to treat as background. QKVShare, Stochastic KV Routing, SpecKV, DFlash, LAWS, SpecMD, vLLM correctness, PyTorch SMG/AutoSP, NVbandwidth, and KernelBench-X all say the same thing in different domains: optimized runtime paths are not necessarily mechanism-preserving transformations.</p>
+<p>For ordinary serving, a runtime optimization may change numerical precision, cache layout, expert prefetch timing, memory movement, batching, or token acceptance. For RL rollouts, the consequences are larger: the serving path supplies trajectories, logprobs, observations, and sometimes verifier inputs. A subtle serving bug can rotate the training gradient.</p>
+<p>The mechanism-preserving inference harness should therefore log both performance and model behavior:</p>
+<ul>
+<li>output agreement under matched seeds;</li>
+<li>rare-fact / exact-constraint accuracy;</li>
+<li>logit drift and activation cosine drift where hooks are available;</li>
+<li>attention entropy and cache-hit/acceptance traces;</li>
+<li>rollout distribution changes for tool/RL tasks;</li>
+<li>verifier-label disagreement;</li>
+<li>gradient cosine if training updates are being studied;</li>
+<li>memory bandwidth / interconnect / cache bytes so algorithmic claims are not confused with topology.</li>
+</ul>
+<p>KernelBench-X adds an adjacent agentic-coding version: LLM repair loops can improve compilation/correctness while reducing speedup. A kernel-generation agent must be audited on semantic correctness and hardware efficiency after every repair step. NVbandwidth-style measurement matters because many apparent algorithmic differences are actually memory/interconnect bottlenecks.</p>
+<p>The cheap paper/demo: “Does faster inference preserve mechanisms?” Pick one small model and one accessible serving perturbation. Even if full activation hooks are difficult, output/logit/rare-feature/task-score drift plus cost traces would already be more informative than tokens/sec alone.</p>
+<h3>5. Speech/audio work should move from WER/TTS demos to factor survival probes</h3>
+<p>Audio was one of the strongest applied clusters. The week’s evidence says speech systems are bottlenecked at factor boundaries:</p>
+<ul>
+<li>LASE: speaker identity embeddings can leak script/language with accent-conditional failures.</li>
+<li>Text-to-Talk: AR text and NAR audio diffusion suggest text and audio need different dependency structures.</li>
+<li>TTS-STT Flywheel: targeted synthetic entity-dense data improves rare entity ASR but must be checked for regressions/artifacts.</li>
+<li>Multi-Axis Speech Similarity: content, speaker, dialect, and gender should not collapse into one similarity vector.</li>
+<li>Dysarthric ASR context failure: extra context may not actually be used.</li>
+<li>Codec intelligibility: codec quality and intelligibility diverge under noise/enhancement.</li>
+<li>MiniMind-O: small speech-native omni models make modality projector / tokenizer / Thinker-Talker probes more feasible.</li>
+<li>VibeVoice and OmniFlatten: long-form/full-duplex speech models make sequence representation and timing first-class.</li>
+</ul>
+<p>The consolidated project is a speech factor harness, not a model-building effort. Use WavLM/ECAPA/codec states or a small speech-native stack. Build or sample a tiny dataset with labels/proxies for speaker, script/language/accent, phoneme/content, pitch/prosody, entity identity, noise/enhancement, and timing/overlap if available. Train linear probes and simple subspace interventions. Test correct vs shuffled metadata/context. Add gradient-reversal for one nuisance factor such as script/language and measure whether speaker verification and prosody survive.</p>
+<p>The evaluation should include EHR or rare-entity hit rate, not only WER; speaker/prosody/context artifacts, not only ASR score; and real-recording sanity checks if synthetic TTS data is used.</p>
+<p>This is a very good Aman-shaped project: small, mechanism-first, relevant to TTS/talking-face interests, and not dependent on frontier training.</p>
+<h3>6. Intervention auditing is becoming an end-to-end workflow</h3>
+<p>The steering/alignment cluster suggests a concrete workflow:</p>
+<ol>
+<li>Define an intervention: fine-tune, DPO/style tuning, prompt-delta steering, single-vector steering, conceptor subspace projection, MoE route mask, or model edit.</li>
+<li>Measure intended target behavior.</li>
+<li>Automatically discover side effects by contrasting generations before/after intervention and producing natural-language hypotheses.</li>
+<li>Validate those hypotheses on slices: calibration, truthfulness, refusal, sycophancy, evidence use, verbosity/style, alternative-answer probability, and hidden-state features.</li>
+<li>Inspect mechanism: token-local deltas, subspace rank, layer separability, routing shifts, or feature drift.</li>
+</ol>
+<p>The sources line up: Steer Like the LLM says prompting is sparse and token-local; Conceptors says concepts are subspaces, not one vector; automatic side-effect generation supplies the audit layer; Misaligned by Reward, Safety Drift, clinical safety scaling, and warmth/sycophancy provide failure modes where aggregate “better” can hide epistemic damage.</p>
+<p>This is not yet the top experiment because the setup space is broad. But it is a strong future harness, especially if paired with a small instruct model and one behavior dimension such as evidence-grounding or warmth/style.</p>
+<h3>7. Multimodal representation work needs nameability and persistence stress tests</h3>
+<p>The week’s multimodal evidence splits into two questions:</p>
+<ol>
+<li><strong>Persistence:</strong> Persistent Visual Memory / attention dilution says visual evidence loses attention mass as generated text grows. The key equation is</li>
+</ol>
+<p>   $$A_{\text{image}} = \frac{S_{\text{image}}}{S_{\text{image}}+S_{\text{text}}}.$$</p>
+<p>   If generated text grows $$S_{\text{text}}$$ while image relevance mass stays fixed, visual grounding decays. This is a clean demo idea: detail recall vs answer length, with a visual refresh or memory-summary baseline.</p>
+<ol>
+<li><strong>Nameability:</strong> GenLIP, end-to-end semantic tokenizers, and TC-JEPA suggest downstream language/generative losses can reshape visual tokenization. But the risk is that caption-conditioned objectives preserve language-nameable factors and suppress local/non-nameable details. Diffusion outlier-token work and MMDG-Bench reinforce the need for patch-level and corruption/missing-modality tests.</li>
+</ol>
+<p>The right future experiment is a synthetic visual factor dataset where some factors are captioned/nameable and others are uncaptioned/non-nameable. Compare visual SSL, text-conditioned SSL, end-to-end tokenizer, and caption-randomized controls. Probe factor retention and local corruption sensitivity. For LVLMs, add long-answer visual detail recall.</p>
+<p>This is a good blog/demo candidate, but this week it ranks below RL/MoE/context/audio because the latter gained more direct repeated evidence.</p>
+<h3>8. Cheap internal signals are proliferating; compare failure overlap before trusting any one</h3>
+<p>A subtle but useful pattern this week: many papers propose cheap signals that stand in for expensive supervision or repeated sampling:</p>
+<ul>
+<li>first-content-token entropy for hallucination;</li>
+<li>middle-layer attention divergence;</li>
+<li>conceptor quota/subspace geometry;</li>
+<li>outcome-potential clusters for turn credit;</li>
+<li>reward-model pairwise preference audits;</li>
+<li>length-value / remaining-horizon probes;</li>
+<li>posterior-stability or acceptance signals for speculation;</li>
+<li>activation-similarity for data selection.</li>
+</ul>
+<p>The correct next step is not to crown a winner. It is to log several cheap signals on the same examples and cluster failure overlap. If first-token entropy catches ambiguity, attention divergence catches entity instability, self-consistency catches multi-modal answer sets, and reward-model preferences catch social/style failures, then the signals are complementary. If they all fail on the same examples or collapse to logprob, they are less useful.</p>
+<p>A small factual QA harness could compare first-token entropy, attention KL, logprob, self-consistency, and correctness across entity/numeric/ambiguous slices. This is lower priority than the promoted experiments but cheap enough to keep in the backlog.</p>
+<h2>Idea DB changes</h2>
+<ul>
+<li><strong>Promoted to <code>promote</code>:</strong></li>
+</ul>
+<p>  - Rollout lifecycle diagnostics for reasoning RL.</p>
+<p>  - Cost-normalized long-context interface benchmark.</p>
+<p>  - Runtime paths are training-loop perturbations.</p>
+<p>  - Measure serving-stack choices as perturbations to model mechanisms.</p>
+<p>  - Build an audio identity-leakage probe for codec and speaker representations.</p>
+<ul>
+<li><strong>Moved to <code>test</code>:</strong></li>
+</ul>
+<p>  - Shared MoE expert pools as measurable modular capacity.</p>
+<p>  - Use MoE routing masks as a mechanistic intervention, not just a safety adapter.</p>
+<p>  - Entity-level synthetic curricula for speech robustness.</p>
+<p>  - Mechanism-preserving KV-cache handoff.</p>
+<p>  - Cheap internal uncertainty probes need failure-overlap maps.</p>
+<ul>
+<li><strong>Kept on <code>watch</code>:</strong></li>
+</ul>
+<p>  - Latent language models as semantic-planning probes.</p>
+<p>  - Prompt steering as sparse token-local control.</p>
+<p>  - Preference optimization as probability-geometry drift.</p>
+<p>  - Adaptive inference controllers.</p>
+<p>  - Early-representation access.</p>
+<p>  - Multimodal tokenizer / visual dilution ideas.</p>
+<p>  - Low-bit weak-feature starvation.</p>
+<ul>
+<li><strong>Merged conceptually:</strong></li>
+</ul>
+<p>  - KV-cache byte pricing, KV handoff, serving perturbations, runtime correctness, speculative/cache/expert-prefetch items should be treated as one umbrella: <strong>mechanism-preserving inference and context-budget harnesses</strong>.</p>
+<p>  - Audio identity leakage, codec-token factor separation, speech tokenizer bottlenecks, and entity-level synthetic curricula should be treated as one umbrella: <strong>speech factor survival probes</strong>.</p>
+<p>  - Agent orchestration graphs, tool-tree reward, rollout lifecycle, and inference-time feedback should be treated as one umbrella: <strong>trajectory-distribution design for agents</strong>.</p>
+<ul>
+<li><strong>Killed / marked as ingest artifacts:</strong></li>
+</ul>
+<p>  - Generic auto-extracted headings such as “Mechanism,” “Minimal experiment or probe,” “What would falsify it,” and “Why it matters for Aman” are not real ideas and should not guide prioritization.</p>
+<h2>Recurring bottlenecks</h2>
+<ol>
+<li><strong>Gradient allocation:</strong> MoE routers allocate expert gradients; quantized weights can trap small gradients; DPO/style objectives move probability geometry; activation-similarity data selection tries to choose which internal paths get trained.</li>
+<li><strong>State accessibility:</strong> KV cache, long context, procedural registers, visual memory, agent memory, and speech latents all ask whether useful state is present <em>and reachable</em> at decision time.</li>
+<li><strong>Trajectory distribution:</strong> Agent/RL training depends on which paths are generated, filtered, controlled, replayed, and served correctly.</li>
+<li><strong>Factor entanglement:</strong> Speech, audio-visual, multimodal, and steering systems keep mixing content, speaker, dialect, prosody, style, safety, truthfulness, and local visual detail.</li>
+<li><strong>Aggregate metric camouflage:</strong> Perplexity hides rare-feature MoE damage; WER hides entity/prosody failures; tokens/sec hides activation drift; final answer hides bad tool traces; accuracy hides safety/sycophancy drift; compile success hides slow kernels.</li>
+<li><strong>Cost normalization:</strong> Long-context, inference acceleration, repeated inference, agent context operations, and GPU kernels all need equalized token/time/tool/memory/bandwidth budgets before claims are meaningful.</li>
+</ol>
+<h2>Missing tools / annoying manual things</h2>
+<ol>
+<li><strong>A unified runtime-perturbation logger</strong> for small models: run the same prompts under different serving paths and automatically capture output agreement, logit drift, activation drift if possible, latency, memory, cache bytes, attention entropy, and rare-slice errors.</li>
+<li><strong>A rollout-lifecycle instrumentation harness</strong> for toy agents: log trajectories, tool calls, verifier labels, branch/stop decisions, replay age, runtime backend, and gradient-cosine proxies.</li>
+<li><strong>MoE routing probe utilities</strong>: heatmaps for $$U_{\ell,g}$$, router entropy by factor, MI $$I(G;F\mid\ell)$$, expert ablation scripts, overflow/drop-by-factor, and cross-layer gradient cosine.</li>
+<li><strong>Speech factor probe boilerplate</strong>: dataset manifest format for speaker/script/accent/phoneme/prosody/entity labels, WavLM/ECAPA/codec extraction, linear probes, gradient-reversal nuisance heads, and EHR/WER/prosody metrics.</li>
+<li><strong>Cost-normalized corpus interface benchmark tooling</strong>: one harness that can run dense retrieval, direct grep/read tools, summaries/signatures, and full-context prompting under equal budgets.</li>
+<li><strong>Intervention side-effect audit templates</strong>: before/after generation comparison, automatic side-effect hypothesis generation, and validation slices for calibration/truthfulness/style/refusal/evidence-use.</li>
+<li><strong>Kernel repair audit scripts</strong>: store every LLM-generated Triton repair step with compile result, correctness, runtime, memory bandwidth, and regression type.</li>
+</ol>
+<h2>Papers or demos now cheap because infra improved</h2>
+<ol>
+<li><strong>Mechanism-preserving inference harness</strong></li>
+</ol>
+<p>   - Concrete dependency: MLX/llama.cpp/vLLM/SGLang maturity, QKVShare-style cache APIs, and accessible low-bit/speculative paths.</p>
+<p>   - Unlocks: compare baseline vs optimized inference on rare-feature and long-context prompts; produce plots of speedup vs drift/failure.</p>
+<ol>
+<li><strong>Toy rollout-lifecycle RL lab</strong></li>
+</ol>
+<p>   - Concrete dependency: small open instruct models, lightweight tool environments, deterministic verifiers, and vLLM/RL correctness discussions that clarify what to log.</p>
+<p>   - Unlocks: measure how generation diversity, verifier noise, stopping, replay, and runtime rotate update directions before scaling to real agent tasks.</p>
+<ol>
+<li><strong>Tiny MoE global-pool experiment</strong></li>
+</ol>
+<p>   - Concrete dependency: small MoE implementations and better MoE serving/routing attention from UniPool/EMO/MASCing.</p>
+<p>   - Unlocks: train layer-local vs shared-pool MoEs on synthetic factor data and test causal modularity directly.</p>
+<ol>
+<li><strong>Speech factor survival probe</strong></li>
+</ol>
+<p>   - Concrete dependency: public WavLM/ECAPA/codec representations, open TTS for synthetic curricula, MiniMind-O-scale small speech-native models, and factorized speech papers.</p>
+<p>   - Unlocks: test script leakage, speaker/prosody preservation, rare entity hit rate, and codec damage without training a full TTS/ASR stack.</p>
+<ol>
+<li><strong>Long-context access-interface benchmark</strong></li>
+</ol>
+<p>   - Concrete dependency: cheap local corpora, agent tool APIs, retrieval libraries, long-context serving posts, and Context-ReAct/Direct Corpus Interaction ideas.</p>
+<p>   - Unlocks: compare dense retrieval vs raw corpus access vs signatures vs full context under equal budget.</p>
+<ol>
+<li><strong>Activation steering side-effect audit</strong></li>
+</ol>
+<p>   - Concrete dependency: conceptor/subspace steering papers and automatic side-effect discovery methods.</p>
+<p>   - Unlocks: evaluate whether subspace steering produces fewer calibration/truthfulness/style regressions than single-vector steering.</p>
+<ol>
+<li><strong>KernelBench-X small local reproduction</strong></li>
+</ol>
+<p>   - Concrete dependency: Triton examples, LLM codegen, and NVbandwidth-style measurement.</p>
+<p>   - Unlocks: show where repair loops improve correctness but reduce speed, and whether task structure predicts failures in a local setting.</p>
+<h2>Questions inbox triage</h2>
+<h3>Promoted to concrete experiments</h3>
+<ul>
+<li><strong>Rollout lifecycle stage diagnosis:</strong> promoted. Merge questions about orchestration graphs, GFCR stages, lifecycle-stage ablations, StraTA/A^2TGPO/LoPE, runtime nondeterminism, and vLLM correctness into one experiment: fixed toy math/tool environment, one lifecycle perturbation at a time, measure $$q(\tau)$$, advantages, verifier error, and gradient cosine.</li>
+<li><strong>Shared MoE expert pool / routing masks:</strong> promoted. Merge older MoE routing-mask question with the new global-pool question. Test layer-local vs global expert pools using routing MI, causal ablations, gradient cosine, and rare-feature retention.</li>
+<li><strong>Long-context access interface:</strong> promoted. Merge KV-byte measurement, serving perturbation, explicit context operations, dense retrieval vs raw access, MiA signatures, and full-context prompting into a cost-normalized evidence-retention benchmark.</li>
+<li><strong>Speech factor survival:</strong> promoted. Merge codec-token separation, speaker/script leakage, entity-dense synthetic curricula, context metadata, and rare-entity ASR questions into one audio probe harness.</li>
+<li><strong>Runtime/inference path as mechanism perturbation:</strong> promoted. Merge low-bit/KV/speculation/serving optimization questions into one harness measuring drift, rare failures, and rollout distribution changes.</li>
+</ul>
+<h3>Kept as candidates</h3>
+<ul>
+<li><strong>Prompt-local steering vs global vectors:</strong> keep. Good candidate, but wait until a small target behavior and model are chosen.</li>
+<li><strong>Conceptors/subspace steering side effects:</strong> keep and merge with intervention auditing.</li>
+<li><strong>Cheap hallucination probes:</strong> keep as a lightweight benchmark: first-token entropy vs attention divergence vs logprob/self-consistency.</li>
+<li><strong>Text-conditioned visual SSL / non-nameable factors:</strong> keep for a visual-factor synthetic dataset.</li>
+<li><strong>Latent language models / global semantic variables:</strong> keep; Cola DLM is interesting but needs either accessible code or a tiny synthetic version.</li>
+<li><strong>Activation-pattern data selection:</strong> keep; promising but less repeated this week than RL/MoE/context/audio.</li>
+<li><strong>Safety/style drift probes:</strong> keep; merge with reward-model/preference/intervention auditing.</li>
+</ul>
+<h3>Answered or partially answered</h3>
+<ul>
+<li><strong>Which source type produced the most useful opportunities?</strong> Answered this week: papers and lab/infra blogs dominated; HN was useful only as weak supporting signal for infra/skepticism and should remain low-weight.</li>
+<li><strong>Which inference/GPU concepts deserve first-principles posts?</strong> Answered: rollout lifecycle, MoE expert allocation, KV-cache/context cost, and GPU kernel correctness-speed tradeoffs are the best candidates.</li>
+<li><strong>What audio/TTS representation bottleneck repeats?</strong> Answered: factor entanglement and factor survival across tokenizer/encoder/context/curriculum boundaries, especially speaker/script/prosody/entity separation.</li>
+<li><strong>Which aggregate metrics hide interface failures?</strong> Partially answered: WER, final-answer reward, tokens/sec, perplexity, safety pass rate, compile success, and broad accuracy all hid relevant slice failures this week.</li>
+</ul>
+<h3>Killed or deprioritized</h3>
+<ul>
+<li>Do not maintain duplicate standalone questions for “KV bytes,” “serving optimizations,” “KV handoff,” and “speculation drift.” They are now one runtime/context-budget question.</li>
+<li>Do not maintain duplicate standalone questions for “audio codec separation,” “speaker leakage,” “speech context metadata,” and “entity-dense ASR.” They are now one speech-factor question.</li>
+<li>Do not promote generic “which source type is useful?” beyond the answered note; it is operational monitoring, not a research question.</li>
+</ul>
+<h2>Next-week plan</h2>
+<ol>
+<li><strong>Specify the toy rollout-lifecycle experiment.</strong> Write a one-page design with environment, tools, known failure classes, lifecycle perturbations, logged fields, and gradient-cosine proxy. Use [[2026-05-07-rollout-lifecycle-gradient]] as the math backbone.</li>
+<li><strong>Turn the MoE blog into an experiment skeleton.</strong> Define the synthetic dataset and model variants for layer-local vs global-pool MoE. Decide metrics: $$U_{\ell,g}$$, $$I(G;F\mid\ell)$$, $$\Delta_{g,F}$$, cross-layer gradient cosine, rare-feature accuracy.</li>
+<li><strong>Draft the speech factor probe manifest.</strong> Choose likely public representations/datasets and define labels/proxies for speaker, language/script/accent, phoneme/content, prosody, and rare entities.</li>
+<li><strong>Design the cost-normalized long-context interface benchmark.</strong> Build the corpus schema and budget rules before choosing models. Include dense retrieval, direct corpus access, signatures/summaries, explicit context operations, and full context.</li>
+<li><strong>Keep scouting but reduce duplication.</strong> Daily notes should map new evidence into the four promoted umbrellas unless a genuinely new mechanism appears: rollout lifecycle, expert/capacity allocation, mechanism-preserving inference/context budgets, and speech/multimodal factor survival.</li>
+</ol></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 21:36</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
