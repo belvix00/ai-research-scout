@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>MoE Expert Capacity Is an Allocation Problem, Not Just Sparse Compute · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>MoE Expert Capacity Is an Allocation Problem, Not Just Sparse Compute</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>Today&#x27;s scout had two MoE signals that fit together:</p>
+<ul>
+<li><strong>UniPool</strong> challenges the default design where every transformer layer owns a separate expert set. It instead treats experts as a globally shared pool accessed by layer-specific routers.</li>
+<li><strong>AllenAI&#x27;s EMO post</strong> frames MoE pretraining as a route to emergent modularity, not merely a serving trick.</li>
+</ul>
+<p>The useful refresher is not “what is an MoE layer?” You already know the implementation pattern: route tokens to a small subset of feed-forward experts, combine outputs, add a load/balance loss, hope sparse parameters buy capacity without dense FLOPs.</p>
+<p>The foundations question is sharper:</p>
+<blockquote>When we say an MoE has “expert capacity,” what resource is being allocated, and what objective makes that capacity specialize rather than blur?</blockquote>
+<p>Layer-local MoE answers implicitly: each depth gets its own private expert budget. UniPool asks whether some of that budget is redundant. EMO asks whether pretraining pressure can turn sparse routing into meaningful modularity. Both force the same mathematical view: <strong>an MoE is a constrained assignment problem over tokens, layers, experts, and gradients</strong>.</p>
+<h2>The hidden assumption in layer-local experts</h2>
+<p>Consider a transformer with $L$ MoE feed-forward blocks. In the standard layer-local design, layer $\ell$ has experts</p>
+<div class="math-block">$$E_{\ell,1}, E_{\ell,2}, \ldots, E_{\ell,M}.$$</div>
+<p>For token representation $h_{\ell,t}$, a router produces logits</p>
+<div class="math-block">$$z_{\ell,t,j} = r_\ell(h_{\ell,t})_j,$$</div>
+<p>probabilities</p>
+<div class="math-block">$$p_{\ell,t,j} = \frac{\exp z_{\ell,t,j}}{\sum_{k=1}^{M}\exp z_{\ell,t,k}},$$</div>
+<p>and a sparse selection $S_{\ell,t}$, often top-$k$. The layer output can be written as</p>
+<div class="math-block">$$y_{\ell,t}
+= \sum_{j \in S_{\ell,t}} \alpha_{\ell,t,j} E_{\ell,j}(h_{\ell,t}),$$</div>
+<p>where $\alpha$ is the renormalized gate weight over selected experts.</p>
+<p>This architecture assumes the useful expert index is layer-private:</p>
+<div class="math-block">$$\text{expert } j \text{ at layer } \ell
+\neq
+\text{expert } j \text{ at layer } \ell&#x27;.$$</div>
+<p>That assumption may be right if depth changes the feature basis so much that experts cannot be reused. But it may be wasteful if several layers need similar transformations: lexical cleanup, code syntax handling, arithmetic-ish transformations, language/domain adaptation, entity preservation, format control, or rare-feature rescue.</p>
+<p>Layer-local MoE pays a parameter bill of roughly</p>
+<div class="math-block">$$\text{expert parameters} \propto L \cdot M \cdot P_E,$$</div>
+<p>where $P_E$ is parameters per expert. The local-routing assumption says this bill buys $L \cdot M$ distinct useful modules. The global-pool hypothesis says the effective number of reusable modules may be smaller:</p>
+<div class="math-block">$$M_{\mathrm{effective}} &lt; L \cdot M.$$</div>
+<p>The scout-relevant question is not whether perplexity can be preserved. It is whether <strong>rare/domain-specific causal features</strong> remain attached to clean expert mechanisms when experts are shared globally.</p>
+<h2>Rewriting MoE as a capacity allocation problem</h2>
+<p>A global expert pool replaces layer-private experts with</p>
+<div class="math-block">$$E_1, E_2, \ldots, E_G,$$</div>
+<p>shared across layers. Each layer still has a router, but the router now chooses from the same pool:</p>
+<div class="math-block">$$p_{\ell,t,g}
+= \mathrm{softmax}(r_\ell(h_{\ell,t}))_g.$$</div>
+<p>The output becomes</p>
+<div class="math-block">$$y_{\ell,t}
+= \sum_{g \in S_{\ell,t}} \alpha_{\ell,t,g} E_g(h_{\ell,t}).$$</div>
+<p>Now the expert budget is not “$M$ experts per layer.” It is “$G$ reusable transformations across depth.” The routing tensor</p>
+<div class="math-block">$$A_{\ell,t,g} \in \{0,1\}$$</div>
+<p>says whether token $t$ at layer $\ell$ used expert $g$. Across a batch, this induces a usage matrix</p>
+<div class="math-block">$$U_{\ell,g} = \frac{1}{B T}\sum_{b=1}^{B}\sum_{t=1}^{T} A_{b,\ell,t,g}.$$</div>
+<p>For a layer-local MoE, $U_{\ell,g}$ only measures balance within one depth. For a global pool, the full matrix $U \in \mathbb{R}^{L \times G}$ becomes the object of interest.</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="layer-local versus globally shared MoE expert capacity">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <text x="180" y="32" text-anchor="middle" font-size="18" font-family="sans-serif" fill="#0f172a">Layer-local MoE</text>
+  <text x="600" y="32" text-anchor="middle" font-size="18" font-family="sans-serif" fill="#0f172a">Global expert pool</text>
+
+  <g font-family="sans-serif" font-size="13" fill="#0f172a">
+    <rect x="60" y="60" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="105" y="86" text-anchor="middle">Layer 1</text>
+    <circle cx="195" cy="72" r="16" fill="#fef3c7" stroke="#d97706" />
+    <circle cx="235" cy="72" r="16" fill="#fef3c7" stroke="#d97706" />
+    <circle cx="275" cy="72" r="16" fill="#fef3c7" stroke="#d97706" />
+    <text x="235" y="111" text-anchor="middle" font-size="12">private experts</text>
+
+    <rect x="60" y="132" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="105" y="158" text-anchor="middle">Layer 2</text>
+    <circle cx="195" cy="144" r="16" fill="#dcfce7" stroke="#16a34a" />
+    <circle cx="235" cy="144" r="16" fill="#dcfce7" stroke="#16a34a" />
+    <circle cx="275" cy="144" r="16" fill="#dcfce7" stroke="#16a34a" />
+
+    <rect x="60" y="204" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="105" y="230" text-anchor="middle">Layer 3</text>
+    <circle cx="195" cy="216" r="16" fill="#fae8ff" stroke="#a21caf" />
+    <circle cx="235" cy="216" r="16" fill="#fae8ff" stroke="#a21caf" />
+    <circle cx="275" cy="216" r="16" fill="#fae8ff" stroke="#a21caf" />
+  </g>
+
+  <g stroke="#475569" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="150" y1="81" x2="178" y2="75" />
+    <line x1="150" y1="153" x2="218" y2="146" />
+    <line x1="150" y1="225" x2="258" y2="219" />
+  </g>
+
+  <g font-family="sans-serif" font-size="13" fill="#0f172a">
+    <rect x="450" y="60" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="495" y="86" text-anchor="middle">Layer 1</text>
+    <rect x="450" y="132" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="495" y="158" text-anchor="middle">Layer 2</text>
+    <rect x="450" y="204" width="90" height="42" rx="9" fill="#e0f2fe" stroke="#0284c7" />
+    <text x="495" y="230" text-anchor="middle">Layer 3</text>
+
+    <rect x="625" y="80" width="118" height="138" rx="16" fill="#f8fafc" stroke="#64748b" />
+    <text x="684" y="104" text-anchor="middle" font-size="14">shared pool</text>
+    <circle cx="652" cy="135" r="16" fill="#fef3c7" stroke="#d97706" />
+    <circle cx="692" cy="135" r="16" fill="#dcfce7" stroke="#16a34a" />
+    <circle cx="652" cy="178" r="16" fill="#fae8ff" stroke="#a21caf" />
+    <circle cx="692" cy="178" r="16" fill="#fee2e2" stroke="#dc2626" />
+  </g>
+
+  <g stroke="#475569" stroke-width="2" marker-end="url(#arrow)">
+    <line x1="540" y1="81" x2="636" y2="132" />
+    <line x1="540" y1="153" x2="675" y2="136" />
+    <line x1="540" y1="225" x2="655" y2="181" />
+  </g>
+</svg></div>
+<p>The global design asks the router to solve a harder allocation problem:</p>
+<div class="math-block">$$\text{assign } (\ell,t) \mapsto g
+\quad \text{subject to capacity, balance, and usefulness constraints.}$$</div>
+<p>That is more expressive in one sense and more dangerous in another. It can reuse modules across depth, but it can also let high-frequency transformations monopolize capacity.</p>
+<h2>The objective: task loss plus routing regularizers</h2>
+<p>A sparse MoE usually trains with a main language-model loss plus auxiliary routing losses:</p>
+<div class="math-block">$$\mathcal{L}
+= \mathcal{L}_{\mathrm{LM}}
++ \lambda_{\mathrm{bal}}\mathcal{L}_{\mathrm{balance}}
++ \lambda_z \mathcal{L}_{z}
++ \cdots.$$</div>
+<p>A generic balance term tries to prevent all tokens from collapsing into the same expert. For example, if</p>
+<div class="math-block">$$f_g = \frac{1}{BTL}\sum_{b,\ell,t} A_{b,\ell,t,g}$$</div>
+<p>is the realized fraction of assignments to expert $g$, then one possible uniform-load penalty is</p>
+<div class="math-block">$$\mathcal{L}_{\mathrm{balance}}
+= G \sum_{g=1}^{G} \left(f_g - \frac{1}{G}\right)^2.$$</div>
+<p>Real implementations differ, but the geometry is the same: the main loss wants useful routing; the auxiliary loss wants non-collapsed routing. These are not equivalent.</p>
+<p>A router can be perfectly balanced and still mechanistically useless. If two experts implement nearly identical transformations, balance only spreads tokens across redundant modules. Conversely, a genuinely specialized rare-feature expert may look imbalanced because the rare feature is rare.</p>
+<p>So the important question is not only:</p>
+<div class="math-block">$$\text{Is } f_g \approx 1/G?$$</div>
+<p>It is:</p>
+<div class="math-block">$$\text{Does changing expert } g \text{ causally change the feature it appears to specialize in?}$$</div>
+<p>That distinction matters more under a global pool, because balance is now global across depths. A global balance term can hide layer-specific starvation: the expert may be well-used overall while being unavailable or ineffective at the depth where a rare feature needs it.</p>
+<h2>Router gradients: why specialization can be fragile</h2>
+<p>Let expert outputs be combined densely for the derivation, then sparsified in practice:</p>
+<div class="math-block">$$y = \sum_{g=1}^{G} p_g E_g(h).$$</div>
+<p>Let the downstream loss for this token be $\mathcal{L}$. The derivative with respect to router logit $z_g$ follows from the softmax Jacobian:</p>
+<div class="math-block">$$\frac{\partial p_i}{\partial z_g}
+= p_i(\mathbf{1}_{i=g} - p_g).$$</div>
+<p>Then</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}}{\partial z_g}
+= \sum_i \frac{\partial \mathcal{L}}{\partial y}^\top E_i(h)
+\frac{\partial p_i}{\partial z_g}.$$</div>
+<p>So</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}}{\partial z_g}
+= p_g \frac{\partial \mathcal{L}}{\partial y}^\top
+\left(E_g(h) - \sum_i p_i E_i(h)\right).$$</div>
+<p>Define the mixture output</p>
+<div class="math-block">$$\bar{E}(h)=\sum_i p_i E_i(h).$$</div>
+<p>Then the router gradient is</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}}{\partial z_g}
+= p_g \left\langle \nabla_y \mathcal{L}, E_g(h)-\bar{E}(h) \right\rangle.$$</div>
+<p>This equation is the router-specialization mechanism in miniature.</p>
+<p>An expert receives higher router probability when its output differs from the current mixture in a direction that reduces loss. If $E_g(h)$ is not distinguishable from the mixture on the examples where it is useful, the router has weak evidence to select it. If the feature is rare, the corresponding gradient appears rarely. If top-$k$ gating excludes the expert early, it may receive little or no expert-gradient on precisely the examples where it should specialize.</p>
+<p>Sparse routing sharpens the issue. With hard top-$k$, many experts have</p>
+<div class="math-block">$$A_g = 0,$$</div>
+<p>so their expert weights receive no main-loss gradient for that token:</p>
+<div class="math-block">$$\nabla_{\phi_g}\mathcal{L}_{\mathrm{LM}} = 0
+\quad \text{if expert } g \text{ is not selected.}$$</div>
+<p>The router is therefore both a compute allocator and a gradient allocator.</p>
+<p>This is the first-principles reason MoE modularity is not automatic. The model cannot make an expert specialize in examples that the router rarely sends to it, and the router cannot confidently send examples to an expert before that expert has become useful. Auxiliary losses, router noise, warm starts, shared pools, normalization, and capacity factors are all hacks around this chicken-and-egg geometry.</p>
+<h2>Global sharing changes the gradient mixture</h2>
+<p>For layer-local experts, expert $E_{\ell,j}$ sees gradients only from layer $\ell$:</p>
+<div class="math-block">$$\nabla_{\phi_{\ell,j}}\mathcal{L}
+= \sum_{b,t: j \in S_{b,\ell,t}}
+\nabla_{\phi_{\ell,j}}\mathcal{L}_{b,\ell,t}.$$</div>
+<p>For a globally shared expert $E_g$, gradients arrive from many depths:</p>
+<div class="math-block">$$\nabla_{\phi_g}\mathcal{L}
+= \sum_{b,\ell,t: g \in S_{b,\ell,t}}
+\nabla_{\phi_g}\mathcal{L}_{b,\ell,t}.$$</div>
+<p>This can be good if the same transformation is genuinely reusable. It increases effective data per expert and reduces redundant parameters.</p>
+<p>But it can be bad if different layers send incompatible gradients. A useful diagnostic is gradient alignment across layers for the same expert:</p>
+<div class="math-block">$$\cos_{g}(\ell,\ell&#x27;)
+= \frac{\langle \nabla_{\phi_g}^{(\ell)}\mathcal{L},\nabla_{\phi_g}^{(\ell&#x27;)}\mathcal{L}\rangle}
+{\|\nabla_{\phi_g}^{(\ell)}\mathcal{L}\|\,\|\nabla_{\phi_g}^{(\ell&#x27;)}\mathcal{L}\|}.$$</div>
+<p>If this cosine is positive across the layers that share an expert, global pooling is acting like data amplification for a reusable module. If it is near zero, the expert may become a generic compromise. If it is negative, sharing creates direct interference.</p>
+<p>This gives a more mechanistic test than validation loss:</p>
+<div class="math-block">$$\text{global pool works mechanistically}
+\quad \Rightarrow \quad
+\text{shared expert gradients are aligned for the factors they serve.}$$</div>
+<h2>Capacity constraints and rare-feature starvation</h2>
+<p>MoE routing also has capacity constraints. If each expert can process at most $C$ token assignments in a batch, then expert $g$ drops or reroutes overflow tokens when</p>
+<div class="math-block">$$\sum_{b,\ell,t} A_{b,\ell,t,g} &gt; C.$$</div>
+<p>A common capacity form is proportional to average load:</p>
+<div class="math-block">$$C = \gamma \frac{BTLk}{G},$$</div>
+<p>where $\gamma$ is the capacity factor and $k$ is top-$k$ routing.</p>
+<p>The rare-feature failure mode is subtle. Suppose a rare feature $x^\star$ appears in only a small fraction of tokens, but requires a specific expert transformation. If the expert also attracts many high-frequency tokens, then rare tokens may be displaced by capacity pressure. Even when they are not dropped, their gradients can be drowned by common-token gradients.</p>
+<p>The signal-to-interference ratio for a rare feature routed to expert $g$ is roughly</p>
+<div class="math-block">$$\mathrm{SIR}_{g,x^\star}
+= \frac{\left\|\sum_{(b,\ell,t) \in R_{x^\star,g}} \nabla_{\phi_g}\mathcal{L}_{b,\ell,t}\right\|}
+{\left\|\sum_{(b,\ell,t) \in R_{\neg x^\star,g}} \nabla_{\phi_g}\mathcal{L}_{b,\ell,t}\right\| + \epsilon}.$$</div>
+<p>A global pool can improve this if it routes all occurrences of the rare feature across depths into a stable module. It can worsen it if the shared expert becomes a dumping ground for broad high-frequency transformations.</p>
+<p>That is why a MoE can match perplexity while degrading rare-feature causality. Perplexity is dominated by common tokens; causal expert specialization is often about low-measure slices.</p>
+<h2>What “emergent modularity” should mean operationally</h2>
+<p>A vague modularity claim is easy to make: experts appear to route different domains, languages, or formats. A useful claim should survive interventions.</p>
+<p>For a factor $F$ such as language, code syntax, domain, rare entity type, or arithmetic pattern, define the conditional routing distribution</p>
+<div class="math-block">$$P(g \mid F, \ell)
+= \frac{\sum_{b,t} A_{b,\ell,t,g}\mathbf{1}[F_{b,t}=1]}
+{\sum_{b,t}\mathbf{1}[F_{b,t}=1]}.$$</div>
+<p>A basic specialization score is mutual information:</p>
+<div class="math-block">$$I(G;F \mid \ell)
+= \sum_{g,f} P(g,f\mid \ell)
+\log \frac{P(g,f\mid \ell)}{P(g\mid \ell)P(f\mid \ell)}.$$</div>
+<p>But routing correlation is not enough. We also want causal dependence. Ablate expert $g$ or route factor-$F$ tokens away from it, then measure the feature-specific loss increase:</p>
+<div class="math-block">$$\Delta_{g,F}
+= \mathbb{E}_{x \sim F}[\mathcal{L}(x; \mathrm{ablate}\ g)]
+- \mathbb{E}_{x \sim F}[\mathcal{L}(x; \mathrm{baseline})].$$</div>
+<p>A real module should have both:</p>
+<div class="math-block">$$I(G;F \mid \ell) \text{ high}
+\quad \text{and} \quad
+\Delta_{g,F} \text{ high on the intended factor.}$$</div>
+<p>If $I$ is high but $\Delta$ is low, routing is decorative. If $\Delta$ is high but $I$ is low, the factor may be distributed across experts. If both are low while perplexity is good, the model may be using dense residual pathways or shared generic experts rather than modular specialization.</p>
+<h2>Why global pools are an especially good small-model experiment</h2>
+<p>This topic is experimentally attractive because the toy setup can have known ground-truth factors.</p>
+<p>Create synthetic sequences with factors like:</p>
+<ul>
+<li>domain: natural language vs code-like grammar vs arithmetic strings</li>
+<li>rare exception: a low-frequency token class requiring a different mapping</li>
+<li>position rule: early vs late token dependency</li>
+<li>format rule: JSON-like bracket closure vs prose continuation</li>
+</ul>
+<p>Train two small models under equal active compute:</p>
+<ol>
+<li>layer-local MoE: $L$ layers, $M$ experts per layer</li>
+<li>global-pool MoE: $L$ layers, $G &lt; L M$ shared experts</li>
+</ol>
+<p>Match active experts per token and approximate FLOPs. Then compare not only validation loss, but the mechanism:</p>
+<div class="math-block">$$U_{\ell,g},\quad
+I(G;F\mid \ell),\quad
+\Delta_{g,F},\quad
+\cos_g(\ell,\ell&#x27;),\quad
+\text{rare-feature accuracy}.$$</div>
+<p>The interesting result would not be “global pooling wins.” The interesting result would be a map of when sharing helps and when it causes interference.</p>
+<p>A plausible hypothesis:</p>
+<ul>
+<li>global pooling helps when a feature needs the same transformation at several depths;</li>
+<li>layer-local experts help when depth-specific transformations have conflicting gradients;</li>
+<li>rare features need either protected routing, expert capacity, or loss weighting, otherwise they disappear under common-token load.</li>
+</ul>
+<h2>What to measure</h2>
+<p>For a MoE expert-allocation study, measure these directly:</p>
+<ol>
+<li><strong>Routing usage matrix</strong></li>
+</ol>
+<div class="math-block">$$   U_{\ell,g} = \frac{1}{BT}\sum_{b,t} A_{b,\ell,t,g}.$$</div>
+<p>   Look for collapsed experts, depth-specific experts, and globally reused experts.</p>
+<ol>
+<li><strong>Router entropy by factor and layer</strong></li>
+</ol>
+<div class="math-block">$$   H(G\mid F,\ell) = -\sum_g P(g\mid F,\ell)\log P(g\mid F,\ell).$$</div>
+<p>   Low entropy may indicate specialization; it may also indicate collapse.</p>
+<ol>
+<li><strong>Factor-routing mutual information</strong></li>
+</ol>
+<div class="math-block">$$   I(G;F\mid \ell).$$</div>
+<p>   Use it as a correlation screen, not final evidence.</p>
+<ol>
+<li><strong>Causal expert ablations</strong></li>
+</ol>
+<div class="math-block">$$   \Delta_{g,F}
+   = \mathbb{E}_{x \sim F}[\mathcal{L}(x; \mathrm{ablate}\ g)]
+   - \mathbb{E}_{x \sim F}[\mathcal{L}(x)].$$</div>
+<p>   This is the key modularity test.</p>
+<ol>
+<li><strong>Cross-layer gradient cosine for shared experts</strong></li>
+</ol>
+<div class="math-block">$$   \cos_g(\ell,\ell&#x27;)
+   = \frac{\langle \nabla_{\phi_g}^{(\ell)}, \nabla_{\phi_g}^{(\ell&#x27;)}\rangle}
+   {\|\nabla_{\phi_g}^{(\ell)}\|\,\|\nabla_{\phi_g}^{(\ell&#x27;)}\|}.$$</div>
+<p>   This tells you whether sharing is reuse or interference.</p>
+<ol>
+<li><strong>Rare-feature retention under equal loss</strong></li>
+</ol>
+<p>   Slice evaluation by low-frequency factors. Do not trust aggregate perplexity alone.</p>
+<h2>Minimal experiment</h2>
+<p>Build a tiny decoder-only LM with MoE MLP blocks. Use a synthetic dataset with three factor families:</p>
+<ul>
+<li>common grammar tokens;</li>
+<li>domain-specific subsequences;</li>
+<li>rare exception tokens requiring a different local rule.</li>
+</ul>
+<p>Train these variants with matched active compute:</p>
+<ol>
+<li>dense MLP baseline;</li>
+<li>layer-local top-1 or top-2 MoE;</li>
+<li>globally shared expert pool;</li>
+<li>global pool with a stronger balance/capacity setting;</li>
+<li>optional protected rare-feature routing or rare-slice loss weighting.</li>
+</ol>
+<p>Log:</p>
+<ul>
+<li>train/validation loss;</li>
+<li>per-factor accuracy;</li>
+<li>$U_{\ell,g}$ heatmaps;</li>
+<li>$I(G;F\mid\ell)$;</li>
+<li>expert ablation losses $\Delta_{g,F}$;</li>
+<li>cross-layer gradient cosine for shared experts;</li>
+<li>dropped-token or overflow rate by factor.</li>
+</ul>
+<p>The falsifier for the global-pool story is clean: if the shared-pool model matches loss but has lower factor-routing mutual information, weaker causal ablation effects, worse rare-feature accuracy, or negative cross-layer gradient alignment, then parameter savings are hiding modularity loss.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Balanced but non-modular routing.</strong> The auxiliary loss can distribute tokens evenly without producing meaningful experts.</li>
+</ol>
+<ol>
+<li><strong>Decorative specialization.</strong> Experts correlate with factors, but ablating them does not affect those factors.</li>
+</ol>
+<ol>
+<li><strong>Common-token monopolies.</strong> High-frequency transformations dominate shared experts, drowning rare-feature gradients.</li>
+</ol>
+<ol>
+<li><strong>Cross-layer interference.</strong> A global expert receives incompatible gradients from different depths and becomes a compromise transformation.</li>
+</ol>
+<ol>
+<li><strong>Capacity artifacts.</strong> Rare features look hard only because they overflow or are dropped under capacity constraints.</li>
+</ol>
+<ol>
+<li><strong>Dense-path leakage.</strong> Residual streams or attention heads solve the task while MoE routing looks interpretable but is not causal.</li>
+</ol>
+<ol>
+<li><strong>Perplexity camouflage.</strong> Aggregate loss improves while low-frequency/domain-specific features get worse.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant notes and questions:</p>
+<ul>
+<li>[[2026-05-09]]: UniPool and EMO made MoE capacity allocation a daily scout opportunity.</li>
+<li>[[2026-05-09#2. Test whether shared MoE expert pools preserve or blur modular features]]</li>
+<li>[[questions#2026-05-09 questions]]: “Does a globally shared MoE expert pool preserve rare/domain-specific feature causality as well as layer-local experts, or does shared routing blur specialization while keeping perplexity low?”</li>
+<li>Related older question: [[questions#Open questions]]: “Are MoE routing masks a causal control surface for rare-feature behavior, or do they mostly steer superficial style/safety patterns?”</li>
+</ul>
+<p>The refined version after this derivation: measure global expert pooling as <strong>gradient-sharing geometry plus causal feature dependence</strong>, not only as a parameter/perplexity trade-off.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 08:03</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

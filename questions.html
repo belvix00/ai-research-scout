@@ -96,13 +96,16 @@
 <ul>
 <li>[experiment] In a fixed agentic RL sandbox, do strategy priors, per-turn information-gain shaping, and prompt-space perturbations move the rollout distribution in distinguishable ways, or are they all proxies for more samples?</li>
 <li>[experiment] Does a globally shared MoE expert pool preserve rare/domain-specific feature causality as well as layer-local experts, or does shared routing blur specialization while keeping perplexity low?</li>
+</ul>
+<p>  - Clarified in [[2026-05-09-moe-expert-allocation]]: treat global expert pooling as gradient-sharing geometry plus causal feature dependence. Measure usage matrices $U_{\ell,g}$, factor-routing mutual information $I(G;F\mid\ell)$, expert ablation losses $\Delta_{g,F}$, cross-layer gradient cosine for shared experts, and rare-feature retention under matched active compute.</p>
+<ul>
 <li>[experiment] Which long-context access interface retains exact constraints best under equal cost: dense retrieval, compact concept signatures, raw corpus tool access, or full-context prompting?</li>
 <li>[candidate] Can continuous latent language models expose controllable global plan variables more cleanly than autoregressive hidden states?</li>
 <li>[experiment] During LLM-generated Triton kernel repair, which regresses first when correctness improves: memory bandwidth, occupancy, fusion quality, or end-to-end speedup?</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 03:08</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-09 08:03</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
