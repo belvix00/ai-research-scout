@@ -190,10 +190,24 @@
 <ul>
 <li>No single dominant pattern today; durable updates split across MoE allocation, agent-RL lifecycle, long-context evidence access, audio factor survival, and interpretability capacity audits.</li>
 <li>Runtime systems remain experimental conditions: KV layout, prefix caching, CPU/GPU orchestration, kernel broadcast placement, and compression can change what information survives or what experiments are cheap.</li>
+</ul>
+<h2>Daily additions — 2026-05-11</h2>
+<ul>
+<li><strong>Temporary-lossy pretraining is now a concrete mechanism class</strong> — Lighthouse Attention and Token-Superposition Training both deliberately compress/drop sequence detail during most of training, then recover standard/full-resolution behavior. Experiment: tiny LM with lossy-token or hierarchical-attention phase plus AR/full-attention recovery; measure rare-token/order-sensitive slices and recovery speed under matched FLOPs.</li>
+<li><strong>Reasoning RL needs expressiveness-controlled environments</strong> — ScaleLogic separates proof depth from logical expressiveness, while RAO and POPO change delegation and rollout contrast. Experiment: toy symbolic environment with fixed verifier and adjustable operators; compare grouped positive/negative, positive-only, and recursive/delegated rollouts.</li>
+<li><strong>Interpretability methods should be audited by causal prediction capacity</strong> — SoftSAE, patch-effect graphs, and jet decompositions are three ways of changing explanation capacity/structure. Experiment: compare fixed-k SAE, dynamic-k SAE, and graph features on held-out activation-patching effect prediction rather than reconstruction alone.</li>
+<li><strong>Speech interfaces need task/factor-preservation sign-off</strong> — PairAlign, TextPro-SLM, answer-preserving compression, and dysarthric-ASR context failures show that tokenization, compression, and prompt context can preserve averages while losing specific factors. Experiment: one speech-factor survival benchmark across raw/compressed/codec/prosody-aware representations.</li>
+<li><strong>Serving path remains a mechanism-preservation variable</strong> — Million-token serving, CPU/GPU disaggregation, and ternary SIMD kernels show runtime changes can alter cost and possibly reproducibility/failure slices. Experiment: compare baseline vs optimized local paths on long-context/rare-feature prompts with output/logprob drift and latency/memory.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Temporary lossiness may be useful during training, but needs falsification on rare/order-sensitive slices before becoming a general principle.</li>
+<li>Audio context conditioning remains suspect: context in the prompt is not evidence the acoustic decision path used it.</li>
+<li>HN remained low-weight; only mechanism-bearing weak signals were retained.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-10 03:06</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

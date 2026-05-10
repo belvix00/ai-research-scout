@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-10 03:06:19</p>
+<p>Generated: 2026-05-11 03:06:28</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -391,6 +391,27 @@
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - Mechanism: - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the generat</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - <strong>Mechanism</strong> - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the g</li>
 </ul>
+<h2>Temporary-lossy pretraining recovery probes</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-11</li>
+<li>Last seen: 2026-05-11</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Mechanism</h3>
+<p>Use lossy/coarse sequence interfaces during most of pretraining, then recover standard full-resolution behavior near the end.</p>
+<h3>Minimal experiment</h3>
+<p>Train tiny LMs with lossy token-bag or hierarchical-attention phases followed by AR/full-attention recovery; compare rare-token, order-sensitive, syntax, and long-context slices under matched FLOPs.</p>
+<h3>Falsifier</h3>
+<p>Lossy phases fail to recover baseline behavior under matched compute or only improve aggregate loss while damaging rare/order-sensitive slices.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.06546v1</code> — Token-Superposition Training combines contiguous tokens into multi-hot targets during an efficient phase, then returns to standard training.</li>
+<li><code>https://arxiv.org/abs/2605.06554v1</code> — Lighthouse Attention uses a training-only hierarchical attention wrapper that is removed near the end of training.</li>
+</ul>
 <h2>Cost-normalized long-context interface benchmark</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -587,6 +608,46 @@
 <ul>
 <li><code>daily/2026-05-05-2nd-run.md</code> — - <strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2604.27039" target="_blank" rel="noopener">Length Value Model</a>, <a href="https://openreview.net/forum?id=K5A2jBmEBK" target="_blank" rel="noopener">DeepCompress</a>, <a href="https://huggingface.co/papers/2605.01032" target="_blank" rel="noopener">StreamingThinker</a>. - <strong>Mechanism:</strong> Reasoning length is treated as an internal state variable with dense value supervision, rather than an external max-token budget. If the model can predict remaining horizon or classify simple vs hard trajectories, it can choose where to spend test-time compute. - <strong>Minimal experiment/probe:</strong> On a small math/code dataset, train a lightweight probe on hidden states to predict remaining solution length and final correctness</li>
 <li><code>daily/2026-05-05-1133-IST.md</code> — - <strong>Evidence links:</strong> <a href="https://huggingface.co/papers/2604.27039" target="_blank" rel="noopener">Length Value Model</a>, <a href="https://openreview.net/forum?id=K5A2jBmEBK" target="_blank" rel="noopener">DeepCompress</a>, <a href="https://huggingface.co/papers/2605.01032" target="_blank" rel="noopener">StreamingThinker</a>. - <strong>Mechanism:</strong> Reasoning length is treated as an internal state variable with dense value supervision, rather than an external max-token budget. If the model can predict remaining horizon or classify simple vs hard trajectories, it can choose where to spend test-time compute. - <strong>Minimal experiment/probe:</strong> On a small math/code dataset, train a lightweight probe on hidden states to predict remaining solution length and final correctness</li>
+</ul>
+<h2>Expressiveness-controlled RL reasoning lab</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-11</li>
+<li>Last seen: 2026-05-11</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Mechanism</h3>
+<p>Separate proof depth, logical expressiveness, rollout contrast source, and delegation structure to explain RL reasoning sample efficiency.</p>
+<h3>Minimal experiment</h3>
+<p>Toy symbolic environment with adjustable operators and proof depth; compare grouped rollouts, positive-only updates, and recursive/delegated traces.</p>
+<h3>Falsifier</h3>
+<p>Expressiveness does not change scaling after controlling for token length and reward sparsity, or lifecycle interventions do not alter update direction.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.06638v1</code> — ScaleLogic reports RL training compute scaling with proof depth and larger exponents for more expressive logic.</li>
+</ul>
+<h2>Speech factor-preservation sign-off benchmark</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-11</li>
+<li>Last seen: 2026-05-11</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Mechanism</h3>
+<p>Tokenization, compression, and context conditioning can preserve aggregate speech metrics while damaging speaker, prosody, rare entity, clinical context, or downstream answer families.</p>
+<h3>Minimal experiment</h3>
+<p>Compare raw/compressed/codec/prosody-aware representations with probes and downstream tasks across labeled speech factors.</p>
+<h3>Falsifier</h3>
+<p>Factor probes and downstream slices reveal no failures beyond aggregate WER/CER/MOS.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.06631v1</code> — Task-aware answer preservation evaluates compression by worst-family downstream answer error.</li>
 </ul>
 <h2>Shared MoE expert pools and route masks as causal capacity probes</h2>
 <ul>
@@ -2259,7 +2320,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-10 03:06</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

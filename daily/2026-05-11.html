@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-11 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-11</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest signals were: long-context training/serving is splitting into separate mechanisms; agent/RL papers are making the rollout lifecycle more explicit; interpretability is experimenting with variable-capacity and graph-structured decompositions; audio papers are converging on factorized speech interfaces and task-aware evaluation; and infra posts/papers continue to show that runtime systems are experimental conditions, not neutral plumbing.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>Several architecture papers attacked the “sequence interface” from different angles. <strong>Lighthouse Attention</strong> proposes a training-only hierarchical attention wrapper for long-context pretraining: compress/decompress the sequence during most of training, then remove the wrapper and recover a standard full-attention model near the end. This is interesting because it does not claim that the final deployed architecture must be sparse; instead, it treats approximate attention as a pretraining curriculum and throughput hack. Relative to last week’s long-context interface items, this adds a training-time version of the evidence-retention question: what information can be lossy during optimization if the final model is later recovered?</p>
+<p><strong>Token-Superposition Training</strong> makes an even more explicit lossy-pretraining move: merge contiguous tokens into multi-hot targets during an efficient phase, then return to normal token training. If the result holds broadly, the useful concept is “temporary objective coarsening”: early training may not require all token-order detail at full resolution. In the same architecture cluster, <strong>Cola DLM</strong> continues the latent-language thread by separating global semantic prior modeling from local text realization through continuous latent diffusion. This adds a different inductive bias from autoregressive next-token prediction: plan-like variables may be modeled in latent space, then decoded into text.</p>
+<p>A separate mechanistic architecture signal came from the attention-sink paper. It traces sinks to value aggregation, variance discrepancy, FFN super-neuron amplification, and dimensional disparity, then reproduces sink behavior through controlled interventions. That is stronger than a descriptive “attention sinks exist” claim: it suggests a causal chain and a normalization intervention to test.</p>
+<h3>Training, RL, and optimization</h3>
+<p>The RL/reasoning cluster was unusually dense. <strong>ScaleLogic</strong> gives a controlled environment where reasoning difficulty decomposes into horizon/depth and logical expressiveness; the authors report that RL compute scales as a power law with proof depth and that the exponent worsens as expressiveness increases. This is valuable because “long-horizon reasoning” is normally mixed with data, prompt, verifier, and benchmark artifacts. Here the mechanism is more isolated: proof length and logical operator richness change the learning curve.</p>
+<p>Agent RL also continued to move from final-answer optimization toward lifecycle design. <strong>Recursive Agent Optimization</strong> makes delegation and recursive subtask spawning trainable. <strong>StraTA</strong> from recent OpenReview/arXiv signals uses strategy abstraction before action execution. <strong>POPO</strong> asks whether positive rollouts alone can induce usable negative gradients through probability redistribution. Together these do not prove one thesis, but they do broaden the space of rollout interventions: structure the agent tree, structure the trajectory strategy, or change which rollout signs enter the update.</p>
+<p>Optimization also produced a useful warning signal: <strong>optimizer-model consistency</strong> argues that pretraining optimizer choice shapes the checkpoint’s activation regularization and local landscape, so SFT with a different optimizer may forget more. That is a training-dynamics claim with direct experimental implications: optimizer identity may be a hidden part of the pretrained model’s “state.” The SignSGD theory paper and SGDM high-probability bounds from OpenReview are broader math background rather than immediate opportunities, but they reinforce that update geometry and noise structure matter.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Interpretability signals split into “capacity” and “structure.” <strong>SoftSAE</strong> replaces fixed TopK SAE sparsity with dynamic input-dependent TopK, based on the idea that different inputs have different local intrinsic dimensionality. If true, fixed-k SAEs are not just inefficient; they may systematically add noise on simple inputs and miss factors on complex ones. The right evaluation is not only reconstruction but whether adaptive features better predict causal intervention effects.</p>
+<p><strong>Patch-Effect Graph Kernels</strong> proposes a different representation for activation-patching evidence: convert patch profiles into graphs over model components and compare them using graph kernels. This is useful because patching runs produce high-dimensional prompt-by-layer-by-head tensors that are hard to compare across tasks. Graph structure could make circuit families comparable instead of forcing hand inspection.</p>
+<p>OpenReview’s <strong>Decomposing LLM Computation with Jets</strong> adds a more mathematical decomposition language: explicit computational paths plus remainders via jet operators. It is earlier-stage and more abstract, but sits naturally beside graph kernels and SAEs as a third decomposition family. The skeptical/failure-mode side was represented by the warmth/sycophancy Nature item and emotional false-presupposition work: style or affective objectives can move accuracy, calibration, and belief resistance in ways aggregate helpfulness scores may hide.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio was one of the clearest multi-paper clusters. <strong>PairAlign</strong> reframes audio tokenization as sequence-level self-alignment rather than local quantization or reconstruction. The important mechanism is that token identity, order, length, termination, and edit similarity become training targets. This directly matters for speech memory and reasoning because a bad token sequence interface can lose content even when a codec sounds plausible.</p>
+<p><strong>TextPro-SLM</strong> attacks the speech/text modality gap from the input side: synchronized text tokens plus prosody embeddings feed the LLM, aiming to preserve text-model semantics while adding paralinguistic information. This pairs well with <strong>WavCube</strong> and earlier speech-factor evidence: unified representations must preserve semantic content, acoustic detail, speaker/prosody, and timing without collapsing them into one latent. <strong>Task-Aware Answer Preservation under Audio Compression</strong> adds an evaluation guardrail: compression should be accepted only if worst-family downstream answer error remains bounded, not if average audio metrics look good.</p>
+<p>The failure signal remains strong: <strong>dysarthric ASR context prompting</strong> found that diagnosis labels and richer clinical context did not reliably improve frozen audio-language models and could degrade WER, while LoRA adaptation helped. That means the presence of multimodal or textual context is not evidence that the model uses it. For speech systems, “context conditioning” needs causal tests.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>The infra cluster emphasized boundaries: KV cache layout, prefix caching, CPU/GPU orchestration, and custom low-bit kernels. Together AI’s DeepSeek-V4 serving post frames million-token context as an inference-systems problem involving compressed KV layouts, prefix caching, endpoint profiles, and kernel maturity. That complements the training-side long-context papers: even if training creates long-context competence, deployment depends on whether prefill/decode/KV movement can be made stable and economical.</p>
+<p>The PyTorch SMG post argues for disaggregating CPU orchestration from GPU execution in LLM serving, motivated by production bottlenecks such as Python/GIL pressure. This matters for research because serving-path changes can alter the practical rollout distribution for agents and RL training. <strong>Litespark</strong> shows the same principle on consumer CPUs: ternary-weight models only become useful if kernels exploit the algebraic structure with SIMD add/subtract rather than treating ternary weights as ordinary dense floats.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>Model/data hub signals were used selectively rather than as release hype. MiniMind-O remains useful because it is small, open, speech-native, and inspectable; it can serve as a cheap playground for Thinker/Talker and codec-buffer probes. Common Corpus from OpenReview is worth tracking as a permissively licensed pretraining-data effort, but today it was less mechanism-rich than the training/audio/infra signals. HN was weak and only promoted when it pointed to mechanism-bearing material, such as KV-cache explanation or warmth/sycophancy tradeoffs.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Lighthouse Attention for long-context pretraining</strong> — A training-only hierarchical attention wrapper compresses/decompresses long sequences around ordinary SDPA and is removed near the end of training. The important idea is approximate attention as an optimization curriculum rather than a permanent architecture. Evidence: https://arxiv.org/abs/2605.06554v1</li>
+</ol>
+<ol>
+<li><strong>Attention sinks get a proposed causal chain</strong> — The attention-sink paper connects value aggregation, variance discrepancy, FFN super-neurons, and dimensional disparity, then recreates sinks with interventions. This makes attention sinks testable as a structural mechanism and suggests head-wise RMSNorm as a control knob. Evidence: https://arxiv.org/abs/2605.06611v1</li>
+</ol>
+<ol>
+<li><strong>Token-Superposition Training coarsens early pretraining</strong> — TST combines contiguous tokens into multi-hot targets during a high-throughput phase and later recovers ordinary training. The interesting question is which token-order information can be temporarily sacrificed without hurting final capabilities. Evidence: https://arxiv.org/abs/2605.06546v1</li>
+</ol>
+<ol>
+<li><strong>Continuous latent diffusion language modeling remains alive</strong> — Cola DLM models global semantics in continuous latent space with diffusion, then decodes to text. This is not just “diffusion for text”; it separates semantic prior transport from local surface realization. Evidence: https://arxiv.org/abs/2605.06548v1</li>
+</ol>
+<ol>
+<li><strong>ScaleLogic decomposes RL reasoning difficulty</strong> — The paper controls proof depth and logical expressiveness and reports different compute-scaling exponents. That creates a cleaner lab for asking whether RL teaches long-horizon reasoning or only adapts to shallow verifier-friendly patterns. Evidence: https://arxiv.org/abs/2605.06638v1</li>
+</ol>
+<ol>
+<li><strong>Recursive Agent Optimization makes delegation trainable</strong> — RAO trains agents to spawn/delegate to recursive copies, making divide-and-conquer inference a learned policy choice. This fits the rollout-lifecycle direction: task decomposition, communication, and stopping are part of the optimizer’s trajectory distribution. Evidence: https://arxiv.org/abs/2605.06639v1</li>
+</ol>
+<ol>
+<li><strong>POPO challenges the need for sampled negative rollouts</strong> — Positive-only policy optimization claims implicit negative gradients can arise by redistributing probability among online positive rollouts. If real, it changes how sparse binary RLVR should be instrumented: positive set coverage and importance weights become the contrast source. Evidence: https://arxiv.org/abs/2605.06650v1</li>
+</ol>
+<ol>
+<li><strong>Optimizer choice may be checkpoint-compatible or checkpoint-hostile</strong> — Optimizer-model consistency argues that finetuning with the pretraining optimizer forgets less because the optimizer has shaped the checkpoint’s landscape. This should be easy to probe on smaller models by varying pretraining and SFT optimizers while logging forgetting/activation drift. Evidence: https://arxiv.org/abs/2605.06654v1</li>
+</ol>
+<ol>
+<li><strong>SoftSAE introduces adaptive explanation capacity</strong> — Dynamic TopK sparse autoencoders allow different inputs to activate different numbers of features. The next question is whether adaptive sparsity improves causal interpretability rather than only reconstruction. Evidence: https://arxiv.org/abs/2605.06610v1</li>
+</ol>
+<ol>
+<li><strong>Patch-effect graphs structure activation-patching evidence</strong> — Converting patch profiles into graphs makes patching outputs comparable across prompts and task families. This is a useful tooling idea for scaling circuit analysis beyond a few hand-curated heatmaps. Evidence: https://arxiv.org/abs/2605.06480v1</li>
+</ol>
+<ol>
+<li><strong>PairAlign targets sequence-level audio token quality</strong> — Audio tokenizers usually optimize local reconstruction or clustering; PairAlign optimizes cross-view sequence predictability, compactness, length, EOS, and edit-like consistency. That is a strong signal for speech-token interfaces. Evidence: https://arxiv.org/abs/2605.06582v1</li>
+</ol>
+<ol>
+<li><strong>Audio compression evaluation moves to answer preservation</strong> — Task-aware answer preservation asks whether compressed audio preserves downstream LALM answers, especially worst-affected query families. This is a clean example of replacing aggregate codec quality with task-conditioned failure slices. Evidence: https://arxiv.org/abs/2605.06631v1</li>
+</ol>
+<ol>
+<li><strong>Dysarthric ASR shows context may be ignored</strong> — Diagnosis labels and clinical descriptions did not meaningfully help frozen audio-language models, while context-aware LoRA adaptation did. This warns against assuming that prompt-side clinical or multimodal context is actually used by the acoustic decision process. Evidence: https://arxiv.org/abs/2605.02782v1</li>
+</ol>
+<ol>
+<li><strong>Million-token context serving remains a systems problem</strong> — Together’s post highlights compressed KV, prefix caching, kernel maturity, and endpoint profiling for DeepSeek-V4-style million-token context. This is a practical reminder that long-context research and long-context serving have different bottlenecks. Evidence: https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem</li>
+</ol>
+<ol>
+<li><strong>Ternary CPU inference needs matching kernels</strong> — Litespark reports large speed/memory gains for ternary models only after replacing generic dense floating-point paths with custom SIMD add/subtract kernels. The broader lesson is that model arithmetic and runtime kernels must co-design, especially for local/on-device experiments. Evidence: https://arxiv.org/abs/2605.06485v1</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Temporary lossiness is becoming a serious training idea.</strong> Lighthouse Attention and Token-Superposition Training both intentionally discard or compress detail during most of training, then recover a standard or higher-resolution behavior later. This suggests a class of experiments around which information must be exact during optimization versus only exact at convergence.</li>
+</ol>
+<ol>
+<li><strong>The unit of RL improvement is moving from “objective” to “trajectory lifecycle.”</strong> ScaleLogic, RAO, POPO, StraTA-like strategy abstraction, and verifier-backed problem generation all change different pieces of what trajectories are generated, decomposed, contrasted, and rewarded. The shared question is not “PPO vs GRPO vs DPO,” but which trajectory distribution gives useful gradients.</li>
+</ol>
+<ol>
+<li><strong>Speech systems need factor-specific causal tests.</strong> PairAlign, TextPro-SLM, answer-preserving compression, dysarthric ASR prompting failures, and WavCube-like unified representations all point to the same evaluation gap: aggregate WER/CER/MOS or average QA accuracy can hide failure of prosody, speaker identity, clinical context, rare entities, or downstream answer families.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Test temporary-lossy pretraining on a tiny language model</h3>
+<p>Evidence links: Lighthouse Attention (https://arxiv.org/abs/2605.06554v1), Token-Superposition Training (https://arxiv.org/abs/2605.06546v1), Continuous Latent Diffusion LM (https://arxiv.org/abs/2605.06548v1).</p>
+<p>Mechanism: Early training may only need coarse information channels; exact token order/full attention may be recoverable later if the model has learned enough distributional structure.</p>
+<p>Minimal experiment/probe: Train tiny transformers on a small corpus with (a) baseline AR, (b) short lossy token-bag phase then AR recovery, and (c) local/hierarchical attention phase then full attention recovery. Log loss, rare-token accuracy, syntax probes, and recovery speed under matched FLOPs.</p>
+<p>Falsifier: Lossy phases either fail to recover baseline downstream behavior under matched compute or only help loss while damaging rare/order-sensitive slices.</p>
+<p>Confidence: medium.</p>
+<h3>2. Build a controlled RL reasoning scaling lab around expressiveness, not benchmark names</h3>
+<p>Evidence links: ScaleLogic (https://arxiv.org/abs/2605.06638v1), POPO (https://arxiv.org/abs/2605.06650v1), Recursive Agent Optimization (https://arxiv.org/abs/2605.06639v1).</p>
+<p>Mechanism: RL difficulty may be governed by proof horizon, operator expressiveness, rollout contrast source, and decomposition policy rather than a single “reasoning” scalar.</p>
+<p>Minimal experiment/probe: Create a toy symbolic environment with adjustable proof depth and operator set. Compare outcome-only GRPO-style groups, positive-only updates, and recursive/delegated traces. Measure solve rate, sample efficiency, trajectory diversity, and zero-advantage rate.</p>
+<p>Falsifier: Expressiveness changes do not alter scaling once token length and reward sparsity are controlled, or lifecycle interventions fail to change update direction.</p>
+<p>Confidence: medium-high.</p>
+<h3>3. Evaluate adaptive interpretability capacity by causal prediction, not reconstruction</h3>
+<p>Evidence links: SoftSAE (https://arxiv.org/abs/2605.06610v1), Patch-Effect Graph Kernels (https://arxiv.org/abs/2605.06480v1), Jets OpenReview (https://openreview.net/forum?id=u6JLh0BO5h).</p>
+<p>Mechanism: Different examples may require different numbers and structures of explanatory factors; fixed-k features or unstructured patch tensors can hide variable circuit complexity.</p>
+<p>Minimal experiment/probe: On GPT-2 Small IOI-style tasks, compare fixed-k SAE, dynamic-k SAE, and patch-effect graph features for predicting held-out activation-patching effects and behavior under feature ablation. Score intervention prediction, not explanation plausibility.</p>
+<p>Falsifier: Dynamic capacity improves reconstruction but not held-out intervention prediction or circuit localization.</p>
+<p>Confidence: medium.</p>
+<h3>4. Make a speech-factor survival benchmark for tokenization, compression, and context conditioning</h3>
+<p>Evidence links: PairAlign (https://arxiv.org/abs/2605.06582v1), TextPro-SLM (https://arxiv.org/abs/2605.05927v1), answer-preserving compression (https://arxiv.org/abs/2605.06631v1), dysarthric context failure (https://arxiv.org/abs/2605.02782v1).</p>
+<p>Mechanism: Speech systems can preserve surface intelligibility while losing one task-relevant factor: speaker, prosody, rare entity, clinical context, phoneme, or downstream answer family.</p>
+<p>Minimal experiment/probe: Use a small public speech encoder/codec stack and build labeled slices for speaker/script/accent/prosody/entities/context. Compare raw audio, compressed audio, codec tokens, prosody-aware text tokens, and prompted context. Fit probes and measure downstream answer/WER deltas per factor.</p>
+<p>Falsifier: Factor probes and downstream slices do not reveal failures beyond aggregate WER/CER/MOS, or context conditioning changes outputs without factor-specific gains.</p>
+<p>Confidence: high.</p>
+<h3>5. Treat serving path as a mechanism-preservation variable</h3>
+<p>Evidence links: Together million-token serving (https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem), PyTorch SMG (https://pytorch.org/blog/lightseek-smg/), Litespark ternary CPU inference (https://arxiv.org/abs/2605.06485v1).</p>
+<p>Mechanism: KV compression, prefix caching, CPU/GPU orchestration, ternary kernels, and runtime backend changes can alter not only cost but reproducibility, latency distribution, and sometimes model behavior.</p>
+<p>Minimal experiment/probe: Run one small model through two local inference paths where possible: baseline PyTorch/llama.cpp versus quantized/ternary/custom-cache path. Use long-context and rare-fact prompts; log output agreement, logprob/activation drift if accessible, latency, memory, and failure slices.</p>
+<p>Falsifier: Runtime path changes affect only speed/memory and never change output/logprob/failure distributions under controlled seeds and prompts.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>EMO and shared/domain-constrained expert pools</strong> — MoE modularity remains promising, but avoid adding duplicate MoE opportunities until there is enough evidence to compare document-level grouping against global shared pools. Evidence: https://arxiv.org/abs/2605.06663v1</li>
+<li><strong>Optimizer-model consistency</strong> — Worth a small forgetting/activation-drift reproduction, especially if Muon/AdamW differences appear in more than one paper. Evidence: https://arxiv.org/abs/2605.06654v1</li>
+<li><strong>JASTIN-style audio evaluators</strong> — Instruction-following audio judges may become useful tools, but need calibration and adversarial/family-level validation before being trusted. Evidence: https://arxiv.org/abs/2605.04505v1</li>
+<li><strong>Attention-sink normalization interventions</strong> — Head-wise RMSNorm or sink relocation tests could become a compact mechanistic demo if reproduced on small open models. Evidence: https://arxiv.org/abs/2605.06611v1</li>
+<li><strong>OpenReview Q-RAG / FrugalRAG / SeekBench cluster</strong> — Retrieval and search-agent papers are relevant when they expose process-level evidence use, not merely RAG benchmark scores. Evidence: https://openreview.net/forum?id=MS9nWFY7LG and https://openreview.net/forum?id=uQKtwdJN0o and https://openreview.net/forum?id=r0L9GwlnzP</li>
+<li><strong>Warmth/sycophancy tradeoff</strong> — Keep as skeptical context until the primary study details are read carefully; useful for style-objective drift probes. Evidence: https://www.nature.com/articles/s41586-026-10410-0</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
