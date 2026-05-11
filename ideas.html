@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-11 03:06:28</p>
+<p>Generated: 2026-05-12 03:07:34</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -391,6 +391,97 @@
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - Mechanism: - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the generat</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - <strong>Mechanism</strong> - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the g</li>
 </ul>
+<h2>Adaptive inference controllers need failure-mode evaluation</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-05</li>
+<li>Last seen: 2026-05-12</li>
+<li>Evidence count: 3</li>
+</ul>
+<h3>Thesis</h3>
+<p>SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</p>
+<h3>Mechanism</h3>
+<p>Gate compute with entropy, acceptance history, self-consistency, or posterior stability; evaluate accuracy-per-compute and cascade errors.</p>
+<h3>Minimal experiment</h3>
+<p>tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</p>
+<h3>Falsifier</h3>
+<p>Controller overhead erases gains or average speedups hide systematic failures on compositional/rare prompts.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-12.md</code> — AutoTTS searches over branch/continue/probe/prune/stop controllers using pre-collected reasoning trajectories and cheap feedback.</li>
+<li><code>running.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
+<li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
+</ul>
+<h2>Non-AR trajectory and compression diagnostics</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-12</li>
+<li>Last seen: 2026-05-12</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Byte-level, diffusion, and flow language models may have different trajectory bottlenecks, residual collapse modes, cache behavior, and compression rules than autoregressive LMs.</p>
+<h3>Mechanism</h3>
+<p>Generation trajectory, residual mean/outlier structure, and parallel representative tokens alter where information is stored and where compression hurts.</p>
+<h3>Minimal experiment</h3>
+<p>Compare tiny AR and masked/diffusion/byte models under matched quantization/sparsity and few-step trajectory scoring; measure loss, rare slices, outliers, and midpoint quality.</p>
+<h3>Falsifier</h3>
+<p>DLM/byte/flow models show the same compression/outlier/trajectory sensitivity as AR models after controlling scale and data.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
+<li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
+</ul>
+<h2>Sparse branch-point control for reasoning RL</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-12</li>
+<li>Last seen: 2026-05-12</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Reasoning post-training gains may concentrate at a small number of high-entropy decision points already available in the base model, while graph/listwise objectives improve rollout ranking.</p>
+<h3>Mechanism</h3>
+<p>Entropy-gated branch selection plus graph/listwise preference geometry localizes useful gradients.</p>
+<h3>Minimal experiment</h3>
+<p>On small math/code rollouts, compare DPO pairs, GraphDPO/listwise ranking, entropy-gated contrastive corrections, and OPD with KL baseline; log changed-token sparsity and promoted-token rank.</p>
+<h3>Falsifier</h3>
+<p>Gains require distributed token changes, promoted tokens are not in the base model top-k, or entropy-gated corrections fail across tasks.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-12.md</code> — GraphDPO treats multiple ranked rollouts as a directed preference graph rather than independent pairs.</li>
+<li><code>daily/2026-05-12.md</code> — ReasonMaxxer claims RL affects only 1-3% of high-entropy token positions and can be approximated by entropy-gated contrastive corrections.</li>
+</ul>
+<h2>Speech factor-preservation sign-off benchmark</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-11</li>
+<li>Last seen: 2026-05-12</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Mechanism</h3>
+<p>Tokenization, compression, and context conditioning can preserve aggregate speech metrics while damaging speaker, prosody, rare entity, clinical context, or downstream answer families.</p>
+<h3>Minimal experiment</h3>
+<p>Compare raw/compressed/codec/prosody-aware representations with probes and downstream tasks across labeled speech factors.</p>
+<h3>Falsifier</h3>
+<p>Factor probes and downstream slices reveal no failures beyond aggregate WER/CER/MOS.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-12.md</code> — MiniMind-O is small and open enough to inspect Thinker/Talker bridging, codec buffers, speaker tokens, and multimodal sequence format.</li>
+<li><code>https://arxiv.org/abs/2605.06631v1</code> — Task-aware answer preservation evaluates compression by worst-family downstream answer error.</li>
+</ul>
 <h2>Temporary-lossy pretraining recovery probes</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -478,29 +569,6 @@
 <ul>
 <li><code>daily/2026-05-05-2nd-run.md</code> — - <strong>Evidence links:</strong> <a href="https://openreview.net/forum?id=PzhNnMepgl" target="_blank" rel="noopener">SureLock for masked diffusion-LM decoding</a>, <a href="https://huggingface.co/papers/2605.01725" target="_blank" rel="noopener">Motion-Aware Caching</a>, <a href="https://openreview.net/forum?id=2baJBgfr9S" target="_blank" rel="noopener">HiDrop</a>, <a href="https://huggingface.co/papers/2604.27085" target="_blank" rel="noopener">RoundPipe</a>. - <strong>Mechanism:</strong> Several domains are converging on the same idea: compute should follow instability or utility, not position in a fixed schedule. Tokens with stabilized posteriors can be locked; static video regions can reuse cache; visual tokens can be injected/pruned according to layer role; GPU stages can be dispatched to break weight binding. - **Minimal exp</li>
 <li><code>daily/2026-05-05-1133-IST.md</code> — - <strong>Evidence links:</strong> <a href="https://openreview.net/forum?id=PzhNnMepgl" target="_blank" rel="noopener">SureLock for masked diffusion-LM decoding</a>, <a href="https://huggingface.co/papers/2605.01725" target="_blank" rel="noopener">Motion-Aware Caching</a>, <a href="https://openreview.net/forum?id=2baJBgfr9S" target="_blank" rel="noopener">HiDrop</a>, <a href="https://huggingface.co/papers/2604.27085" target="_blank" rel="noopener">RoundPipe</a>. - <strong>Mechanism:</strong> Several domains are converging on the same idea: compute should follow instability or utility, not position in a fixed schedule. Tokens with stabilized posteriors can be locked; static video regions can reuse cache; visual tokens can be injected/pruned according to layer role; GPU stages can be dispatched to break weight binding. - **Minimal exp</li>
-</ul>
-<h2>Adaptive inference controllers need failure-mode evaluation</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>inference</code>, <code>small-model</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-05</li>
-<li>Last seen: 2026-05-09</li>
-<li>Evidence count: 2</li>
-</ul>
-<h3>Thesis</h3>
-<p>SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</p>
-<h3>Mechanism</h3>
-<p>Gate compute with entropy, acceptance history, self-consistency, or posterior stability; evaluate accuracy-per-compute and cascade errors.</p>
-<h3>Minimal experiment</h3>
-<p>tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</p>
-<h3>Falsifier</h3>
-<p>Controller overhead erases gains or average speedups hide systematic failures on compositional/rare prompts.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>running.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
-<li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
 </ul>
 <h2>Audio generation needs dependency-factorized objectives</h2>
 <ul>
@@ -628,26 +696,6 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>https://arxiv.org/abs/2605.06638v1</code> — ScaleLogic reports RL training compute scaling with proof depth and larger exponents for more expressive logic.</li>
-</ul>
-<h2>Speech factor-preservation sign-off benchmark</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: none</li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-11</li>
-<li>Last seen: 2026-05-11</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Mechanism</h3>
-<p>Tokenization, compression, and context conditioning can preserve aggregate speech metrics while damaging speaker, prosody, rare entity, clinical context, or downstream answer families.</p>
-<h3>Minimal experiment</h3>
-<p>Compare raw/compressed/codec/prosody-aware representations with probes and downstream tasks across labeled speech factors.</p>
-<h3>Falsifier</h3>
-<p>Factor probes and downstream slices reveal no failures beyond aggregate WER/CER/MOS.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>https://arxiv.org/abs/2605.06631v1</code> — Task-aware answer preservation evaluates compression by worst-family downstream answer error.</li>
 </ul>
 <h2>Shared MoE expert pools and route masks as causal capacity probes</h2>
 <ul>
@@ -2320,7 +2368,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-12 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

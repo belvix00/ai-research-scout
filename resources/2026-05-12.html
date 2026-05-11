@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-12 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-12</h1>
+<h3>Core DL/LLM research</h3>
+<h2>arXiv — Fast Byte Latent Transformer</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.08044v1</p>
+<p>Summary: A new BLT variant attacks byte-level generation speed with block-wise diffusion, self-speculation, and diffusion-plus-verification. It was collected because byte-level LMs remove tokenizer brittleness but usually pay a byte-by-byte decoding tax. The mechanism signal is parallel byte generation plus verification as a way to keep tokenizer-free modeling while cutting memory-bandwidth cost.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — STARFlow2: Bridging Language Models and Normalizing Flows for Unified Multimodal Generation</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.08029v1</p>
+<p>Summary: STARFlow2 argues that autoregressive normalizing flows are structurally closer to LLM decoding than diffusion image generators because they share causal masks, left-to-right generation, and KV-cache mechanics. It interleaves a VLM stream and a TarFlow stream so visual outputs can enter the cache without re-encoding. Collected as a clean architecture signal for cache-friendly unified multimodal generation.</p>
+<p>Personalization: low</p>
+<h2>arXiv — GazeVLM: Active Vision via Internal Attention Control for Multimodal Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.07817v1</p>
+<p>Summary: GazeVLM adds learned gaze tokens that modulate a causal attention mask, letting the model suppress irrelevant visual features and focus locally without external crop tools or extra visual-token floods. The GRPO-trained policy rewards valid grounding. Collected because it turns visual attention allocation into an internal controllable mechanism rather than a separate agent wrapper.</p>
+<p>Personalization: low</p>
+<h2>HF Papers — LLMs Improving LLMs: Agentic Discovery for Test-Time Scaling</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.08083</p>
+<p>Summary: AutoTTS searches over width-depth test-time-scaling controllers using pre-collected trajectories and cheap probe signals instead of repeated expensive LLM calls. It is useful because the learned object is not an answer but a compute-allocation policy: branch, continue, probe, prune, or stop. The mechanism is controller synthesis over inference traces.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — DiffRetriever: Parallel Representative Tokens for Retrieval with Diffusion Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.07210v1</p>
+<p>Summary: DiffRetriever uses diffusion language models to read multiple masked representative positions in one bidirectional pass, avoiding autoregressive latency for multi-representative retrieval. It was collected because it shows a concrete capability difference between AR and diffusion LMs: parallel representative-token extraction. The learning value is retrieval as a place where diffusion-style parallelism may be structurally useful, not only generative.</p>
+<p>Personalization: low</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>arXiv — Beyond Pairs: Your Language Model is Secretly Optimizing a Preference Graph</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.08037v1</p>
+<p>Summary: GraphDPO generalizes pairwise DPO to directed acyclic preference graphs induced by multiple ranked rollouts per prompt. It preserves transitivity, handles equivalence layers, and keeps per-prompt complexity linear via log-sum-exp aggregation. Collected because it treats alignment data as a graph-structured supervision object rather than independent pairs.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — Rethinking RL for LLM Reasoning: It’s Sparse Policy Selection, Not Capability Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.06241</p>
+<p>Summary: This paper claims RL reasoning gains concentrate at only 1–3% of high-entropy token positions, promoting tokens already in the base model’s top-5 alternatives. ReasonMaxxer then applies contrastive loss only at entropy-gated decision points and reportedly matches RL with far less compute. Collected as a strong sparse-control hypothesis: RL may mostly select latent branches rather than teach new algorithms.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — Listwise Policy Optimization: Group-based RLVR as Target-Projection on the LLM Response Simplex</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.06139</p>
+<p>Summary: LPO reframes group-based RLVR as defining a target distribution on the response simplex and projecting the policy toward it by exact divergence minimization. It was collected because it gives a geometric language for GRPO-like updates: what target distribution is being implied by a group’s advantages? The mechanism signal is stable listwise projection with response diversity preservation.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — KL for a KL: On-Policy Distillation with Control Variate Baseline</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.07865v1</p>
+<p>Summary: vOPD casts on-policy distillation as policy-gradient RL and introduces a closed-form value baseline equal to per-token negative reverse KL between student and teacher. It aims to reduce variance without adding a critic or full-vocabulary overhead. Collected because OPD is becoming a recurring post-training primitive and this paper isolates a variance-reduction mechanism.</p>
+<p>Personalization: medium</p>
+<h2>HF Papers — Mean Mode Screaming: Mean–Variance Split Residuals for 1000-Layer Diffusion Transformers</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.06169</p>
+<p>Summary: This mechanistic training paper describes collapse in very deep DiTs where residual streams become mean-dominated and centered variation is suppressed. MV-Split residuals separately handle centered updates and trunk-mean replacement to stabilize 400–1000 layer DiTs. Collected because it is a rare architecture-training dynamics signal at extreme depth, with a concrete residual-stream failure mode.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Layer Collapse in Diffusion Language Models</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.06366v1</p>
+<p>Summary: This paper finds that early layers of LLaDA-like diffusion language models collapse into redundant activation patterns dominated by a persistent super-outlier, yet that outlier is causally important. It also reports compression behavior opposite to autoregressive LMs, including stronger robustness to low-bit quantization. Collected because DLMs may have different layer dynamics and deployment rules than AR models.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: Jets are proposed as a way to decompose LLM computations into explicit input-output path contributions plus remainders. This is not yet a plug-and-play tool, but it gives a formal vocabulary for disentangling computations that SAEs and patching only approximate empirically. Collected as a broad learning item for mechanistic decomposition.</p>
+<p>Personalization: low</p>
+<h3>Audio/TTS/speech</h3>
+<h2>arXiv — PairAlign: Sequence Tokenization via Self-Alignment with Applications to Audio Tokenization</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.06582v1</p>
+<p>Summary: PairAlign treats audio tokenization as conditional sequence generation and trains content-preserving views to predict each other’s token sequences while unrelated sequences act as competitors. It optimizes sequence consistency, compactness, length, EOS placement, and edit-like stability rather than just local codec reconstruction. Collected because speech-token interfaces are central to audio memory and reasoning.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — MiniMind-O Technical Report: An Open Small-Scale Speech-Native Omni Model</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.03937v1</p>
+<p>Summary: MiniMind-O is a 0.1B-scale open omni model with text, speech, image inputs and text/streaming-speech outputs. Its Thinker/Talker split, Mimi-code buffer, speaker token, and released multimodal sequence format make the full loop inspectable. Collected because small speech-native systems are cheap enough for factor and codec-interface probes.</p>
+<p>Personalization: high</p>
+<h2>arXiv — TextPro-SLM: Your Speech LLM Can Be a Prosody-Aware Text LLM</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.05927v2</p>
+<p>Summary: TextPro-SLM reduces the speech/text modality gap from the input side by pairing synchronized text tokens with prosody embeddings before the LLM. It reports strong paralinguistic understanding with roughly 1,000 hours of LLM training audio. The mechanism is factorized input representation: text-like semantics plus prosody channels instead of one overloaded speech latent.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — X-Voice: Zero-Shot Cross-Lingual Voice Cloning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.05611v1</p>
+<p>Summary: X-Voice is a 0.4B multilingual zero-shot voice cloning model trained over 30 languages with IPA as a shared representation and a two-stage prompt-text-masking recipe. It extends F5-TTS with language-ID injection and classifier-free guidance scheduling. Collected because it exposes concrete levers for cross-lingual speaker transfer: phonemic representation, prompt transcript removal, and language conditioning.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Task-Aware Answer Preservation under Audio Compression for Large Audio Language Models</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.06631v1</p>
+<p>Summary: This paper evaluates audio compression by downstream LALM answer preservation, especially the worst-affected query families, rather than aggregate codec quality. It proposes a statistical sign-off protocol for compression budgets. Collected as a failure-slice guardrail: compression can look acceptable on average while damaging one deployment-critical question family.</p>
+<p>Personalization: medium</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>arXiv — Star Elastic: Many-in-One Reasoning LLMs with Efficient Budget Control</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.07182v1</p>
+<p>Summary: Star Elastic post-trains nested submodels inside a parent reasoning model across SSM, embedding, MoE, and FFN axes, then routes different submodels by reasoning phase. It also extends to FP8/NVFP4 quantized elastic checkpoints. Collected because it makes model size and precision an inference-time control variable rather than a fixed deployment choice.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — Introducing AutoSP</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/introducing-autosp/</p>
+<p>Summary: AutoSP automatically converts standard Transformer training code into sequence-parallel code for long-context LLM training across multiple GPUs. Collected because long-context experimentation often dies on plumbing before modeling starts. The mechanism/tooling signal is compiler/runtime transformation of ordinary model code into distributed sequence parallelism.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — In-Kernel Broadcast Optimization: Co-Designing Kernels for RecSys Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/</p>
+<p>Summary: IKBO eliminates explicit replication of shared user embeddings/sequences by fusing broadcast logic into GPU kernels. Although the example is RecSys, the learning value generalizes to ML inference: when model structure repeats inputs across candidates, kernel-level broadcast can remove a memory movement bottleneck. Collected as a kernel-model co-design pattern.</p>
+<p>Personalization: low</p>
+<h2>Together AI — Serving DeepSeek-V4: why million-token context is an inference systems problem</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem</p>
+<p>Summary: A serving systems post on million-token context with compressed KV layouts, prefix caching, kernel maturity, endpoint profiles, and B200-class hardware. It remains useful because long-context capability is only partly a model property; prefill/decode/KV movement determines whether it is affordable. Collected as infra context for long-context experiments.</p>
+<p>Personalization: medium</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>arXiv — PACZero: PAC-Private Fine-Tuning of Language Models via Sign Quantization</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.06505v1</p>
+<p>Summary: PACZero uses sign-quantized zeroth-order gradients under a PAC privacy view, with zero mutual-information release on unanimous update signs. It is outside the main daily cluster but valuable because it links privacy, zeroth-order finetuning, and quantized update geometry. The mechanism signal is privacy cost depending on disagreement among candidate-secret subsets.</p>
+<p>Personalization: low</p>
+<h2>BAIR Blog — Adaptive Parallel Reasoning: The Next Paradigm in Efficient Inference Scaling</h2>
+<p>Type: Independent blog</p>
+<p>Link: http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/</p>
+<p>Summary: A research-blog treatment of inference scaling that emphasizes adaptive parallelism rather than a single longer chain of thought. Collected as broad background for AutoTTS-style controllers and width-depth budget allocation. The mechanism to track is when parallel branches add independent evidence versus redundant sampling.</p>
+<p>Personalization: low</p>
+<h3>Skeptical or failure signal</h3>
+<h2>arXiv — Beyond Confidence: Rethinking Self-Assessments for Performance Prediction in LLMs</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.07806v1</p>
+<p>Summary: This paper finds that verbalized confidence is an inconsistent and overoptimistic correctness predictor, while appraisal dimensions such as effort and ability can perform better depending on task type. Collected as a skeptical deployment signal: asking a model “are you confident?” is too coarse. The mechanism value is multidimensional self-assessment tied to task characteristics.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Asymmetric Phase Coding Audio Watermarking</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.07241v1</p>
+<p>Summary: APC is a training-free cryptographic signing layer for audio using Ed25519 signatures, Reed-Solomon coding, STFT phase-bin selection, and QIM over log-magnitude differences. It is a skeptical/provenance signal because passive deepfake detectors are brittle and utterance-level classifiers can miss partial manipulation. The mechanism is auditable signing rather than learned authenticity judgment.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-12 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

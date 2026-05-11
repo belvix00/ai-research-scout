@@ -204,10 +204,23 @@
 <li>Temporary lossiness may be useful during training, but needs falsification on rare/order-sensitive slices before becoming a general principle.</li>
 <li>Audio context conditioning remains suspect: context in the prompt is not evidence the acoustic decision path used it.</li>
 <li>HN remained low-weight; only mechanism-bearing weak signals were retained.</li>
+</ul>
+<h2>Daily additions — 2026-05-12</h2>
+<ul>
+<li><strong>Reasoning/post-training updates should be localized before being scaled</strong> — ReasonMaxxer, GraphDPO, LPO, and vOPD all suggest the useful gradient may live in sparse high-entropy decision points, graph/listwise rollout structure, or low-variance KL baselines. Experiment: fixed small math/code rollout set; compare pairwise, graph/listwise, entropy-gated, and OPD-baseline updates while logging changed-token sparsity and update-direction overlap.</li>
+<li><strong>Non-AR language/model families need their own trajectory and compression diagnostics</strong> — Fast BLT, STARFlow2, DiffRetriever, DLM layer collapse, and Mean Mode Screaming indicate byte/diffusion/flow systems differ in decoding granularity, trajectory quality, residual collapse, cache behavior, and low-bit robustness. Experiment: tiny AR vs masked/diffusion/byte model comparison with quantization/sparsity plus midpoint/trajectory probes.</li>
+<li><strong>Speech factor survival now has an inspectable model target</strong> — PairAlign, MiniMind-O, TextPro-SLM, X-Voice, and task-aware compression make a small speech-factor benchmark more concrete. Experiment: use MiniMind-O or public speech encoders/codecs to test semantic edit structure, speaker identity, prosody, language/phoneme factors, and answer-family preservation under raw/compressed/tokenized inputs.</li>
+<li><strong>Adaptive inference controllers must be rare-case audited</strong> — AutoTTS, GazeVLM, Star Elastic, and million-token serving posts make budget allocation trainable across branches, visual focus, submodel size, and context/KV. Experiment: rare-clue/distractor benchmark comparing fixed compute against adaptive branch/prune/gaze/submodel controllers; measure over-pruning and rare evidence loss, not only average accuracy-per-token.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>Do not import AR-model compression or interpretability intuitions directly into diffusion/flow/byte families; outlier layers, residual mean modes, and trajectory bottlenecks may differ.</li>
+<li>Preference/RL evidence is converging on update geometry rather than optimizer brand: graph structure, simplex projection, entropy-gated branch selection, and control-variate baselines.</li>
+<li>Audio authenticity and robustness should combine factor survival with provenance/signing; learned detectors alone are not enough for partial edits.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-12 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

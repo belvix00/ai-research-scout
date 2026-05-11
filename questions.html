@@ -48,6 +48,12 @@
 <li><code>candidate</code> When speech context is provided at inference time, which internal representations actually change in the acoustic decision path rather than only in text-side rationales?</li>
 <li><code>candidate</code> Which serving-path changes preserve mechanism-level behavior under long-context and rare-feature prompts, and which only preserve top-line output agreement?</li>
 </ul>
+<ul>
+<li><code>candidate</code> Are reasoning-RL gains mostly localized to sparse high-entropy branch points already present in the base model, or do they require distributed representation changes?</li>
+<li><code>candidate</code> Which compression and sparsity rules differ between autoregressive, byte-level, diffusion, and flow language models once tasks and scale are controlled?</li>
+<li><code>candidate</code> Can trajectory-quality probes predict when few-step diffusion/flow generation will beat blind distillation under equal forward-pass budgets?</li>
+<li><code>candidate</code> When adaptive inference controllers branch, prune, gaze, or switch submodel size, which rare evidence slices are most likely to be over-pruned?</li>
+</ul>
 <h2>Candidate experiments</h2>
 <ul>
 <li><code>experiment</code> <strong>Rollout-lifecycle diagnostics for reasoning/tool RL.</strong> In a fixed toy math/tool environment, perturb strategy priors, generation diversity, verifier noise, per-turn information-gain shaping, prompt-space perturbations, stopping/control, replay age, and runtime path one at a time. Measure trajectory distribution $$q(\tau)$$, zero-advantage rate, verifier errors, tool success, and gradient cosine against a wide/clean reference sampler. See [[2026-05-07-rollout-lifecycle-gradient]] and [[2026-05-09#1. Compare agentic RL lifecycle interventions under a fixed toy environment]].</li>
@@ -78,7 +84,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-12 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
