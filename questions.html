@@ -54,6 +54,7 @@
 <li><code>experiment</code> <strong>Shared MoE expert pools and route masks as causal capacity probes.</strong> Train tiny layer-local and globally shared expert-pool MoEs on synthetic domain/rare-feature factors. Measure usage matrices $$U_{\ell,g}$$, router entropy, $$I(G;F\mid\ell)$$, expert ablation losses $$\Delta_{g,F}$$, cross-layer gradient cosine, rare-feature retention, and overflow/drop rate. See [[2026-05-09-moe-expert-allocation]].</li>
 <li><code>experiment</code> <strong>Cost-normalized long-context access benchmark.</strong> Compare dense retrieval, compact concept signatures/summaries, raw corpus grep/read/script access, explicit context operations, and full-context prompting on a local corpus with exact constraints, sparse clues, and distractors under equal token/time/tool/KV budgets.</li>
 <li><code>experiment</code> <strong>Mechanism-preserving inference/runtime harness.</strong> Run the same small model/task under baseline and one optimized path: low-bit weights, low-bit/adaptive KV, speculative decoding, cache handoff, expert prefetch, or different serving backend. Measure output agreement, logit/activation drift where possible, attention entropy, rare-feature accuracy, rollout reproducibility, verifier disagreement, latency, memory, and bandwidth.</li>
+<li><code>experiment</code> <strong>Temporary-lossy pretraining recovery geometry.</strong> Train a tiny LM with an early lossy-token or compressed-attention phase, then restore exact AR/full-attention training. Measure coarse-vs-exact gradient cosine, rare-token/order-sensitive/long-context recovery lag $$\mathrm{Lag}_F$$, per-slice gradient-energy retention $$R_F$$, and matched-FLOP speedup. See [[2026-05-11-temporary-lossy-pretraining]] and [[2026-05-11#1. Test temporary-lossy pretraining on a tiny language model]].</li>
 <li><code>experiment</code> <strong>Speech factor survival probe.</strong> Use WavLM/ECAPA/codec states or a small speech-native stack to probe speaker, script/language/accent, phoneme/content, prosody, entity identity, and context metadata. Test correct vs shuffled metadata, gradient-reversal nuisance removal, entity-dense synthetic curricula, EHR/WER regression, and real-recording sanity checks.</li>
 <li><code>experiment</code> <strong>Cheap hallucination/uncertainty probe overlap map.</strong> On one small factual QA set, log first-content-token entropy, ordinary logprob, middle-layer attention divergence/KL, semantic self-consistency, answer type, and correctness. Cluster failures by which signal catches them.</li>
 <li><code>experiment</code> <strong>Visual grounding persistence / attention dilution demo.</strong> Create simple images with late-needed details; compare short answer, long answer, and long answer with visual refresh/memory summary. Measure detail accuracy vs generation length and attention-to-image fraction if available.</li>
@@ -77,7 +78,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 03:06</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 08:03</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

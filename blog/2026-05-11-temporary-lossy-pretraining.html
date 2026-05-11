@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Temporary-Lossy Pretraining: When the Optimization Path Can Be Coarser Than the Final Model · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>Temporary-Lossy Pretraining: When the Optimization Path Can Be Coarser Than the Final Model</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>Today&#x27;s scout had two unusually direct architecture signals:</p>
+<ul>
+<li><strong>Lighthouse Attention</strong> treats approximate/hierarchical attention as a <em>training-time wrapper</em>: compress the sequence around attention for most of long-context pretraining, then remove the wrapper and recover ordinary full-attention behavior near the end.</li>
+<li><strong>Token-Superposition Training</strong> coarsens the early language-modeling target by merging contiguous tokens into multi-hot or superposed targets, then returns to ordinary token-level training.</li>
+</ul>
+<p>These are not the usual “make inference sparse forever” claims. The interesting common mechanism is more specific:</p>
+<blockquote>The training trajectory may be allowed to be lossy for a while, as long as the final phase restores the high-resolution interface before convergence.</blockquote>
+<p>That deserves a foundations refresher because it cuts against a common instinct: if the final task needs exact token order, rare lexical identity, or full pairwise attention, surely the whole optimization path should expose those details. Maybe not. Early optimization may mostly need coarse distributional structure; exact detail may only need to become visible after the representation has entered the right basin.</p>
+<p>The question is not “can we drop information?” The sharper question is:</p>
+<blockquote>Which sequence details must be present for the <em>gradient field</em> to point toward a useful basin, and which details only need to be present for the final solution?</blockquote>
+<h2>Two losses, one final model</h2>
+<p>Let the ordinary autoregressive pretraining objective be</p>
+<div class="math-block">$$\mathcal{L}_{\mathrm{AR}}(\theta)
+= \mathbb{E}_{x\sim \mathcal{D}}
+\left[-\sum_{t=1}^{T} \log p_\theta(x_t\mid x_{&lt;t})\right].$$</div>
+<p>Temporary-lossy pretraining introduces a coarse transform $$C$$, used only during an early phase. The transform might act on the <strong>context path</strong>:</p>
+<div class="math-block">$$\tilde{x}_{1:T&#x27;} = C_{\mathrm{ctx}}(x_{1:T}),
+\qquad T&#x27; &lt; T,$$</div>
+<p>as in a hierarchical/compressed attention wrapper, or it might act on the <strong>target path</strong>:</p>
+<div class="math-block">$$\tilde{y}_j = C_{\mathrm{tgt}}(x_{a_j:b_j}),$$</div>
+<p>as in token superposition over contiguous spans.</p>
+<p>The training schedule is then not one fixed objective, but a homotopy-like path:</p>
+<div class="math-block">$$\mathcal{L}_\alpha(\theta)
+= (1-\alpha)\mathcal{L}_{\mathrm{coarse}}(\theta)
++ \alpha\mathcal{L}_{\mathrm{AR}}(\theta),
+\qquad \alpha: 0\rightarrow 1.$$</div>
+<p>The final deployed model is judged on $$\mathcal{L}_{\mathrm{AR}}$$, but most optimization steps may be taken under $$\mathcal{L}_{\mathrm{coarse}}$$. This is the key conceptual move. We are no longer asking whether the coarse objective is a faithful final objective. We are asking whether it is a good <em>preconditioner for representation learning</em>.</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="temporary lossy pretraining path from coarse objective to exact autoregressive objective">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="42" y="42" width="200" height="82" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+  <text x="142" y="75" text-anchor="middle" font-family="sans-serif" font-size="17" fill="#0f172a">coarse phase</text>
+  <text x="142" y="101" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">compressed attention /</text>
+  <text x="142" y="118" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">superposed targets</text>
+
+  <rect x="300" y="42" width="200" height="82" rx="14" fill="#fef9c3" stroke="#ca8a04" stroke-width="2" />
+  <text x="400" y="75" text-anchor="middle" font-family="sans-serif" font-size="17" fill="#0f172a">recovery phase</text>
+  <text x="400" y="101" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">restore exact tokens,</text>
+  <text x="400" y="118" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">full attention, AR loss</text>
+
+  <rect x="558" y="42" width="200" height="82" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2" />
+  <text x="658" y="75" text-anchor="middle" font-family="sans-serif" font-size="17" fill="#0f172a">final model</text>
+  <text x="658" y="101" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">ordinary high-resolution</text>
+  <text x="658" y="118" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">decoder / objective</text>
+
+  <line x1="245" y1="83" x2="292" y2="83" stroke="#475569" stroke-width="3" marker-end="url(#arrow)" />
+  <line x1="503" y1="83" x2="550" y2="83" stroke="#475569" stroke-width="3" marker-end="url(#arrow)" />
+
+  <line x1="90" y1="225" x2="710" y2="225" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="120" y1="225" x2="120" y2="142" stroke="#2563eb" stroke-width="3" />
+  <line x1="390" y1="225" x2="390" y2="162" stroke="#ca8a04" stroke-width="3" />
+  <line x1="660" y1="225" x2="660" y2="186" stroke="#16a34a" stroke-width="3" />
+  <text x="400" y="258" text-anchor="middle" font-family="sans-serif" font-size="14" fill="#334155">training time: information resolution increases before convergence</text>
+  <text x="120" y="140" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#2563eb">cheap broad gradient</text>
+  <text x="390" y="158" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#a16207">detail reintroduced</text>
+  <text x="660" y="182" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#15803d">exact behavior</text>
+</svg></div>
+<h2>Coarsening as gradient projection</h2>
+<p>A clean way to think about temporary lossiness is as a projection of the training signal.</p>
+<p>Suppose the exact per-token target is one-hot:</p>
+<div class="math-block">$$y_t \in \{0,1\}^{V},
+\qquad \sum_{v=1}^{V}y_{t,v}=1.$$</div>
+<p>For logits $$z_t$$ and probabilities $$p_t=\mathrm{softmax}(z_t)$$, the exact cross-entropy gradient is</p>
+<div class="math-block">$$\nabla_{z_t}\mathcal{L}_{\mathrm{AR}} = p_t - y_t.$$</div>
+<p>Now replace a span $$x_{a:b}$$ with a coarser target $$\tilde{y}_{a:b}$$. In a simple token-bag approximation, the target distribution over the span is</p>
+<div class="math-block">$$\tilde{y}_{a:b,v}
+= \frac{1}{b-a+1}\sum_{t=a}^{b}\mathbf{1}[x_t=v].$$</div>
+<p>If the model predicts one distribution $$p_j$$ for that coarse target, the gradient is</p>
+<div class="math-block">$$\nabla_{z_j}\mathcal{L}_{\mathrm{coarse}} = p_j - \tilde{y}_{a:b}.$$</div>
+<p>This has removed within-span order and position-specific credit. More abstractly, if $$P_C$$ is the linear operator that averages or merges exact token-level targets into coarse cells, then the coarse gradient resembles</p>
+<div class="math-block">$$g_C(\theta)
+\approx P_C g_{\mathrm{AR}}(\theta),$$</div>
+<p>up to architecture and normalization details.</p>
+<p>The projection can be helpful when it removes high-variance detail early. It can be harmful when the projected-away dimensions contain features that need early representation growth: rare tokens, syntax/order cues, long-distance copy behavior, exact delimiters, or low-frequency factual/entity identities.</p>
+<p>So the first diagnostic is not final loss. It is <strong>gradient alignment</strong>:</p>
+<div class="math-block">$$\cos(g_C,g_{\mathrm{AR}})
+= \frac{\langle g_C, g_{\mathrm{AR}}\rangle}
+{\|g_C\|\,\|g_{\mathrm{AR}}\|}.$$</div>
+<p>If the coarse objective points mostly in the same direction as the exact objective on common structure, it may be a good early accelerator. If it is orthogonal or anti-aligned on rare/order-sensitive slices, the later recovery phase must repair damage rather than merely add detail.</p>
+<h2>Why this can work: basins before bits</h2>
+<p>A model trained from scratch does not immediately need all target bits equally. Early in training, much of the useful progress is learning broad statistical structure:</p>
+<ul>
+<li>which tokens co-occur;</li>
+<li>which domains/formats exist;</li>
+<li>approximate local syntax;</li>
+<li>rough semantic clusters;</li>
+<li>frequency and morphology patterns;</li>
+<li>generic attention/MLP features that support many later tasks.</li>
+</ul>
+<p>Call these coarse variables $$s(x)$$. Exact token identity and order can be decomposed into coarse plus residual information:</p>
+<div class="math-block">$$x = (s(x), r(x)).$$</div>
+<p>The exact objective decomposes as</p>
+<div class="math-block">$$-\log p_\theta(x_t\mid x_{&lt;t})
+= -\log p_\theta(s_t\mid x_{&lt;t})
+  -\log p_\theta(r_t\mid s_t,x_{&lt;t}).$$</div>
+<p>A lossy early phase mostly trains the first term. The bet is that once representations for $$s_t$$ are good, recovering $$r_t$$ is cheaper than learning both from scratch at full resolution.</p>
+<p>This is analogous to a curriculum, but with an important distinction: the examples need not become easier; the <em>interface</em> becomes lower-resolution. The data distribution may be the same, while the model is temporarily denied some distinctions.</p>
+<p>The useful condition is roughly:</p>
+<div class="math-block">$$\theta_{\mathrm{coarse}} \in \mathcal{B}_{\mathrm{exact}},$$</div>
+<p>where $$\mathcal{B}_{\mathrm{exact}}$$ is a basin from which exact AR training reaches a good final solution quickly. Temporary lossiness works if coarse training moves parameters into a good basin without erasing features that exact training cannot cheaply reconstruct.</p>
+<h2>Context lossiness: approximate attention as an optimization curriculum</h2>
+<p>For an ordinary attention layer, token $$t$$ attends to keys/values over positions $$i\leq t$$:</p>
+<div class="math-block">$$\mathrm{Attn}(q_t,K,V)
+= \sum_{i\leq t} a_{t,i}v_i,
+\qquad
+ a_{t,i}=\frac{\exp(q_t^\top k_i/\sqrt{d})}{\sum_{j\leq t}\exp(q_t^\top k_j/\sqrt{d})}.$$</div>
+<p>A lossy hierarchical wrapper replaces the full set of keys/values with a compressed representation for some part of training. Write compressed cells as</p>
+<div class="math-block">$$\bar{k}_m = \sum_{i\in B_m} w_{m,i} k_i,
+\qquad
+\bar{v}_m = \sum_{i\in B_m} w_{m,i} v_i,$$</div>
+<p>where $$B_m$$ is a block of positions. Attention becomes approximately</p>
+<div class="math-block">$$\widetilde{\mathrm{Attn}}(q_t,\bar{K},\bar{V})
+= \sum_m \tilde{a}_{t,m}\bar{v}_m.$$</div>
+<p>This collapses distinctions inside $$B_m$$. If a task only needs “some earlier section talked about X,” the approximation may preserve enough signal. If a task needs “the third delimiter after the rare variable name,” it may not.</p>
+<p>The important point for pretraining is that the wrapper is removed later. So the failure condition is not “compression loses information” — of course it does. The failure condition is:</p>
+<div class="math-block">$$\text{compressed training prevents formation of features required for exact recovery.}$$</div>
+<p>A long-context lossy phase might still teach topic persistence, broad retrieval behavior, and hierarchical discourse structure. But it may undertrain exact position binding, induction heads over rare strings, long-distance copy circuits, or delimiter-sensitive code behavior.</p>
+<p>This predicts slice-specific behavior: average loss can recover while exact-recall and order-sensitive slices lag.</p>
+<h2>Target lossiness: token superposition and credit diffusion</h2>
+<p>Target coarsening has a different geometry. Instead of hiding context details from attention, it diffuses output credit across several possible tokens.</p>
+<p>For a span $$x_{a:b}$$, a multi-hot or averaged target asks the model to place mass on the set of tokens in the span. If a span contains tokens $$u,v,w$$, then predicting $$u$$ where $$v$$ was actually next may not be fully penalized during the coarse phase. This reduces the pressure to learn exact local order.</p>
+<p>The upside is throughput and smoother gradients. The downside is that sequence models are not bag models. The exact AR factorization is</p>
+<div class="math-block">$$p(x_{a:b}\mid x_{&lt;a})
+= \prod_{t=a}^{b}p(x_t\mid x_{&lt;t}),$$</div>
+<p>while a coarse bag-like objective approximates something closer to</p>
+<div class="math-block">$$p(\{x_a,\ldots,x_b\}\mid x_{&lt;a}).$$</div>
+<p>Those are equivalent only when within-span order carries little information. Natural language has many local cases where order matters, but the severity differs by slice:</p>
+<ul>
+<li>punctuation and delimiters;</li>
+<li>code syntax;</li>
+<li>arithmetic strings;</li>
+<li>entity names;</li>
+<li>negation scope;</li>
+<li>copied substrings;</li>
+<li>low-frequency morphology.</li>
+</ul>
+<p>So target lossiness should be evaluated by <em>what kind of conditional information it removes</em>. The coarse phase might correctly learn that a region concerns a Python function, but fail to learn the exact indentation/delimiter sequence until the recovery phase.</p>
+<h2>Recovery speed is the central measurement</h2>
+<p>The key empirical object is not merely final validation loss. It is a recovery curve after restoring the exact objective.</p>
+<p>Let $$\theta_0$$ be a baseline model trained with exact AR for all steps, and $$\theta_C$$ be a model after a lossy phase with the same or lower compute. At recovery step $$s$$, evaluate slice loss:</p>
+<div class="math-block">$$\mathcal{L}_{F}(s)
+= \mathbb{E}_{x\sim F}
+\left[-\sum_t \log p_{\theta_C(s)}(x_t\mid x_{&lt;t})\right],$$</div>
+<p>where $$F$$ indexes a factor slice: rare tokens, exact copy, code delimiters, long-context retrieval, arithmetic order, etc.</p>
+<p>Define recovery lag relative to an exact-training baseline:</p>
+<div class="math-block">$$\mathrm{Lag}_{F}(\epsilon)
+= \min\{s: \mathcal{L}_{F}^{C}(s) \leq \mathcal{L}_{F}^{\mathrm{baseline}}(s)+\epsilon\}.$$</div>
+<p>Temporary lossiness is attractive if it improves cost-adjusted training without large slice lags:</p>
+<div class="math-block">$$\text{speedup} &gt; 1
+\quad \text{and} \quad
+\mathrm{Lag}_{F}(\epsilon) \text{ is small for important } F.$$</div>
+<p>It is a bad bargain if common-token loss recovers quickly but rare/order-sensitive factors require so much recovery compute that the early savings disappear.</p>
+<h2>The optimization-geometry risk: irreversible feature starvation</h2>
+<p>Some details can be learned late. Others may require early bootstrapping.</p>
+<p>Suppose a rare factor $$F$$ appears with probability $$\rho\ll 1$$ and its exact gradient component is $$g_F$$. Under coarse training, that component is attenuated by a factor $$\beta_F\in[0,1]$$:</p>
+<div class="math-block">$$g_C = g_{\mathrm{common}} + \beta_F g_F + \eta.$$</div>
+<p>If $$\beta_F\approx 0$$ for most of pretraining, then the feature&#x27;s representation may not grow while common features consume capacity. Later exact training sees $$g_F$$ again, but now it must carve the feature into an already-specialized representation. The repair cost can be much larger than the original missing gradient mass suggests.</p>
+<p>A simple warning metric is gradient-energy retention by slice:</p>
+<div class="math-block">$$R_F
+= \frac{\|\Pi_F g_C\|^2}{\|\Pi_F g_{\mathrm{AR}}\|^2 + \epsilon},$$</div>
+<p>where $$\Pi_F$$ projects onto parameters or activations most affected by slice $$F$$. In practice you can approximate this with per-slice gradient norms, logit gradients, or probe changes rather than a perfect projection.</p>
+<p>If $$R_F$$ is low for rare/order-sensitive slices, the lossy phase is not just cheaper training; it is selective undertraining.</p>
+<h2>What to measure</h2>
+<p>For temporary-lossy pretraining, measure the mechanism rather than only final perplexity:</p>
+<ol>
+<li><strong>Common vs rare-token recovery curves</strong></li>
+</ol>
+<div class="math-block">$$   \mathcal{L}_{\mathrm{common}}(s),\quad \mathcal{L}_{\mathrm{rare}}(s),\quad \mathrm{Lag}_{F}(\epsilon).$$</div>
+<ol>
+<li><strong>Order-sensitive slice accuracy</strong></li>
+</ol>
+<p>   Evaluate code delimiters, bracket matching, copied substrings, arithmetic strings, entity names, and negation/order perturbations.</p>
+<ol>
+<li><strong>Gradient alignment between coarse and exact objectives</strong></li>
+</ol>
+<div class="math-block">$$   \cos(g_C,g_{\mathrm{AR}})$$</div>
+<p>   computed globally and per slice on the same minibatches.</p>
+<ol>
+<li><strong>Gradient-energy retention for vulnerable factors</strong></li>
+</ol>
+<div class="math-block">$$   R_F
+   = \frac{\|\Pi_F g_C\|^2}{\|\Pi_F g_{\mathrm{AR}}\|^2 + \epsilon}.$$</div>
+<ol>
+<li><strong>Representation/probe recovery</strong></li>
+</ol>
+<p>   Fit simple probes for position, delimiter state, rare entity identity, copy source position, and long-context clue identity across training phases.</p>
+<ol>
+<li><strong>Compute-normalized outcome</strong></li>
+</ol>
+<p>   Compare matched FLOPs or wall-clock, not just matched steps. The claim is only interesting if the lossy phase buys real optimization throughput.</p>
+<h2>Minimal experiment</h2>
+<p>Train a tiny decoder-only transformer on a controlled mixture:</p>
+<ul>
+<li>ordinary text-like sequences;</li>
+<li>code/bracket sequences with exact delimiters;</li>
+<li>copy/retrieval sequences with rare strings;</li>
+<li>arithmetic/order-sensitive toy strings;</li>
+<li>rare exception tokens whose rule differs from the common pattern.</li>
+</ul>
+<p>Use four variants under matched compute accounting:</p>
+<ol>
+<li><strong>Exact AR baseline</strong> for all steps.</li>
+<li><strong>Target-lossy phase</strong>: span-level token superposition or bag target for the first $$N$$ tokens/FLOPs, then exact AR recovery.</li>
+<li><strong>Context-lossy phase</strong>: local/hierarchical attention or block-compressed attention for the first $$N$$ tokens/FLOPs, then full-attention recovery.</li>
+<li><strong>Annealed lossiness</strong>: gradually shrink block size or increase $$\alpha$$ in</li>
+</ol>
+<div class="math-block">$$   \mathcal{L}_\alpha=(1-\alpha)\mathcal{L}_{\mathrm{coarse}}+\alpha\mathcal{L}_{\mathrm{AR}}.$$</div>
+<p>Log, every few checkpoints:</p>
+<ul>
+<li>validation loss by slice;</li>
+<li>exact next-token accuracy by slice;</li>
+<li>recovery lag $$\mathrm{Lag}_F$$;</li>
+<li>coarse/exact gradient cosine on held-out minibatches;</li>
+<li>probe accuracy for position, delimiter state, rare entity identity, and copy source;</li>
+<li>final performance at equal FLOPs.</li>
+</ul>
+<p>The clean falsifier: temporary-lossy training matches average loss but has persistent recovery lag on rare/order-sensitive slices, or the recovery compute erases the claimed speedup.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Perplexity camouflage.</strong> Average validation loss recovers while rare tokens, delimiters, copy strings, or long-context clues remain damaged.</li>
+</ol>
+<ol>
+<li><strong>Irreversible feature starvation.</strong> Coarse training gives nearly zero gradient energy to a rare factor; exact recovery later cannot cheaply carve out the missing representation.</li>
+</ol>
+<ol>
+<li><strong>Order-blind local minima.</strong> Target superposition teaches good bag-of-token statistics but poor conditional ordering, especially in code, math, and entity strings.</li>
+</ol>
+<ol>
+<li><strong>Compression-induced retrieval habits.</strong> Context compression teaches the model to use block summaries even after full attention returns, weakening exact pointer/copy circuits.</li>
+</ol>
+<ol>
+<li><strong>Schedule dependence.</strong> The method works only for a narrow switch time or annealing curve; too long a coarse phase damages recovery, too short gives no speedup.</li>
+</ol>
+<ol>
+<li><strong>Benchmark mismatch.</strong> Web-text perplexity looks fine, but downstream tasks requiring exact evidence, rare names, or structured syntax regress.</li>
+</ol>
+<ol>
+<li><strong>Hidden compute accounting.</strong> The recovery phase, extra wrapper overhead, or data-pipeline complexity consumes the advertised savings.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant scout notes and questions:</p>
+<ul>
+<li>[[2026-05-11]]: Lighthouse Attention and Token-Superposition Training made temporary-lossy pretraining the day&#x27;s clearest mechanism class.</li>
+<li>[[questions#Open questions]]: “Which sequence details can be temporarily lossy during pretraining while still recovering rare-token, order-sensitive, and long-context behavior under matched compute?”</li>
+<li>[[questions#Candidate experiments]]: mechanism-preserving inference/runtime and long-context access questions are adjacent, because they ask when approximate interfaces preserve behavior under cost constraints.</li>
+<li>[[2026-05-09]] and [[running#Weekly synthesis — 2026-05-09]]: the broader weekly theme was interface survival under capacity and cost constraints.</li>
+</ul>
+<p>Refined question after this derivation: measure temporary-lossy pretraining as <strong>gradient projection plus recovery geometry</strong>. The practical test is not whether coarse training can reduce early loss cheaply; it is whether exact-token, exact-order, and long-context factors recover with small slice-specific lag under matched FLOPs.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-11 08:03</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
