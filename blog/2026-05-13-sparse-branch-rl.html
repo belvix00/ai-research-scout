@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Sparse Branch Selection: When Reasoning RL Is Mostly Probability Mass Reallocation · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>Sparse Branch Selection: When Reasoning RL Is Mostly Probability Mass Reallocation</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>The 2026-05-12 scout had a unusually clean post-training cluster:</p>
+<ul>
+<li><strong>ReasonMaxxer / Rethinking RL for LLM Reasoning</strong> claimed that much of the observed reasoning-RL gain is localized: only a small fraction of high-entropy token positions change, and the promoted token is often already among the base model&#x27;s top alternatives.</li>
+<li><strong>GraphDPO</strong> argued that preference data for one prompt is often a directed graph over rollouts, not a bag of independent pairs.</li>
+<li><strong>Listwise Policy Optimization</strong> made the response-simplex target of group RLVR explicit.</li>
+<li><strong>KL for a KL / vOPD</strong> imported a closed-form control-variate baseline into on-policy distillation.</li>
+</ul>
+<p>Together these are not just four new optimizer recipes. They point at a mechanism question:</p>
+<blockquote>Is post-training teaching a new reasoning algorithm, or is it mostly reallocating probability mass among branches already present in the base model?</blockquote>
+<p>This post is a foundations refresher on that question. The goal is not to re-explain PPO, DPO, or transformers. It is to pin down the geometry of <strong>sparse branch selection</strong>: high-entropy decision points, response-simplex targets, graph/listwise supervision, and the measurements that would falsify the claim.</p>
+<p>The prior rollout-lifecycle post [[2026-05-07-rollout-lifecycle-gradient]] treated the whole sampled trajectory distribution as the object. This post zooms into one narrower hypothesis: conditional on having sampled useful trajectories, the useful update may live at a small set of branch points.</p>
+<h2>A rollout can improve because one branch changed</h2>
+<p>Let a reasoning trace or solution be a token sequence</p>
+<div class="math-block">$$y = (y_1,\ldots,y_T),$$</div>
+<p>sampled from a base policy</p>
+<div class="math-block">$$\pi_0(y\mid x)=\prod_{t=1}^{T}\pi_0(y_t\mid x,y_{&lt;t}).$$</div>
+<p>A post-trained policy $$\pi_\theta$$ improves a task if it increases probability of successful traces:</p>
+<div class="math-block">$$P_\theta(\mathrm{success}\mid x)
+= \sum_y \pi_\theta(y\mid x)\,\mathbf{1}[R(x,y)=1].$$</div>
+<p>That probability can rise in two very different ways.</p>
+<ol>
+<li><strong>Distributed algorithmic change:</strong> many token distributions move, hidden states reorganize, and success probability improves because the model computes differently across the trace.</li>
+<li><strong>Sparse branch selection:</strong> most conditional distributions stay close to the base model, but at a few uncertain positions, probability mass moves from a bad branch to a good branch.</li>
+</ol>
+<p>The second case is easy to understate because the final trace may look very different after one early branch. A single token such as <code>therefore</code>, a sign choice, an intermediate variable, a tool call, or a decomposition step can route the rest of the trajectory.</p>
+<p>For a prefix $$h_t=(x,y_{&lt;t})$$, define the base-model entropy</p>
+<div class="math-block">$$H_0(h_t) = -\sum_{v}\pi_0(v\mid h_t)\log \pi_0(v\mid h_t).$$</div>
+<p>Sparse branch selection says the main update is concentrated on a subset</p>
+<div class="math-block">$$B(x,y) = \{t: H_0(h_t)&gt;\tau_H,\; \Delta_t \text{ affects outcome}\},$$</div>
+<p>with $$|B|\ll T$$. The post-training distribution can then have low average KL while still producing large task gains.</p>
+<h2>Why small token KL can still mean large outcome change</h2>
+<p>Per-token KL from the base policy is</p>
+<div class="math-block">$$D_{\mathrm{KL}}(\pi_\theta\|\pi_0 \mid h_t)
+= \sum_v \pi_\theta(v\mid h_t)\log\frac{\pi_\theta(v\mid h_t)}{\pi_0(v\mid h_t)}.$$</div>
+<p>The sequence-level KL decomposes as</p>
+<div class="math-block">$$D_{\mathrm{KL}}(\pi_\theta(y\mid x)\|\pi_0(y\mid x))
+= \mathbb{E}_{y\sim\pi_\theta}\left[\sum_{t=1}^{T}
+D_{\mathrm{KL}}(\pi_\theta(\cdot\mid h_t)\|\pi_0(\cdot\mid h_t))\right].$$</div>
+<p>If only $$k$$ positions change, the average per-token KL can look tiny:</p>
+<div class="math-block">$$\frac{1}{T}\sum_t D_t \approx \frac{1}{T}\sum_{t\in B}D_t.$$</div>
+<p>But task success is not linear in average token KL. If an early branch chooses between two basins of continuation, moving one conditional probability can multiply the mass of successful completions.</p>
+<p>Suppose at prefix $$h$$ the base model assigns probability $$p_0$$ to a good branch $$a^+$$ and $$1-p_0$$ to a bad branch $$a^-$$. Let continuation success probabilities be</p>
+<div class="math-block">$$S^+ = P(\mathrm{success}\mid h,a^+),\qquad
+S^- = P(\mathrm{success}\mid h,a^-),$$</div>
+<p>with $$S^+\gg S^-$$. If post-training changes only that branch probability to $$p_\theta$$, then</p>
+<div class="math-block">$$P_\theta(\mathrm{success}\mid h)-P_0(\mathrm{success}\mid h)
+= (p_\theta-p_0)(S^+-S^-).$$</div>
+<p>So a local probability shift has large value when two conditions hold:</p>
+<div class="math-block">$$|p_\theta-p_0| \text{ is nontrivial}
+\quad\text{and}\quad
+S^+-S^- \text{ is large}.$$</div>
+<p>This is the precise version of “the base model already knew the branch.” The branch must be in support, and the continuation gap must be high.</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sparse branch selection in reasoning post training">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="40" y="96" width="145" height="72" rx="14" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+  <text x="112" y="126" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#0f172a">prefix h</text>
+  <text x="112" y="149" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">high entropy</text>
+
+  <rect x="325" y="35" width="160" height="70" rx="14" fill="#dcfce7" stroke="#16a34a" stroke-width="2" />
+  <text x="405" y="64" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">branch a⁺</text>
+  <text x="405" y="86" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">high success continuation</text>
+
+  <rect x="325" y="174" width="160" height="70" rx="14" fill="#fee2e2" stroke="#dc2626" stroke-width="2" />
+  <text x="405" y="203" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">branch a⁻</text>
+  <text x="405" y="225" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">low success continuation</text>
+
+  <rect x="610" y="78" width="150" height="124" rx="14" fill="#f8fafc" stroke="#64748b" stroke-width="2" />
+  <text x="685" y="116" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">post-training</text>
+  <text x="685" y="140" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">move probability mass</text>
+  <text x="685" y="160" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">only at branch points</text>
+
+  <line x1="185" y1="123" x2="316" y2="72" stroke="#16a34a" stroke-width="4" marker-end="url(#arrow)" />
+  <line x1="185" y1="145" x2="316" y2="207" stroke="#dc2626" stroke-width="2" stroke-dasharray="7 6" marker-end="url(#arrow)" />
+  <line x1="486" y1="70" x2="603" y2="117" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="486" y1="209" x2="603" y2="161" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+
+  <text x="252" y="65" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#166534">increase p(a⁺|h)</text>
+  <text x="257" y="221" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#991b1b">decrease p(a⁻|h)</text>
+</svg></div>
+<h2>The gradient concentrates where alternatives disagree</h2>
+<p>Consider a policy-gradient style update for a sampled token $$a_t$$ at prefix $$h_t$$:</p>
+<div class="math-block">$$g_t = \widehat{A}_t\nabla_\theta \log \pi_\theta(a_t\mid h_t).$$</div>
+<p>For logits $$z_v(h_t)$$, the derivative has the familiar softmax form:</p>
+<div class="math-block">$$\frac{\partial \log \pi(a_t\mid h_t)}{\partial z_v}
+= \mathbf{1}[v=a_t]-\pi(v\mid h_t).$$</div>
+<p>So the logit-gradient component is</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}_{\mathrm{PG}}}{\partial z_v}
+= -\widehat{A}_t\left(\mathbf{1}[v=a_t]-\pi(v\mid h_t)\right)$$</div>
+<p>for gradient descent on $$-\widehat{A}_t\log\pi(a_t\mid h_t)$$.</p>
+<p>If $$\widehat{A}_t&gt;0$$, the sampled token&#x27;s logit rises and competing logits fall. If $$\widehat{A}_t&lt;0$$, the sampled token is suppressed. The update is only useful when sampled alternatives have different downstream value. At a deterministic low-entropy prefix, most rollouts choose the same token and local credit cannot distinguish branches. At a high-entropy prefix with outcome-sensitive alternatives, the same estimator becomes a branch-ranking signal.</p>
+<p>Define a local value for choosing token $$v$$:</p>
+<div class="math-block">$$Q(h,v)=\mathbb{E}[R(y)\mid h_t=h, y_t=v].$$</div>
+<p>The expected logit-gradient direction at prefix $$h$$ is proportional to</p>
+<div class="math-block">$$\mathbb{E}_{v\sim\pi}\left[(Q(h,v)-b(h))\nabla_z\log \pi(v\mid h)\right].$$</div>
+<p>Using the softmax derivative, the expected gradient for logit $$z_u$$ becomes</p>
+<div class="math-block">$$\mathbb{E}\left[(Q(h,v)-b)(\mathbf{1}[u=v]-\pi(u\mid h))\right]
+= \pi(u\mid h)\left(Q(h,u)-\bar{Q}(h)\right),$$</div>
+<p>where</p>
+<div class="math-block">$$\bar{Q}(h)=\sum_v \pi(v\mid h)Q(h,v).$$</div>
+<p>This equation is the branch-selection core:</p>
+<div class="math-block">$$\Delta z_u \propto \pi(u\mid h)\left(Q(h,u)-\bar{Q}(h)\right).$$</div>
+<p>A token gains logit if its continuation value is above the local average. It loses logit if below. The multiplicative $$\pi(u\mid h)$$ term also explains why post-training can be efficient when the good answer is already in the top-k: if $$\pi(u\mid h)$$ is not tiny, the gradient can reach it. If the needed token is outside support, sparse branch selection fails.</p>
+<h2>DPO is also local odds shifting</h2>
+<p>DPO-like objectives make the odds-shift interpretation even clearer. For a prompt $$x$$ with preferred response $$y^+$$ and dispreferred response $$y^-$$, the DPO loss is commonly written as</p>
+<div class="math-block">$$\mathcal{L}_{\mathrm{DPO}}
+= -\log \sigma\left(\beta\left[
+\log\frac{\pi_\theta(y^+\mid x)}{\pi_0(y^+\mid x)}
+-
+\log\frac{\pi_\theta(y^-\mid x)}{\pi_0(y^-\mid x)}
+\right]\right).$$</div>
+<p>Because sequence log-probability decomposes by token,</p>
+<div class="math-block">$$\log \pi_\theta(y\mid x)=\sum_t\log\pi_\theta(y_t\mid x,y_{&lt;t}),$$</div>
+<p>the DPO margin is a sum of token-level log-ratio changes:</p>
+<div class="math-block">$$M_\theta
+= \sum_t \Delta^+_t - \sum_s \Delta^-_s,$$</div>
+<p>where</p>
+<div class="math-block">$$\Delta^+_t=\log\frac{\pi_\theta(y^+_t\mid h^+_t)}{\pi_0(y^+_t\mid h^+_t)},
+\qquad
+\Delta^-_s=\log\frac{\pi_\theta(y^-_s\mid h^-_s)}{\pi_0(y^-_s\mid h^-_s)}.$$</div>
+<p>The loss does not inherently know which token caused the preference. If the winning and losing responses share a long prefix and diverge at one branch, DPO pressure naturally concentrates near the divergent region. If they differ everywhere in style and length, the same objective may spread credit across formatting, verbosity, or superficial trace features.</p>
+<p>This is why graph/listwise structure matters. It can reduce arbitrary pair credit by using more of the rollout set&#x27;s relative order.</p>
+<h2>Graph and listwise objectives as response-simplex targets</h2>
+<p>For one prompt, suppose we sampled $$n$$ candidate responses $$y_1,\ldots,y_n$$. The policy induces a distribution over this finite candidate set:</p>
+<div class="math-block">$$p_\theta(i\mid x)
+= \frac{\pi_\theta(y_i\mid x)}{\sum_{j=1}^n \pi_\theta(y_j\mid x)}.$$</div>
+<p>A pairwise objective says some edges should have positive margins:</p>
+<div class="math-block">$$y_i \succ y_j.$$</div>
+<p>A graph/listwise objective tries to construct a target distribution $$q(i\mid x)$$ over candidates, then move $$p_\theta$$ toward it. Abstractly:</p>
+<div class="math-block">$$\min_\theta D(q(\cdot\mid x)\,\|\,p_\theta(\cdot\mid x))$$</div>
+<p>or the reverse/regularized variant depending on the method. The important object is the target on the response simplex:</p>
+<div class="math-block">$$\Delta^{n-1}=\left\{p\in\mathbb{R}^n: p_i\ge 0,\;\sum_i p_i=1\right\}.$$</div>
+<p>For example, a Plackett-Luce-style ranking model uses scores $$s_i$$ and probabilities</p>
+<div class="math-block">$$P(i \text{ ranked first})=\frac{\exp(s_i)}{\sum_j\exp(s_j)}.$$</div>
+<p>If the supervision graph implies layers of equivalent responses, the target need not collapse all mass onto one winner. It can distribute probability over equivalent good branches and suppress dominated branches:</p>
+<div class="math-block">$$q_i \propto \exp(r_i/\tau),$$</div>
+<p>where $$r_i$$ is a graph-derived score or rank. This matters for reasoning because there may be many valid traces. A one-winner target can unnecessarily destroy diversity; a graph/listwise target can preserve multiple good branches while demoting inconsistent or wrong ones.</p>
+<p>The simplex view also clarifies why “RLVR vs DPO vs listwise” is not the deepest distinction. The deeper question is:</p>
+<blockquote>What target distribution over branches did the data and objective induce, and how much did the model have to move to reach it?</blockquote>
+<h2>Sparse branch selection as a measurable decomposition</h2>
+<p>We can turn the hypothesis into a decomposition. Let</p>
+<div class="math-block">$$\delta_t(h_t) = D_{\mathrm{KL}}(\pi_\theta(\cdot\mid h_t)\|\pi_0(\cdot\mid h_t)).$$</div>
+<p>Let $$G$$ be a set of successful post-training rollouts. Define the cumulative KL budget over their prefixes:</p>
+<div class="math-block">$$K(G)=\mathbb{E}_{y\in G}\left[\sum_{t=1}^{T}\delta_t(h_t)\right].$$</div>
+<p>If sparse branch selection is true, then a small top-m subset of positions should explain most of the KL movement:</p>
+<div class="math-block">$$\frac{\sum_{t\in \mathrm{TopM}(\delta)}\delta_t}{\sum_{t=1}^{T}\delta_t}\approx 1
+\quad\text{for small } m/T.$$</div>
+<p>But KL concentration alone is insufficient. The changed positions must be outcome-sensitive. For a changed prefix $$h_t$$, estimate a branch value gap:</p>
+<div class="math-block">$$\Gamma(h_t)=\max_{u,v\in \mathrm{TopK}_0(h_t)} |\widehat{Q}(h_t,u)-\widehat{Q}(h_t,v)|.$$</div>
+<p>The sparse-branch story predicts high movement where both base entropy and branch value gap are high:</p>
+<div class="math-block">$$\delta_t \text{ large } \Rightarrow H_0(h_t)\text{ high and }\Gamma(h_t)\text{ high}.$$</div>
+<p>If instead high movement appears mostly in boilerplate, final-answer formatting, verbosity, or style tokens with low branch value gap, then the update is not a clean reasoning-branch update.</p>
+<h2>When sparse branch selection fails</h2>
+<p>The hypothesis is attractive because it suggests cheap post-training and clear diagnostics. But it has sharp failure conditions.</p>
+<h3>1. The good branch is not in support</h3>
+<p>The expected logit update has a $$\pi(u\mid h)$$ factor. If the useful branch has near-zero base probability, ordinary on-policy branch selection barely reaches it:</p>
+<div class="math-block">$$\pi_0(u\mid h)\approx 0
+\quad\Rightarrow\quad
+\Delta z_u \approx 0.$$</div>
+<p>Then you need support expansion: better SFT traces, search, synthetic data, tool use, verifier-guided exploration, or architectural change.</p>
+<h3>2. The correct computation requires hidden-state reorganization</h3>
+<p>Some gains are not local token choices. If the model lacks a representation for a variable binding, proof invariant, latent plan, or tool state, shifting probability among existing tokens is not enough. You would expect broad activation changes, improved probes, and token distribution changes across many positions.</p>
+<h3>3. Pairwise labels credit the wrong feature</h3>
+<p>If $$y^+$$ and $$y^-$$ differ in correctness and also in style, length, or formatting, a pairwise objective can learn the correlated superficial dimension. This is one reason graph/listwise/equivalence-class structure is useful: it can separate “good because correct” from “good because verbose.”</p>
+<h3>4. Entropy is not value uncertainty</h3>
+<p>High entropy only means the model is uncertain among tokens. It does not mean the alternatives have different outcome value. A high-entropy adjective choice may be irrelevant. A low-entropy but wrong deterministic step may be the real bottleneck.</p>
+<p>So entropy-gated training needs an outcome or verifier signal, not entropy alone.</p>
+<h2>What to measure</h2>
+<p>For a small reasoning/post-training run, log the update geometry directly:</p>
+<ol>
+<li><strong>Changed-token sparsity</strong></li>
+</ol>
+<div class="math-block">$$   \delta_t = D_{\mathrm{KL}}(\pi_\theta(\cdot\mid h_t)\|\pi_0(\cdot\mid h_t))$$</div>
+<p>   and the fraction of total KL explained by the top 1%, 3%, 5%, and 10% positions.</p>
+<ol>
+<li><strong>Base-rank of promoted tokens</strong></li>
+</ol>
+<p>   For tokens whose probability rises most, record their rank under $$\pi_0(\cdot\mid h_t)$$. Sparse branch selection predicts many promoted reasoning tokens are already top-k.</p>
+<ol>
+<li><strong>Entropy/value overlap</strong></li>
+</ol>
+<p>   Measure whether changed positions have high base entropy $$H_0(h_t)$$ and high estimated branch value gap $$\Gamma(h_t)$$.</p>
+<ol>
+<li><strong>Response-simplex movement</strong></li>
+</ol>
+<p>   For each prompt&#x27;s sampled candidate set, compare the induced pre/post candidate distributions:</p>
+<div class="math-block">$$   p_0(i\mid x),\quad p_\theta(i\mid x),\quad q(i\mid x).$$</div>
+<p>   Plot whether training moves toward the graph/listwise target or collapses onto one response.</p>
+<ol>
+<li><strong>Activation vs logit locality</strong></li>
+</ol>
+<p>   If hooks are cheap, compare activation drift across layers at changed and unchanged prefixes. Local logit shifts with small hidden drift support the branch-selection story; broad hidden reorganization argues against it.</p>
+<ol>
+<li><strong>Diversity preservation</strong></li>
+</ol>
+<p>   Count how many distinct correct strategies remain probable after training. A good listwise/graph target should demote bad branches without unnecessarily eliminating equivalent good branches.</p>
+<h2>Minimal experiment</h2>
+<p>Use a fixed small model and a small math/code reasoning set where multiple rollouts per prompt can be sampled and verified.</p>
+<ol>
+<li>Sample $$n$$ base rollouts per prompt with logprobs.</li>
+<li>Build a per-prompt outcome graph: correct beats incorrect; shorter or cleaner correct traces may beat bloated correct traces only if that preference is intended; equivalent correct traces stay tied.</li>
+<li>Train four variants under the same prompts and candidate pool:</li>
+</ol>
+<p>   - pairwise DPO on randomly chosen winner/loser pairs;</p>
+<p>   - graph/listwise objective over all sampled candidates;</p>
+<p>   - entropy-gated contrastive correction only at high-entropy divergent prefixes;</p>
+<p>   - SFT on winners as a blunt baseline.</p>
+<ol>
+<li>Evaluate task accuracy, calibration, diversity of correct strategies, and the measurements above: KL concentration, promoted-token base rank, entropy/value overlap, and candidate-simplex movement.</li>
+</ol>
+<p>A clean falsifier would be:</p>
+<div class="math-block">$$\text{accuracy gains require broad KL movement or promoted tokens outside base top-k.}$$</div>
+<p>Another falsifier: entropy-gated corrections reproduce training-set gains but fail badly out of distribution, implying that branch selection overfit surface divergences rather than learning reusable decision rules.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Support illusion.</strong> The correct branch appears in top-k on easy prompts but not on the hard prompts where RL matters.</li>
+<li><strong>Style-credit leakage.</strong> Preference labels reward formatting, confidence, or verbosity correlated with correctness; sparse updates then target style branch points.</li>
+<li><strong>Entropy trap.</strong> High-entropy positions are selected even when alternatives have low outcome value gap.</li>
+<li><strong>Diversity collapse.</strong> A pairwise or low-temperature listwise target puts all mass on one trace and destroys alternative valid strategies.</li>
+<li><strong>Verifier-induced branch bias.</strong> The verifier prefers traces it can parse, not traces that are causally better reasoning.</li>
+<li><strong>Hidden distributed learning.</strong> The method appears sparse at logits, but activation probes reveal broad representation changes; the branch-selection explanation is incomplete.</li>
+<li><strong>Candidate-pool ceiling.</strong> Offline candidate sets omit the branch that would solve harder examples; graph/listwise training can only re-rank what was sampled.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant scout notes and questions:</p>
+<ul>
+<li>[[2026-05-12]]: ReasonMaxxer, GraphDPO, LPO, and vOPD made post-training look like structured probability geometry rather than optimizer branding.</li>
+<li>[[questions#Open questions]]: “Are reasoning-RL gains mostly localized to sparse high-entropy branch points already present in the base model, or do they require distributed representation changes?”</li>
+<li>[[questions#Candidate experiments]]: rollout-lifecycle diagnostics remain the broader harness; this post specifies the branch-level measurement layer inside that harness.</li>
+<li>[[2026-05-07-rollout-lifecycle-gradient]]: the rollout distribution determines which branches can be credited in the first place.</li>
+</ul>
+<p>Refined question after this derivation: measure reasoning post-training as <strong>candidate-simplex movement plus prefix-local KL concentration</strong>. The practical test is whether gains are explained by sparse, high-entropy, high-value-gap branch updates whose promoted tokens were already in the base model&#x27;s reachable support.</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-13 09:57</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

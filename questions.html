@@ -49,7 +49,7 @@
 <li><code>candidate</code> Which serving-path changes preserve mechanism-level behavior under long-context and rare-feature prompts, and which only preserve top-line output agreement?</li>
 </ul>
 <ul>
-<li><code>candidate</code> Are reasoning-RL gains mostly localized to sparse high-entropy branch points already present in the base model, or do they require distributed representation changes?</li>
+<li><code>candidate</code> Are reasoning-RL gains mostly localized to sparse high-entropy branch points already present in the base model, or do they require distributed representation changes? See [[2026-05-13-sparse-branch-rl]].</li>
 <li><code>candidate</code> Which compression and sparsity rules differ between autoregressive, byte-level, diffusion, and flow language models once tasks and scale are controlled?</li>
 <li><code>candidate</code> Can trajectory-quality probes predict when few-step diffusion/flow generation will beat blind distillation under equal forward-pass budgets?</li>
 <li><code>candidate</code> When adaptive inference controllers branch, prune, gaze, or switch submodel size, which rare evidence slices are most likely to be over-pruned?</li>
@@ -62,6 +62,7 @@
 <li><code>experiment</code> <strong>Mechanism-preserving inference/runtime harness.</strong> Run the same small model/task under baseline and one optimized path: low-bit weights, low-bit/adaptive KV, speculative decoding, cache handoff, expert prefetch, or different serving backend. Measure output agreement, logit/activation drift where possible, attention entropy, rare-feature accuracy, rollout reproducibility, verifier disagreement, latency, memory, and bandwidth.</li>
 <li><code>experiment</code> <strong>Temporary-lossy pretraining recovery geometry.</strong> Train a tiny LM with an early lossy-token or compressed-attention phase, then restore exact AR/full-attention training. Measure coarse-vs-exact gradient cosine, rare-token/order-sensitive/long-context recovery lag $$\mathrm{Lag}_F$$, per-slice gradient-energy retention $$R_F$$, and matched-FLOP speedup. See [[2026-05-11-temporary-lossy-pretraining]] and [[2026-05-11#1. Test temporary-lossy pretraining on a tiny language model]].</li>
 <li><code>experiment</code> <strong>Speech factor survival probe.</strong> Use WavLM/ECAPA/codec states or a small speech-native stack to probe speaker, script/language/accent, phoneme/content, prosody, entity identity, and context metadata. Test correct vs shuffled metadata, gradient-reversal nuisance removal, entity-dense synthetic curricula, EHR/WER regression, and real-recording sanity checks.</li>
+<li><code>experiment</code> <strong>Sparse branch-selection audit for reasoning post-training.</strong> On a fixed math/code rollout set, compare pairwise DPO, graph/listwise preference targets, entropy-gated contrastive correction, and winner SFT. Measure prefix-local KL concentration, promoted-token base rank, entropy/value-gap overlap, candidate-simplex movement, diversity of correct strategies, and activation-vs-logit locality. See [[2026-05-13-sparse-branch-rl]].</li>
 <li><code>experiment</code> <strong>Cheap hallucination/uncertainty probe overlap map.</strong> On one small factual QA set, log first-content-token entropy, ordinary logprob, middle-layer attention divergence/KL, semantic self-consistency, answer type, and correctness. Cluster failures by which signal catches them.</li>
 <li><code>experiment</code> <strong>Visual grounding persistence / attention dilution demo.</strong> Create simple images with late-needed details; compare short answer, long answer, and long answer with visual refresh/memory summary. Measure detail accuracy vs generation length and attention-to-image fraction if available.</li>
 <li><code>experiment</code> <strong>Text-conditioned visual SSL nameability probe.</strong> Create/reuse synthetic images with nameable/captioned and non-nameable/uncaptioned factors. Compare visual SSL, text-conditioned SSL, end-to-end tokenizer, and caption-randomized controls with linear probes and local-factor corruption metrics.</li>
@@ -84,7 +85,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-12 03:07</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-13 09:57</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
