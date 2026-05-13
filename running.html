@@ -217,10 +217,22 @@
 <li>Do not import AR-model compression or interpretability intuitions directly into diffusion/flow/byte families; outlier layers, residual mean modes, and trajectory bottlenecks may differ.</li>
 <li>Preference/RL evidence is converging on update geometry rather than optimizer brand: graph structure, simplex projection, entropy-gated branch selection, and control-variate baselines.</li>
 <li>Audio authenticity and robustness should combine factor survival with provenance/signing; learned detectors alone are not enough for partial edits.</li>
+</ul>
+<h2>Daily additions — 2026-05-14</h2>
+<ul>
+<li><strong>Parallel/online state interfaces should be tested as channel-allocation changes, not just new architectures</strong> — Multi-Stream LLMs and δ-mem point to separate ways of escaping serial context: parallel streams and compact online memory. Experiment: tiny synthetic reasoning tasks with controlled independent variables; compare single-stream CoT, latent/parallel streams, and memory updates under matched compute and context budgets.</li>
+<li><strong>Agentic RL needs correction/logging audits before scaling asynchronous pipelines</strong> — RubricEM, AlphaGRPO, internal-state value estimation, failure-trajectory alignment, and Missing Old Logits all change the credit-assignment pipeline. Experiment: fixed toy agent loop with exact vs missing/approximated old logits, rubric/decomposed rewards, and internal-value critics; measure gradient-cosine against an on-policy reference.</li>
+<li><strong>Interpretability and data selection should be evaluated by causal prediction</strong> — Jet decompositions and neuron-aware data selection both use internal computation as a structured signal. Experiment: small LM with synthetic skills; test whether path/activation features predict held-out patching effects and select data with less skill interference than text/embedding similarity.</li>
+<li><strong>Speech-factor probes should include retrieval embeddings and audio-native failures</strong> — Voice search, SLAM-LLM, streaming decoder-only ASR, and audio narrative attacks broaden the speech-factor harness beyond TTS quality. Experiment: probe speaker/accent/prosody/content in voice-search or speech-LLM embeddings, then test transcript-only vs audio-conditioned safety and latency decisions.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable updates split across state/channel allocation, RL credit/logging, causal interpretability/data selection, speech-factor robustness, and infra as experiment enabler.</li>
+<li>PyTorch/framework/runtime improvements should be tracked as cost-floor changes for local mechanism experiments, especially spectral probes and batched diagnostics.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-13 09:57</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-14 03:09</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

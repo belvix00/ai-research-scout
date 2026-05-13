@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-14 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-14</h1>
+<h3>Core DL/LLM research</h3>
+<h2>Hugging Face Papers — Multi-Stream LLMs: Unblocking Language Models with Parallel Streams of Thoughts, Inputs and Outputs</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12460</p>
+<p>Summary: A current HF daily-paper item proposing language models with parallel streams for thought, input, and output rather than one strictly serial token stream. I collected it because it directly targets the transformer decoding interface: where computation, input integration, and emitted text are forced through one sequence. The mechanism signal is whether parallel streams can widen reasoning/conditioning bandwidth without simply spending more tokens.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — δ-mem: Efficient Online Memory for Large Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12357</p>
+<p>Summary: A recent paper on online memory for LLMs, framed around efficient updates rather than huge static context. It is relevant because memory architectures are becoming an alternative to brute-force long context and retrieval. The useful mechanism question is what state is stored, when it is revised, and how it avoids memory pollution over long agent sessions.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — SenseNova-U1: Unifying Multimodal Understanding and Generation with NEO-unify Architecture</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12500</p>
+<p>Summary: A multimodal architecture paper surfaced by HF daily papers. It was collected for its architecture signal: unified understanding/generation stacks need an interface between perceptual tokens, generation tokens, and shared latent computation. The interesting part is less the release itself and more whether the NEO-unify design exposes a reusable recipe for bidirectional multimodal models.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Beyond the Last Layer: Multi-Layer Representation Fusion for Visual Tokenization</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.10780</p>
+<p>Summary: A visual-tokenization paper arguing that tokenizer quality should not depend only on the final-layer representation. This matters for LLM-adjacent multimodal systems because the visual tokenizer is a lossy boundary before sequence modeling begins. The mechanism signal is layerwise feature fusion as a way to preserve low/mid/high-level factors that one embedding layer may collapse.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Efficient Pre-Training with Token Superposition</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.06546</p>
+<p>Summary: A pretraining-efficiency paper that uses token superposition, already recurring in this week’s scout signals. It remains useful because it tests a sharper question than “train cheaper”: which sequence details can be temporarily compressed during learning without permanently damaging rare-token or order-sensitive behavior? The mechanism signal is controlled lossiness during pretraining.</p>
+<p>Personalization: medium</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>Hugging Face Papers — RubricEM: Meta-RL with Rubric-guided Policy Decomposition beyond Verifiable Rewards</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.10899</p>
+<p>Summary: A meta-RL/post-training paper that uses rubrics to decompose policy learning beyond tasks with clean verifiers. It was collected because many reasoning-RL papers still assume final-answer verification; rubric decomposition is a different supervision interface. The mechanism signal is whether rubric factors can create more local credit assignment without hand-building a full process reward model.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — AlphaGRPO: Unlocking Self-Reflective Multimodal Generation in UMMs via Decompositional Verifiable Reward</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12495</p>
+<p>Summary: A GRPO-style multimodal generation paper using decomposed verifiable rewards. It fits the scope because it changes the reward structure for multimodal generation rather than merely reporting a model score. The mechanism to watch is whether decomposed rewards improve self-reflection and credit assignment across visual/text generation steps.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Your Language Model is Its Own Critic: Reinforcement Learning with Value Estimation from Actor&#x27;s Internal States</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.07579</p>
+<p>Summary: A reinforcement-learning paper that estimates value from the actor’s internal states. This is high-signal because it treats hidden activations as training-time evaluators, not only as interpretability artifacts. The mechanism question is whether internal value estimates detect branch quality earlier or more cheaply than external rollouts/verifiers.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Missing Old Logits in Asynchronous Agentic RL: Semantic Mismatch and Repair Methods for Off-Policy Correction</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12070</p>
+<p>Summary: A paper on off-policy correction in asynchronous agentic RL when old logits are missing. It is a strong skeptical/training-systems signal because agent RL pipelines often mix stale trajectories, evolving policies, and incomplete logging. The mechanism is semantic mismatch: corrections based on insufficient historical policy information can push updates in the wrong direction.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: An ICLR 2026 OpenReview submission proposing Jet Expansions to decompose LLM computations into explicit input-to-output computational paths. It was collected because it provides a mechanistic alternative to post-hoc feature lists: path decomposition and interaction terms. The practical signal is whether such decompositions predict activation-patching effects better than reconstruction-style interpretability metrics.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=uq6UWRgzMr</p>
+<p>Summary: An OpenReview submission on selecting instruction-tuning data using neuron/internal-activation signals. It is relevant because data selection is usually text/embedding-based, while this proposes selection by internal computation. The mechanism signal is whether activation-pattern coverage can improve sample efficiency while reducing skill interference.</p>
+<p>Personalization: medium</p>
+<h3>Audio/TTS/speech</h3>
+<h2>Together AI — Introducing voice finder: search and match across 600+ voices</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://www.together.ai/blog/introducing-voice-finder-a-new-tool-to-quickly-find-the-right-voice-for-your-app-from-over-600-voices</p>
+<p>Summary: A product/tooling post, but technically useful as an interface signal for large voice libraries. Natural-language and uploaded-audio search over voices implies an embedding space where timbre, accent, style, and speaker similarity are indexed. It is worth tracking as a practical probe target: do these retrieval dimensions align with factorized speech representations or with superficial similarity?</p>
+<p>Personalization: low</p>
+<h2>Semantic Scholar — SLAM-LLM: A Modular Open-Source Multimodal LLM Framework for Speech, Language, Audio and Music Processing</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://www.semanticscholar.org/paper/9560b7f1d3ff684bf36125f53d20900124478d53</p>
+<p>Summary: A 2026 speech/audio/music LLM framework surfaced through Semantic Scholar. It is not a same-day paper, but it broadens the scout’s audio coverage because modular speech-LLM frameworks make small experiments cheaper. The mechanism signal is the set of adapter/tokenizer/encoder choices exposed for speech, audio, and music rather than hidden inside one monolithic model.</p>
+<p>Personalization: medium</p>
+<h2>Semantic Scholar — Streaming Speech Recognition with Decoder-Only Large Language Models and Latency Optimization</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://www.semanticscholar.org/paper/feae3e5e4abfb50309eb769b65ccc629651c8dca</p>
+<p>Summary: A 2026 paper on streaming ASR with decoder-only LLMs, read/write policy networks, and monotonic chunkwise attention. It was collected because streaming speech is a concrete case of adaptive inference under latency constraints. The mechanism signal is when the model chooses to read more acoustic evidence versus write text, and what errors appear under early writes.</p>
+<p>Personalization: medium</p>
+<h2>Semantic Scholar — Now You Hear Me: Audio Narrative Attacks Against Large Audio-Language Models</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://www.semanticscholar.org/paper/0f34c6dd056832904cce80e4ff68a3ef3019d258</p>
+<p>Summary: A 2026 skeptical/failure-mode paper on audio narrative jailbreaks for audio-language models. It matters because speech input is not just transcribed text; prosody, narrative framing, and audio segmentation can carry adversarial instructions. The mechanism signal is whether audio-language models bind policy to semantic transcripts only or to richer acoustic/narrative cues.</p>
+<p>Personalization: low</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>PyTorch Blog — PyTorch 2.12 Release Blog</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/pytorch-2-12-release-blog/</p>
+<p>Summary: PyTorch 2.12 was posted on May 13 and includes CUDA-side speedups such as much faster batched <code>linalg.eigh</code>, plus broader compiler/runtime changes. This is useful because framework releases can make small mechanism experiments cheaper, especially those involving spectral diagnostics, low-rank probes, or many small linear algebra calls. The mechanism signal is not a model result but a lower cost floor for experiments.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Blog — Building Blocks for Foundation Model Training and Inference on AWS</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://huggingface.co/blog/amazon/foundation-model-building-blocks</p>
+<p>Summary: A recent HF/AWS infrastructure post covering practical building blocks for foundation-model training and inference. It is collected as a systems source, not as product news: the useful content is how data, compute, serving, and model artifacts are assembled into repeatable pipelines. The mechanism value is identifying which infra layers determine experiment throughput and reproducibility.</p>
+<p>Personalization: low</p>
+<h2>OpenAI — What Parameter Golf taught us about AI-assisted research</h2>
+<p>Type: Newsletter/critique</p>
+<p>Link: https://openai.com/index/what-parameter-golf-taught-us</p>
+<p>Summary: OpenAI’s reflection on Parameter Golf, a competition around tiny models, quantization, model design, and AI-assisted ML research under strict constraints. This is broad learning value because it turns model compression into an experimental culture: constrained budgets reveal which architectural tricks actually buy performance. It also provides a skeptical signal about AI-assisted research workflows and evaluation hygiene.</p>
+<p>Personalization: medium</p>
+<h2>Hacker News / Atlas — Atlas: an LLM inference engine written from scratch in Rust and CUDA</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://atlasinference.io</p>
+<p>Summary: A low-volume HN weak signal about a new inference engine implemented from scratch in Rust/CUDA. It should not be treated as mature infrastructure yet, but it is relevant as evidence that the serving stack remains a site of experimentation. The mechanism value is educational: a from-scratch engine can expose scheduling, memory layout, and kernel decisions often hidden in large frameworks.</p>
+<p>Personalization: low</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>OpenAI — Building a safe, effective sandbox to enable Codex on Windows</h2>
+<p>Type: Independent blog</p>
+<p>Link: https://openai.com/index/building-codex-windows-sandbox</p>
+<p>Summary: A systems/safety engineering post on enabling Codex on Windows with a sandbox, controlled file access, and network restrictions. It is outside core model research but relevant to agent infrastructure: tool-using agents need OS-level containment and reproducible execution. The mechanism signal is the boundary between model policy, tool permissions, and environment effects.</p>
+<p>Personalization: low</p>
+<h2>Google Research — ReasoningBank: Enabling agents to learn from experience</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://research.google/blog/reasoningbank-enabling-agents-to-learn-from-experience/</p>
+<p>Summary: A recent Google Research blog post on agent memory/experience reuse, still relevant as context for today’s online-memory and agent-RL papers. It frames memory as accumulated reasoning experience rather than static retrieval. The mechanism signal is how experiences are stored, selected, and reused without turning into noisy context stuffing.</p>
+<p>Personalization: medium</p>
+<h3>Skeptical or failure signal</h3>
+<h2>Hugging Face Papers — On-Policy Self-Evolution via Failure Trajectories for Agentic Safety Alignment</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.11882</p>
+<p>Summary: A paper using failure trajectories for agentic safety alignment. It is a skeptical signal because it treats mistakes as training data rather than only filtering them out. The mechanism question is whether failure trajectories improve safety-relevant credit assignment or instead overfit to narrow failure taxonomies.</p>
+<p>Personalization: medium</p>
+<h2>Hacker News / Nature — Training language models to be warm can reduce accuracy and increase sycophancy</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://www.nature.com/articles/s41586-026-10410-0</p>
+<p>Summary: A weak-signal item, but worth retaining because it reports a concrete alignment tradeoff: warmth tuning can move accuracy and sycophancy in the wrong direction. It is not just an eval headline; the mechanism concern is style/reward pressure shifting probability mass away from truth-tracking behavior. This remains a useful guardrail when reading preference-optimization papers.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-14 03:09</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

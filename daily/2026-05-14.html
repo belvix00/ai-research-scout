@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-14 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-14</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest signals came from HF daily papers around memory, parallel-stream language modeling, multimodal tokenization, and agentic RL; from OpenReview around interpretability and neuron-aware data selection; from PyTorch/OpenAI/Together/HF blogs around infrastructure; and from Semantic Scholar/audio sources around speech-LLM tooling and audio-language failure modes.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>Several papers pushed on model interfaces rather than just scale. <a href="https://huggingface.co/papers/2605.12460" target="_blank" rel="noopener">Multi-Stream LLMs</a> asks whether thought/input/output should remain serialized through one token stream; if the claim holds, the mechanism is not “more CoT” but extra channels for computation and conditioning. <a href="https://huggingface.co/papers/2605.12357" target="_blank" rel="noopener">δ-mem</a> moves the long-context conversation toward efficient online memory: store/update compact state instead of repeatedly refeeding everything.</p>
+<p>The multimodal side also focused on boundary design. <a href="https://huggingface.co/papers/2605.12500" target="_blank" rel="noopener">SenseNova-U1</a> is a unified understanding/generation architecture, while <a href="https://huggingface.co/papers/2605.10780" target="_blank" rel="noopener">multi-layer representation fusion for visual tokenization</a> argues that visual tokens should preserve information from several representation depths, not only final-layer semantics. Relative to the last few days, this continues the “interfaces decide what survives” thread, but today’s evidence is plural: model streams, memory, and tokenizers each expose a different interface.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Post-training/RL signals were dense. <a href="https://huggingface.co/papers/2605.10899" target="_blank" rel="noopener">RubricEM</a> uses rubric-guided policy decomposition to move beyond tasks with clean verifiable rewards. <a href="https://huggingface.co/papers/2605.12495" target="_blank" rel="noopener">AlphaGRPO</a> applies decompositional verifiable reward to multimodal generation. <a href="https://huggingface.co/papers/2605.07579" target="_blank" rel="noopener">Your Language Model is Its Own Critic</a> estimates value from the actor’s internal states, turning hidden representations into a training signal rather than only an analysis object.</p>
+<p>The skeptical RL systems signal was <a href="https://huggingface.co/papers/2605.12070" target="_blank" rel="noopener">Missing Old Logits in Asynchronous Agentic RL</a>: agentic RL pipelines are often asynchronous and logging-incomplete, so off-policy corrections can suffer semantic mismatch when the old policy distribution is unrecoverable. This matters relative to last week’s rollout-lifecycle theme because it makes the logging/runtime layer part of the optimizer, not just engineering hygiene.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>OpenReview added two high-signal mechanism papers. <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Decomposing LLM Computation with Jets</a> proposes Jet Expansions for explicit input-to-output computational paths, which is useful because it can be evaluated by causal prediction of interventions rather than only reconstruction quality. <a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">Neuron-Aware Data Selection</a> selects instruction-tuning data using internal neuron signals; if it works, activation coverage becomes a data-curriculum primitive.</p>
+<p>The failure-mode reminder remains the Nature/HN item on <a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">warmth tuning reducing accuracy and increasing sycophancy</a>. It was not new enough to dominate today, but it is still a useful guardrail: preference/style optimization can shift probability mass and calibration before headline ability metrics clearly fail.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Today’s audio cluster was more tooling/failure-mode than new TTS architecture. Together’s <a href="https://www.together.ai/blog/introducing-voice-finder-a-new-tool-to-quickly-find-the-right-voice-for-your-app-from-over-600-voices" target="_blank" rel="noopener">voice finder</a> is product-facing, but it exposes a useful representation question: what dimensions of speaker/timbre/style/accent does a voice-search embedding actually learn? Semantic Scholar surfaced <a href="https://www.semanticscholar.org/paper/9560b7f1d3ff684bf36125f53d20900124478d53" target="_blank" rel="noopener">SLAM-LLM</a>, a modular speech/audio/music LLM framework that may make small speech-LLM experiments cheaper.</p>
+<p>Two speech papers sharpened the adaptive/failure side. <a href="https://www.semanticscholar.org/paper/feae3e5e4abfb50309eb769b65ccc629651c8dca" target="_blank" rel="noopener">Streaming ASR with decoder-only LLMs</a> uses read/write policies and monotonic chunkwise attention, making streaming recognition a live adaptive-inference problem. <a href="https://www.semanticscholar.org/paper/0f34c6dd056832904cce80e4ff68a3ef3019d258" target="_blank" rel="noopener">Audio Narrative Attacks</a> shows that audio-language safety cannot be reduced to text transcript safety; narrative framing and acoustic presentation can matter.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Infrastructure signals were unusually practical. <a href="https://pytorch.org/blog/pytorch-2-12-release-blog/" target="_blank" rel="noopener">PyTorch 2.12</a> shipped with CUDA and compiler/runtime changes, including large speedups for batched <code>linalg.eigh</code>, which can directly reduce the cost of spectral/probe-heavy mechanism experiments. Hugging Face’s <a href="https://huggingface.co/blog/amazon/foundation-model-building-blocks" target="_blank" rel="noopener">AWS foundation-model training/inference building blocks</a> is broad, but useful as an operational map of where data, artifacts, compute, and serving pipelines introduce reproducibility constraints.</p>
+<p><a href="https://openai.com/index/what-parameter-golf-taught-us" target="_blank" rel="noopener">OpenAI’s Parameter Golf reflection</a> is not a daily model release; it is a field report on constrained ML research, tiny models, quantization, and AI-assisted exploration. The weak-signal <a href="https://atlasinference.io" target="_blank" rel="noopener">Atlas Rust/CUDA inference engine</a> is not mature evidence yet, but it reinforces that inference stacks remain pedagogically and experimentally valuable because they expose memory layout, scheduling, and kernel choices.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>The day had several agent-tooling items that are useful only when treated mechanistically. <a href="https://openai.com/index/building-codex-windows-sandbox" target="_blank" rel="noopener">OpenAI’s Windows Codex sandbox</a> is an environment-control post: safe agent execution depends on file/network boundaries, not just model policy. <a href="https://research.google/blog/reasoningbank-enabling-agents-to-learn-from-experience/" target="_blank" rel="noopener">Google ReasoningBank</a> remains relevant context for today’s online-memory papers because it frames experience storage as reusable reasoning state rather than a passive transcript archive.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Multi-stream language modeling surfaced as a direct challenge to serial token bottlenecks.</strong> <a href="https://huggingface.co/papers/2605.12460" target="_blank" rel="noopener">Multi-Stream LLMs</a> is important because it asks whether thoughts, inputs, and outputs should be separate streams. The minimal mechanism to inspect is cross-stream attention/gating: does it improve branch selection or just hide more compute?</li>
+</ol>
+<ol>
+<li><strong>Online memory stayed central.</strong> <a href="https://huggingface.co/papers/2605.12357" target="_blank" rel="noopener">δ-mem</a> and <a href="https://research.google/blog/reasoningbank-enabling-agents-to-learn-from-experience/" target="_blank" rel="noopener">ReasoningBank</a> both treat memory as state that should be selected and updated. This is different from million-token context: the question becomes memory hygiene, update locality, and retrieval/use at the right decision point.</li>
+</ol>
+<ol>
+<li><strong>Unified multimodal architectures are still wrestling with token boundaries.</strong> <a href="https://huggingface.co/papers/2605.12500" target="_blank" rel="noopener">SenseNova-U1</a> and <a href="https://huggingface.co/papers/2605.10780" target="_blank" rel="noopener">multi-layer visual token fusion</a> are two versions of the same boundary problem. One unifies understanding/generation; the other tries to prevent visual tokenizers from losing useful non-final-layer factors.</li>
+</ol>
+<ol>
+<li><strong>Token superposition remains a concrete temporary-lossiness mechanism.</strong> <a href="https://huggingface.co/papers/2605.06546" target="_blank" rel="noopener">Efficient Pre-Training with Token Superposition</a> continues to be worth tracking because it is falsifiable. If superposition harms rare tokens, order-sensitive tasks, or long-context recovery under matched FLOPs, the “lossy pretraining” story breaks.</li>
+</ol>
+<ol>
+<li><strong>Rubric/decomposed reward post-training broadened beyond exact-verifier RL.</strong> <a href="https://huggingface.co/papers/2605.10899" target="_blank" rel="noopener">RubricEM</a> and <a href="https://huggingface.co/papers/2605.12495" target="_blank" rel="noopener">AlphaGRPO</a> both decompose supervision. The mechanism is local credit assignment: can rubrics or decomposed rewards produce useful gradients without introducing subjective or modality-specific reward hacking?</li>
+</ol>
+<ol>
+<li><strong>Internal states are becoming training-time value signals.</strong> <a href="https://huggingface.co/papers/2605.07579" target="_blank" rel="noopener">Your Language Model is Its Own Critic</a> is notable because it uses actor internals for value estimation. This intersects with interpretability: hidden states may be useful not only for explaining behavior but for controlling updates.</li>
+</ol>
+<ol>
+<li><strong>Asynchronous agentic RL has a logging/off-policy correction problem.</strong> <a href="https://huggingface.co/papers/2605.12070" target="_blank" rel="noopener">Missing Old Logits</a> warns that stale trajectories without old logits create semantic mismatch. This is a practical falsifier for naive agent-RL scaling: if the data pipeline cannot reconstruct the behavior policy, correction math may become decorative.</li>
+</ol>
+<ol>
+<li><strong>Jets offer a path-based interpretability proposal.</strong> <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Decomposing LLM Computation with Jets</a> is interesting because it decomposes computation paths and interactions, not just features. The right evaluation target is held-out causal effect prediction: can the decomposition predict what patching/intervention will do?</li>
+</ol>
+<ol>
+<li><strong>Neuron-aware data selection turns internal computation into curriculum design.</strong> <a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">The OpenReview submission</a> claims instruction-tuning subsets can be selected by neuron signals. If true, activation coverage could beat embedding similarity for avoiding skill interference.</li>
+</ol>
+<ol>
+<li><strong>Audio coverage split between representation tooling and safety failures.</strong> <a href="https://www.together.ai/blog/introducing-voice-finder-a-new-tool-to-quickly-find-the-right-voice-for-your-app-from-over-600-voices" target="_blank" rel="noopener">Together voice finder</a>, <a href="https://www.semanticscholar.org/paper/9560b7f1d3ff684bf36125f53d20900124478d53" target="_blank" rel="noopener">SLAM-LLM</a>, <a href="https://www.semanticscholar.org/paper/feae3e5e4abfb50309eb769b65ccc629651c8dca" target="_blank" rel="noopener">streaming decoder-only ASR</a>, and <a href="https://www.semanticscholar.org/paper/0f34c6dd056832904cce80e4ff68a3ef3019d258" target="_blank" rel="noopener">audio narrative attacks</a> point to different speech problems: search embeddings, modular experimentation, read/write latency, and acoustic/narrative jailbreaks.</li>
+</ol>
+<ol>
+<li><strong>PyTorch 2.12 is an experiment-cost signal.</strong> The <a href="https://pytorch.org/blog/pytorch-2-12-release-blog/" target="_blank" rel="noopener">release blog</a> is useful because faster CUDA linear algebra and runtime improvements can change which diagnostics are cheap enough to run routinely. Spectral probes, low-rank analyses, and batched evaluations especially benefit from framework-level improvements.</li>
+</ol>
+<ol>
+<li><strong>Constrained research competitions can be more informative than broad leaderboards.</strong> OpenAI’s <a href="https://openai.com/index/what-parameter-golf-taught-us" target="_blank" rel="noopener">Parameter Golf reflection</a> shows how tiny budgets force participants to test architecture/compression ideas under hard constraints. That is a useful template for Aman&#x27;s scout-style minimal experiments.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Interfaces remained important, but not as one grand thesis.</strong> Today’s interfaces were memory updates, parallel streams, visual tokenizers, rubric rewards, async RL logs, voice embeddings, and sandbox boundaries. They are related, but each has its own mechanism and should not be collapsed into one story.</li>
+</ol>
+<ol>
+<li><strong>Training signal is moving inward and sideways.</strong> Rubrics, decomposed rewards, actor internal value estimates, neuron-aware data selection, and Jet path decompositions all use information beyond final answer correctness. The opportunity is to compare which internal/intermediate signals actually predict useful update directions.</li>
+</ol>
+<ol>
+<li><strong>Infrastructure changes are both enablers and experimental conditions.</strong> PyTorch 2.12, AWS/HF building blocks, Codex sandboxing, and from-scratch inference engines all affect what experiments are cheap and reproducible. The watchout is that serving/runtime choices can change behavior, not merely accelerate it.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Test whether parallel streams improve reasoning by widening channels or merely adding compute</h3>
+<p>Evidence links: <a href="https://huggingface.co/papers/2605.12460" target="_blank" rel="noopener">Multi-Stream LLMs</a>, <a href="https://huggingface.co/papers/2605.06546" target="_blank" rel="noopener">Token Superposition</a>.</p>
+<p>Mechanism: serial token streams may bottleneck simultaneous input tracking, scratchpad computation, and output realization; parallel streams could reduce interference.</p>
+<p>Minimal experiment/probe: train a tiny transformer on synthetic tasks requiring independent state variables; compare single-stream CoT, two-stream latent scratchpad, and multi-stream input/output variants under matched FLOPs and generated-token budgets.</p>
+<p>Falsifier: gains disappear under matched compute, or parallel streams improve easy averages while worsening rare variable-binding/order-sensitive slices.</p>
+<p>Confidence: medium.</p>
+<h3>2. Compare decomposed reward/rubric signals against hidden-state value estimates in the same toy RL environment</h3>
+<p>Evidence links: <a href="https://huggingface.co/papers/2605.10899" target="_blank" rel="noopener">RubricEM</a>, <a href="https://huggingface.co/papers/2605.12495" target="_blank" rel="noopener">AlphaGRPO</a>, <a href="https://huggingface.co/papers/2605.07579" target="_blank" rel="noopener">Own Critic</a>.</p>
+<p>Mechanism: post-training may need local credit signals, but rubrics, decomposed verifiers, and internal values could disagree on which branch was good.</p>
+<p>Minimal experiment/probe: fixed math/tool environment with logged trajectories; train variants using outcome-only reward, rubric subrewards, decomposed verifiable rewards, and hidden-state value prediction; measure update-direction overlap, branch diversity, and final correctness.</p>
+<p>Falsifier: all methods produce the same update direction and failure slices once sample budget is controlled.</p>
+<p>Confidence: medium-high.</p>
+<h3>3. Build an async agent-RL logging audit before trusting off-policy corrections</h3>
+<p>Evidence links: <a href="https://huggingface.co/papers/2605.12070" target="_blank" rel="noopener">Missing Old Logits</a>, <a href="https://huggingface.co/papers/2605.11882" target="_blank" rel="noopener">On-policy failure trajectories</a>.</p>
+<p>Mechanism: stale trajectories, missing logits, changing tool policies, and failure replay can create semantic mismatch between collected behavior and corrected policy gradients.</p>
+<p>Minimal experiment/probe: toy asynchronous agent loop where old logits are selectively dropped, approximated, or logged exactly; compare correction bias, verifier disagreement, and gradient cosine against an on-policy reference.</p>
+<p>Falsifier: approximate/no-logit correction matches exact old-logit correction across policy drift regimes.</p>
+<p>Confidence: high.</p>
+<h3>4. Use Jet/path decompositions and neuron-aware data selection to predict intervention effects, not just reconstructions</h3>
+<p>Evidence links: <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Jets</a>, <a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">Neuron-aware data selection</a>.</p>
+<p>Mechanism: internal path/activation signals should be judged by whether they predict causal effects and useful data coverage.</p>
+<p>Minimal experiment/probe: small LM with synthetic skills; collect activation/path features, choose tuning subsets by text similarity vs activation coverage, and evaluate whether learned decompositions predict held-out patching/ablation effects.</p>
+<p>Falsifier: activation/path methods improve reconstruction or selection scores but fail to predict causal interventions or reduce skill interference.</p>
+<p>Confidence: medium.</p>
+<h3>5. Make a speech-factor probe around voice search, streaming ASR, and audio narrative attacks</h3>
+<p>Evidence links: <a href="https://www.together.ai/blog/introducing-voice-finder-a-new-tool-to-quickly-find-the-right-voice-for-your-app-from-over-600-voices" target="_blank" rel="noopener">Together voice finder</a>, <a href="https://www.semanticscholar.org/paper/9560b7f1d3ff684bf36125f53d20900124478d53" target="_blank" rel="noopener">SLAM-LLM</a>, <a href="https://www.semanticscholar.org/paper/feae3e5e4abfb50309eb769b65ccc629651c8dca" target="_blank" rel="noopener">Streaming ASR</a>, <a href="https://www.semanticscholar.org/paper/0f34c6dd056832904cce80e4ff68a3ef3019d258" target="_blank" rel="noopener">Audio narrative attacks</a>.</p>
+<p>Mechanism: speech systems entangle speaker identity, timbre, accent, semantic content, timing, and safety policy cues.</p>
+<p>Minimal experiment/probe: use public speech encoders/codecs or SLAM-LLM components; fit probes for speaker/accent/prosody/content, test read/write latency errors, and compare transcript-only versus audio-conditioned safety decisions.</p>
+<p>Falsifier: embeddings and hidden states are transcript-dominated and show no independent speaker/prosody/narrative vulnerability once content is controlled.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><a href="https://huggingface.co/papers/2605.12357" target="_blank" rel="noopener">δ-mem</a>: revisit after reading the full paper; key question is whether memory update rules include anti-pollution or confidence mechanisms.</li>
+<li><a href="https://huggingface.co/papers/2605.12500" target="_blank" rel="noopener">SenseNova-U1</a>: inspect architecture diagrams and training recipe before treating “unified” as technically meaningful.</li>
+<li><a href="https://pytorch.org/blog/pytorch-2-12-release-blog/" target="_blank" rel="noopener">PyTorch 2.12</a>: check whether batched eigensolver and compiler changes help local SAE/spectral/probe experiments.</li>
+<li><a href="https://atlasinference.io" target="_blank" rel="noopener">Atlas inference engine</a>: weak signal only; revisit if it publishes clear docs, benchmarks, or readable kernel/scheduler explanations.</li>
+<li><a href="https://www.semanticscholar.org/paper/0f34c6dd056832904cce80e4ff68a3ef3019d258" target="_blank" rel="noopener">Audio Narrative Attacks</a>: worth reading for concrete attack construction and whether the vulnerability survives transcript normalization.</li>
+<li><a href="https://openai.com/index/building-codex-windows-sandbox" target="_blank" rel="noopener">Codex Windows sandbox</a>: useful for agent-environment boundary design, but not a model-mechanism item.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-14 03:09</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
