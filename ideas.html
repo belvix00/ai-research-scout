@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-14 03:08:56</p>
+<p>Generated: 2026-05-16 03:07:18</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -391,6 +391,30 @@
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - Mechanism: - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the generat</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2605.00809" target="_blank" rel="noopener">Let ViT Speak: Generative Language-Image Pre-training</a> - <a href="https://huggingface.co/papers/2605.00503" target="_blank" rel="noopener">End-to-End Autoregressive Image Generation with 1D Semantic Tokenizer</a> - <strong>Mechanism</strong> - Two-stage tokenizers optimize reconstruction or contrastive objectives before the generator ever sees them. End-to-end or language-token-supervised encoders expose the tokenizer to the downstream autoregressive loss. That should change which visual factors get strong gradients: text-nameable objects may get amplified, while spatial/texture details may still be compressed unless the g</li>
 </ul>
+<h2>Learned state interfaces for rare-evidence retention</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-16</li>
+<li>Last seen: 2026-05-16</li>
+<li>Evidence count: 3</li>
+</ul>
+<h3>Thesis</h3>
+<p>Long-context and agent memory systems should compare learned memory modules, KV write policies, diversity retention, and stateful sessions as alternative state interfaces under equal cost.</p>
+<h3>Mechanism</h3>
+<p>A state interface decides which evidence is retained, when it is written, and whether it remains accessible at the later decision point.</p>
+<h3>Minimal experiment</h3>
+<p>Construct sparse-clue/distractor long-context tasks; compare full context, retrieval, memory module, learned KV writing, diversity retention, and persistent session reuse with matched latency/memory/KV budgets.</p>
+<h3>Falsifier</h3>
+<p>If all interfaces fail/succeed on the same examples after cost matching, state-interface choice is not explaining rare evidence retention.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.13784v1</code> — Stateful streaming transformers keep persistent KV sessions and move prefill off the critical query path.</li>
+<li><code>https://arxiv.org/abs/2605.14037v1</code> — SP-KV learns when to write older key-value pairs to global cache by predicting future utility from next-token loss.</li>
+<li><code>https://arxiv.org/abs/2605.15156v1</code> — MeMo treats updated knowledge as a separate memory model rather than changing base LLM weights or simply extending context.</li>
+</ul>
 <h2>Speech factor-preservation sign-off benchmark</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -436,6 +460,67 @@
 <li><code>daily/2026-05-12.md</code> — AutoTTS searches over branch/continue/probe/prune/stop controllers using pre-collected reasoning trajectories and cheap feedback.</li>
 <li><code>running.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
 <li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
+</ul>
+<h2>Deployment-path validity for model interventions</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-16</li>
+<li>Last seen: 2026-05-16</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Model edits, unlearning, safety interventions, and steering effects should be validated after real deployment transformations such as low-bit quantization, because small updates may not survive binning and outlier-sensitive quantizers can activate new behavior.</p>
+<h3>Mechanism</h3>
+<p>Low-bit quantization imposes bin-width thresholds and block/outlier interactions; interventions below those thresholds can vanish or change semantics.</p>
+<h3>Minimal experiment</h3>
+<p>Apply a small fact edit/unlearning/refusal intervention to an open LM; evaluate fp16 vs NF4/GPTQ/AWQ/GGUF-style quantized paths; log update-to-bin ratios, output/logit/activation drift, and behavior survival.</p>
+<h3>Falsifier</h3>
+<p>If fp16 behavior changes reliably survive all quantized paths and update-to-bin ratios do not predict failures, deployment-path validity is less useful locally.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.15152v1</code> — Widening the Gap frames modern quantization schemes as an attack surface where injected outliers can trigger predictable low-bit behavior changes.</li>
+<li><code>https://arxiv.org/abs/2605.15138v1</code> — Forgetting That Sticks argues that unlearning updates often lie far below NF4 bin widths, so quantization can reverse full-precision forgetting unless the intervention is made quantization-permanent.</li>
+</ul>
+<h2>Speech factor separation needs causal context probes</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-16</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Factor-partitioned speech embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate that speaker/content/dialect/prosody/context are still entangled. Experiment: train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisi</p>
+<h3>Minimal experiment</h3>
+<p>train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces. - HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative-decoding post were retained because they add mechanism/failure evidence rather than generic hype.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.15044v1</code> — SpeakerLLM separates recording condition, profile evidence, and final same/different speaker decision in a natural-language audio-LLM interface.</li>
+<li><code>running.md</code> — Factor-partitioned speech embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate that speaker/content/dialect/prosody/context are still entangled. Experiment: train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces. - HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative</li>
+</ul>
+<h2>Trajectory supervision for agents</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-16</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming all point to the same bottleneck: final-answer reward is too far from the graph events that determine success. Experiment: synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</p>
+<h3>Minimal experiment</h3>
+<p>synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>https://arxiv.org/abs/2605.15155v1</code> — SDAR uses gated token-level self-distillation as an auxiliary objective for multi-turn agent RL, treating positive and negative teacher signals asymmetrically.</li>
+<li><code>running.md</code> — Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming all point to the same bottleneck: final-answer reward is too far from the graph events that determine success. Experiment: synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</li>
 </ul>
 <h2>Non-AR trajectory and compression diagnostics</h2>
 <ul>
@@ -1844,24 +1929,6 @@
 <ul>
 <li><code>weekly/2026-05-09.md</code> — Together’s million-token post, where memory layout and prefill/decode scheduling decide whether the capability is usable. The Impossibility Triangle of Long-Context Modeling acts as the theoretical guardrail: online systems cannot get efficiency, compactness, and scalable recall for free. Some cost is paid in memory, retrieval, variable compute, approximation, or failure. The experiment to run is not “can a model use long context?” It is: under equal token/time/tool/KV budgets, which interface retains exact constraints and sparse clue conjunctions? Create a local corpus with distractors, exact lexical constraints, cross-document dependencies,</li>
 </ul>
-<h2>Speech factor separation needs causal context probes</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>audio</code>, <code>inference</code>, <code>mech-interp</code>, <code>agent-memory</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-09</li>
-<li>Last seen: 2026-05-09</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>Factor-partitioned speech embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate that speaker/content/dialect/prosody/context are still entangled. Experiment: train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisi</p>
-<h3>Minimal experiment</h3>
-<p>train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces. - HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative-decoding post were retained because they add mechanism/failure evidence rather than generic hype.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>running.md</code> — Factor-partitioned speech embeddings, dysarthric ASR context failures, speech inpainting forensics, and low-resource TTS adaptation indicate that speaker/content/dialect/prosody/context are still entangled. Experiment: train probes on speech encoder/codec states and test whether correct vs shuffled metadata moves the intended factor subspace. ### Weak signals / bottlenecks - Hidden trajectories are today’s recurring interface: agent event graphs, DPO probability flow, speculative decoding decisions, sparse-attention top-k paths, and speech-factor subspaces. - HN was used only sparingly; the Nature warmth/sycophancy item and Google speculative</li>
-</ul>
 <h2>Speech interface probes: tokenization, synthetic curricula, and tiny omni architectures</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -2037,24 +2104,6 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>running.md</code> — GFCR rollout taxonomy, PORTool rewarded trees, Reinforced Agent inference feedback, and vLLM RL correctness all point to rollout generation/filtering/control/replay plus runtime correctness as the actual source of training signal. Experiment: toy math/tool RL sandbox with one stage perturbation at a time; measure whether failures localize to verifier noise, branching/stopping, replay, or runtime nondeterminism.</li>
-</ul>
-<h2>Trajectory supervision for agents</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>agent-memory</code>, <code>multimodal</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-09</li>
-<li>Last seen: 2026-05-09</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming all point to the same bottleneck: final-answer reward is too far from the graph events that determine success. Experiment: synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</p>
-<h3>Minimal experiment</h3>
-<p>synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>running.md</code> — Orchestration traces, PORTool rewarded trees, process reward models, and network-agent red-teaming all point to the same bottleneck: final-answer reward is too far from the graph events that determine success. Experiment: synthetic multi-agent tasks with logged spawn/delegate/tool/aggregate/stop events; compare outcome-only reward, per-tool reward, and graph-level shaping.</li>
 </ul>
 <h2>Treat agent context operations as a policy and ablate them one at a time</h2>
 <ul>
@@ -2413,7 +2462,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-14 03:09</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

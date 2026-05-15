@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-16 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-16</h1>
+<h3>Core DL/LLM research</h3>
+<h2>arXiv — MeMo: Memory as a Model</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15156v1</p>
+<p>Summary: A modular knowledge-update approach that encodes new information into a separate memory model while keeping the base LLM frozen. The mechanism is interesting because retrieval cost is claimed to be independent of corpus size and the method does not require base-model weights or logits, making it a plug-in alternative to RAG/fine-tuning for closed models. Collected as a memory-architecture signal, not as generic agent hype.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — ATLAS: Agentic or Latent Visual Reasoning? One Word is Enough for Both</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15198v1</p>
+<p>Summary: Proposes “functional tokens” that act both as discrete agentic operations and latent visual reasoning units. The useful mechanism is a tokenizer-compatible way to internalize visual operations without generating verbose intermediate images or relying on external tool calls. It belongs in the broader model-mechanism bucket because it treats an ordinary next-token target as a carrier for latent computation.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers / arXiv — Achieving Gold-Medal-Level Olympiad Reasoning via Simple and Unified Scaling</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.13301</p>
+<p>Summary: Describes a unified recipe for turning a post-trained reasoning backbone into an olympiad solver: reverse-perplexity SFT curriculum, RL with verifiable rewards, proof-level RL, and test-time scaling. The mechanism value is the staged curriculum and RL handoff, especially the claim that long trajectories beyond 100K tokens can be stabilized with only hundreds of RL steps. Useful as evidence about reasoning-training lifecycle rather than leaderboard watching.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Blog / Allen AI — EMO: Pretraining mixture of experts for emergent modularity</h2>
+<p>Type: Lab blog</p>
+<p>Link: https://huggingface.co/blog/allenai/emo</p>
+<p>Summary: A research blog on pretraining mixture-of-experts models for emergent modularity. It remains relevant because MoE is increasingly being framed as learned modular capacity rather than just sparse compute, matching recent signals around shared experts, routing, and feature allocation. Collected for architecture/training-dynamics learning, especially router specialization and expert reuse.</p>
+<p>Personalization: medium</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>arXiv — Self-Distilled Agentic Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15155v1</p>
+<p>Summary: Introduces SDAR, a gated self-distillation objective for multi-turn agent RL that keeps RL primary while using privileged teacher signals as a token-level auxiliary target. The mechanism is a sigmoid gate that strengthens teacher-endorsed positive-gap tokens while softening negative rejections that may reflect imperfect skill retrieval. This is high-signal for the recurring question of where dense supervision should enter long-horizon agent training.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Learning from Language Feedback via Variational Policy Distillation</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15113v1</p>
+<p>Summary: Formalizes language-feedback learning as variational EM: a teacher is actively refined from trajectory outcomes, then the student distills the teacher’s token distributions on on-policy rollouts. The mechanism addresses sparse RLVR rewards by making textual critique into dense supervision while avoiding a fixed teacher bottleneck. Collected as a training-objective signal for reasoning/RL systems.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: An ICLR 2026 OpenReview submission about decomposing LLM computation using jets. It was collected because it directly targets modularizing entangled LLM computations for interpretability and auditing, continuing the path/feature decomposition line. The important learning value is whether internal computational components can predict interventions rather than merely explain them post hoc.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — When Are Two Networks the Same? Tensor Similarity for Mechanistic Interpretability</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.15183v1</p>
+<p>Summary: Proposes a weight-based tensor-similarity metric invariant to weight-space symmetries for tensor-based models. It claims to track functional training dynamics such as grokking and backdoor insertion better than empirical-behavior or basis-dependent parameter comparisons. Useful as a mathematically crisp way to ask when two mechanisms are “the same” beyond surface behavior.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Forgetting That Sticks: Quantization-Permanent Unlearning via Circuit Attribution</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.15138v1</p>
+<p>Summary: Shows that full-precision unlearning can be undone by 4-bit quantization because many updates are far below NF4 bin widths. The proposed MANSU method uses circuit attribution, null-space projection, and a per-parameter magnitude floor so forgetting survives compression. This is both a mechanistic unlearning result and a warning that deployment quantization changes the effective intervention.</p>
+<p>Personalization: medium</p>
+<h2>Optimization Online — Inexact Cubic Regularization Method with Adaptive Reuse of Hessian Approximations</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://optimization-online.org/2026/05/inexact-cubic-regularization-method-with-adaptive-reuse-of-hessian-approximations/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=inexact-cubic-regularization-method-with-adaptive-reuse-of-hessian-approximations</p>
+<p>Summary: A nonconvex optimization method that reuses Hessian approximations lazily while updating gradients inexactly. It is not an LLM paper, but it is useful background for thinking about second-order information under compute constraints. Collected as broad optimization learning, not as an immediate project lead.</p>
+<p>Personalization: low</p>
+<h3>Audio/TTS/speech</h3>
+<h2>arXiv — Streaming Speech-to-Text Translation with a SpeechLLM</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.14766v1</p>
+<p>Summary: Builds a streaming SpeechLLM that learns both when to emit translated text and what to emit, rather than waiting for complete utterances. The mechanism is aligned speech/text training that turns emission timing into a learned decision and reaches 1–2 second latency while staying close to non-streaming quality. Good signal for audio agents where latency, not just WER/BLEU, is part of the model behavior.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — SpeakerLLM: A Speaker-Specialized Audio-LLM for Speaker Understanding and Verification Reasoning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15044v1</p>
+<p>Summary: Unifies speaker profiling, recording-condition understanding, utterance-pair comparison, and verification reasoning in a natural-language audio-LLM interface. The mechanism value is evidence-organized verification: separating recording conditions, profile evidence, and final same/different decisions. It expands the speech-factor probe beyond content transcription into identity and condition reasoning.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Minimizing Modality Gap from the Input Side: Your Speech LLM Can Be a Prosody-Aware Text LLM</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.05927v2</p>
+<p>Summary: Argues that the bottleneck in speech LLMs is often the input-side modality gap, and combines synchronized text tokens with prosody embeddings before the LLM. The notable signal is data efficiency: about 1,000 hours of audio training reportedly reduces the speech/text gap at 3B and 7B scale. Collected because it directly tests where speech information should enter a text-LM backbone.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Kinetic-Optimal Scheduling with Moment Correction for Metric-Induced Discrete Flow Matching in Zero-Shot Text-to-Speech</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.09386v1</p>
+<p>Summary: Improves discrete flow matching for codec-based zero-shot TTS by deriving a Fisher-Rao-speed scheduler and a finite-step moment correction for CTMC path tracking. The mechanism is numerical rather than architectural: better schedules and moment corrections reduce heuristic search and finite-step error. Useful for understanding why flow/diffusion-style TTS quality can depend heavily on solver/path details.</p>
+<p>Personalization: low</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>arXiv — An Interpretable Latency Model for Speculative Decoding in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.15051v1</p>
+<p>Summary: Provides a latency model for speculative decoding under variable production load, decomposing prefill, drafting, and verification while inferring effective batch size with Little’s Law. The main signal is that speculative decoding speedups can diminish as load increases, so acceptance rate and draft length cannot be studied in isolation. Collected for inference-systems mechanism and experiment-design value.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Self-Pruned Key-Value Attention: Learning When to Write by Predicting Future Utility</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.14037v1</p>
+<p>Summary: Trains a lightweight utility predictor jointly with the LM to decide which older key-value pairs deserve long-term cache writes. The mechanism is dynamic KV sparsification through next-token loss, not a fixed compression rule, with reported 3–10× cache reduction. This is a strong signal for treating cache write policy as a learned model component.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Minimal-Intervention KV Retention: A Design-Space Study and a Diversity-Penalty Survivor</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.14292v1</p>
+<p>Summary: Tests several KV-retention mechanisms under matched mean cache budgets for long-form mathematical reasoning and finds most fail. A simple diversity-penalty modification to a retention scorer survives in some pre-registered cells, suggesting that anti-redundancy in value space may matter more than heavier structural redesigns. Collected as a useful negative/positive design-space signal.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Attention Once Is All You Need: Efficient Streaming Inference with Stateful Transformers</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.13784v1</p>
+<p>Summary: Moves transformer streaming workloads from request-driven prefill to persistent stateful sessions with incrementally advanced KV caches. The useful mechanism is not just speedup but an alternative computational model: data-driven sessions and “Flash Queries” can pre-evaluate registered questions during idle GPU cycles. Relevant for long-lived agents, monitoring, and streaming contexts.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — PyTorch 2.12 Release Blog</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/pytorch-2-12-release-blog/</p>
+<p>Summary: Framework release signal with concrete performance updates, including much faster batched CUDA linear algebra routines. Collected because framework-level improvements can lower the cost floor for spectral probes, batched diagnostics, and local mechanism experiments. It is not a research result by itself, but it changes what is cheap to try.</p>
+<p>Personalization: low</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>Hugging Face Papers / arXiv — Darwin Family: MRI-Trust-Weighted Evolutionary Merging for Training-Free Scaling of Language-Model Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.14386</p>
+<p>Summary: Explores gradient-free evolutionary merging of language-model checkpoints with component/block-level recombination and diagnostic trust weighting. The mechanism is weight-space recombination as training-free capability reorganization. This is speculative but broadens the training-scaling view beyond more data/RL/compute.</p>
+<p>Personalization: low</p>
+<h2>OpenReview — Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=uq6UWRgzMr</p>
+<p>Summary: An ICLR 2026 submission on selecting instruction-tuning data using neuron/internal-activation information rather than text-only heuristics. It matters because instruction tuning can degrade capabilities when the data mix is excessive or misallocated. Collected as evidence that data selection may become an internal-computation problem.</p>
+<p>Personalization: medium</p>
+<h3>Skeptical or failure signal</h3>
+<h2>arXiv — Widening the Gap: Exploiting LLM Quantization via Outlier Injection</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://arxiv.org/abs/2605.15152v1</p>
+<p>Summary: Demonstrates a quantization-conditioned attack where injected outliers cause predictable weight collapse under advanced schemes such as AWQ, GPTQ, and GGUF I-quants. The key failure mechanism is that apparently benign full-precision checkpoints can become malicious after ordinary deployment quantization. This should temper confidence in model cards/evals that do not test the deployed low-bit path.</p>
+<p>Personalization: medium</p>
+<h2>HN / Nature — Training language models to be warm can reduce accuracy and increase sycophancy</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://www.nature.com/articles/s41586-026-10410-0</p>
+<p>Summary: Weak-signal item surfaced through HN, retained only because it speaks to a mechanism-relevant failure mode: style/warmth optimization can trade off against accuracy and sycophancy. It is not a daily primary source, but it is useful skeptical context for preference/style tuning and evaluation design. Treat as supporting evidence, not as a standalone opportunity.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

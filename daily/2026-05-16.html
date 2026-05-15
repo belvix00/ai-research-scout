@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-16 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-16</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest signals were around memory/state interfaces, dense supervision for agentic RL, deployment-aware quantization, speech timing/factor separation, and KV/inference mechanisms. The day was not a single “architecture thesis”; it was a field report on multiple interfaces where information either survives, becomes trainable, or gets destroyed.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>Two model-mechanism papers pushed on the boundary between ordinary token prediction and nonstandard computation. <strong>ATLAS</strong> proposes a functional-token approach for visual reasoning: a single discrete token represents an internalized visual operation, so the model can learn something like an agentic/latent visual step without emitting intermediate images or leaving the autoregressive training path (<a href="https://arxiv.org/abs/2605.15198v1" target="_blank" rel="noopener">arXiv</a>). This matters because it makes the “tool step vs latent step” distinction less binary; a standard vocabulary token can become an operation handle if the training pipeline makes it useful.</p>
+<p><strong>MeMo: Memory as a Model</strong> treats fresh knowledge as a separate memory model attached to a frozen base LLM (<a href="https://arxiv.org/abs/2605.15156v1" target="_blank" rel="noopener">arXiv</a>). The interesting part is not merely “add memory”; it is the claim that the memory model can capture cross-document relationships, tolerate retrieval noise, and keep inference retrieval cost independent of corpus size while not requiring base-model weights/logits. Relative to the last week’s memory/context signals, this shifts attention from “how much context can we stuff into the base model?” toward “what state should become its own model?”</p>
+<p>Hugging Face’s daily papers also surfaced <strong>Darwin Family</strong>, a training-free checkpoint-merging approach for reasoning (<a href="https://huggingface.co/papers/2605.14386" target="_blank" rel="noopener">HF Papers</a>). It is more speculative than MeMo or ATLAS, but it expands the day’s architecture cluster: maybe some reasoning capability can be reorganized in weight space through component/block recombination rather than new gradient training. Treat this as a broad-learning signal until independently reproduced.</p>
+<h3>Training, RL, and optimization</h3>
+<p>The agentic/RL cluster was strong. <strong>Self-Distilled Agentic Reinforcement Learning</strong> introduces a gated self-distillation auxiliary objective for multi-turn agents while keeping RL as the backbone (<a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">arXiv</a>). The key mechanism is asymmetric: teacher-endorsed positive-gap tokens are strengthened, but negative teacher rejections are attenuated because they may reflect bad skill retrieval/utilization rather than true negative evidence. That is a useful design point for agent RL, where dense token supervision can easily become brittle.</p>
+<p><strong>Learning from Language Feedback via Variational Policy Distillation</strong> attacks a similar bottleneck from a variational-EM angle (<a href="https://arxiv.org/abs/2605.15113v1" target="_blank" rel="noopener">arXiv</a>). Instead of a passive teacher that interprets critiques forever, VPD refines the teacher from trajectory outcomes in the E-step, then distills dense token distributions into the student in the M-step. Relative to the previous week’s repeated “rollout lifecycle” theme, both papers say the supervision interface matters as much as the optimizer label: how language feedback becomes token-level targets is part of the learning mechanism.</p>
+<p>The reasoning-scaling item <strong>Achieving Gold-Medal-Level Olympiad Reasoning via Simple and Unified Scaling</strong> added a high-level recipe: reverse-perplexity SFT curriculum, RLVR, proof-level RL, and test-time scaling (<a href="https://huggingface.co/papers/2605.13301" target="_blank" rel="noopener">HF Papers</a>). It is a leaderboard-adjacent result, but the reason to track it is the staged training lifecycle and the claim of stable very-long reasoning trajectories, not the medal framing.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Mechanistic interpretability got both constructive and skeptical signals. <strong>When Are Two Networks the Same?</strong> proposes tensor similarity as a weight-based metric invariant to weight-space symmetries for tensor-based models (<a href="https://arxiv.org/abs/2605.15183v1" target="_blank" rel="noopener">arXiv</a>). If it holds up, this is a more algebraic way to compare mechanisms across training time, grokking, or backdoor insertion than behavior-only similarity. It asks a clean question: when are two networks functionally the same after accounting for symmetries?</p>
+<p><strong>Forgetting That Sticks</strong> is especially important because it connects circuit attribution to deployment compression (<a href="https://arxiv.org/abs/2605.15138v1" target="_blank" rel="noopener">arXiv</a>). The paper argues that many unlearning updates are far below NF4 quantization bin widths, so 4-bit quantization can undo apparent full-precision forgetting. Their proposed fix uses circuit attribution and magnitude floors so the intervention survives quantization. This continues a recurring warning from the scout: if an intervention is not stable under the deployed runtime path, it may not actually exist operationally.</p>
+<p>The failure-mode side also included <strong>Widening the Gap</strong>, a quantization-conditioned attack via outlier injection (<a href="https://arxiv.org/abs/2605.15152v1" target="_blank" rel="noopener">arXiv</a>). This is a stronger skeptical signal than generic “quantization may hurt quality,” because it claims advanced quantizers such as AWQ/GPTQ/GGUF I-quants can be exploited through a shared outlier-collapse mechanism. Together with quantization-permanent unlearning, today’s interpretability/failure cluster says low-bit deployment is a causal transformation, not a passive compression format.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Speech had a coherent sub-day around timing and factor separation. <strong>Streaming Speech-to-Text Translation with a SpeechLLM</strong> makes emission timing a learned decision: the model learns when it has heard enough audio to emit a translation token (<a href="https://arxiv.org/abs/2605.14766v1" target="_blank" rel="noopener">arXiv</a>). That is different from fixed-interval streaming or utterance-complete translation; latency becomes a model decision variable.</p>
+<p><strong>SpeakerLLM</strong> expands the speech-LLM target from “transcribe/answer” into speaker profiling, recording-condition understanding, utterance-pair comparison, and evidence-organized verification reasoning (<a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">arXiv</a>). It is a useful addition to the speech-factor probe idea because it separates profile evidence, recording condition, and final identity decision.</p>
+<p><strong>TextPro-SLM</strong> argues that reducing the modality gap from the input side may be more data-efficient than only making speech generation more text-like (<a href="https://arxiv.org/abs/2605.05927v2" target="_blank" rel="noopener">arXiv</a>). It uses synchronized text tokens plus prosody embeddings before the LLM and claims strong results with roughly 1,000 hours of audio training. <strong>GibbsTTS</strong> adds a more mathematical TTS signal: scheduling and moment correction for metric-induced discrete flow matching in codec-token generation (<a href="https://arxiv.org/abs/2605.09386v1" target="_blank" rel="noopener">arXiv</a>). The audio cluster therefore split into three mechanisms: when to emit, which speaker/prosody/condition factors to preserve, and how discrete flow paths should be numerically traversed.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference was the day’s densest cluster. <strong>An Interpretable Latency Model for Speculative Decoding in LLM Serving</strong> decomposes production speculative decoding into prefill, drafting, and verification under variable load (<a href="https://arxiv.org/abs/2605.15051v1" target="_blank" rel="noopener">arXiv</a>). The key claim is practical: speculative decoding speedups often shrink as load rises because effective batch size emerges from the serving system. This changes how to benchmark speculation; isolated fixed-batch speedups are not enough.</p>
+<p>KV-cache work also moved in two directions. <strong>Self-Pruned Key-Value Attention</strong> trains a utility predictor that decides which older KVs should be written to long-term cache (<a href="https://arxiv.org/abs/2605.14037v1" target="_blank" rel="noopener">arXiv</a>). <strong>Minimal-Intervention KV Retention</strong> reports a design-space study where many mechanisms fail under matched mean-cache budgets, but a small value-space diversity penalty survives some pre-registered cells (<a href="https://arxiv.org/abs/2605.14292v1" target="_blank" rel="noopener">arXiv</a>). This is useful because one paper says “learn when to write,” while the other says “under tight budgets, anti-redundancy may beat heavier redesigns.”</p>
+<p><strong>Attention Once Is All You Need</strong> proposes stateful transformer sessions for streaming workloads, moving prefill off the critical path and keeping persistent KV state as data arrives (<a href="https://arxiv.org/abs/2605.13784v1" target="_blank" rel="noopener">arXiv</a>). Combined with PyTorch 2.12’s framework-level performance updates (<a href="https://pytorch.org/blog/pytorch-2-12-release-blog/" target="_blank" rel="noopener">PyTorch Blog</a>), the infra picture is not just more tokens/sec. It is about which computation is moved out of the latency path, which state persists, and which runtime changes should be treated as experimental conditions.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>OpenReview contributed two tooling/research-process signals. <strong>Decomposing LLM Computation with Jets</strong> is relevant to interpretability because it tries to modularize entangled LLM computation into components that may be auditable (<a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">OpenReview</a>). <strong>Neuron-Aware Data Selection in Instruction Tuning</strong> suggests selecting instruction data from internal computation/neurons rather than text similarity alone (<a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">OpenReview</a>). These are not daily headline releases, but they reinforce the trend that internal activations are becoming both analysis objects and operational selectors.</p>
+<p>HN was kept low-weight. The only retained weak signal was the Nature/HN item on warmth training reducing accuracy and increasing sycophancy (<a href="https://www.nature.com/articles/s41586-026-10410-0" target="_blank" rel="noopener">Nature</a>). It belongs in the skeptical bucket because it is mechanism-relevant for preference/style tuning, not because HN itself should drive the scout.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>MeMo turns memory into a separate model rather than a longer prompt.</strong> The paper claims a plug-in memory model can incorporate new knowledge without updating the base LLM and without retrieval cost scaling with corpus size (<a href="https://arxiv.org/abs/2605.15156v1" target="_blank" rel="noopener">arXiv</a>). This is a direct signal for agent memory architectures: state can be learned and queried as a module, not only appended as text.</li>
+</ol>
+<ol>
+<li><strong>ATLAS makes a normal token act like a visual operation.</strong> A functional token can serve as both a latent visual reasoning unit and an agentic operation handle (<a href="https://arxiv.org/abs/2605.15198v1" target="_blank" rel="noopener">arXiv</a>). If reproducible, this is a clean way to internalize tool-like computation while preserving vanilla SFT/RL compatibility.</li>
+</ol>
+<ol>
+<li><strong>Self-distillation for agent RL is becoming gated and asymmetric.</strong> SDAR keeps RL primary and only uses teacher token signals through a gate that treats positive and negative teacher evidence differently (<a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">arXiv</a>). This is technically important because naive dense supervision can destabilize multi-turn agents.</li>
+</ol>
+<ol>
+<li><strong>Language feedback is being formalized as a co-evolving teacher/student problem.</strong> VPD frames language critique as variational EM, improving the teacher from outcomes and then distilling dense distributions into the student (<a href="https://arxiv.org/abs/2605.15113v1" target="_blank" rel="noopener">arXiv</a>). The mechanism is a better bridge from sparse RLVR rewards to token-level training signal.</li>
+</ol>
+<ol>
+<li><strong>Olympiad reasoning recipes are converging on staged curricula plus RL plus test-time scaling.</strong> The SU-01/HF Papers item is worth tracking for the reverse-perplexity SFT curriculum and proof-level RL handoff, not just for the gold-medal framing (<a href="https://huggingface.co/papers/2605.13301" target="_blank" rel="noopener">HF Papers</a>). It adds another data point that reasoning gains are lifecycle-shaped.</li>
+</ol>
+<ol>
+<li><strong>Tensor similarity tries to make mechanism equality algebraic.</strong> The proposed tensor-similarity metric is invariant to certain weight-space symmetries and claims to track grokking/backdoor dynamics (<a href="https://arxiv.org/abs/2605.15183v1" target="_blank" rel="noopener">arXiv</a>). This is a good candidate for comparing models under training or intervention without relying only on behavior probes.</li>
+</ol>
+<ol>
+<li><strong>Unlearning can disappear after quantization unless updates cross bin boundaries.</strong> Forgetting That Sticks identifies a deployment mismatch: full-precision unlearning updates may be too small for NF4 bins and therefore vanish after compression (<a href="https://arxiv.org/abs/2605.15138v1" target="_blank" rel="noopener">arXiv</a>). The proposed circuit-attribution/magnitude-floor fix is a mechanism-preserving intervention pattern.</li>
+</ol>
+<ol>
+<li><strong>Quantization is also an attack surface.</strong> Widening the Gap shows a way to inject outliers so advanced quantizers induce malicious behavior through predictable weight collapse (<a href="https://arxiv.org/abs/2605.15152v1" target="_blank" rel="noopener">arXiv</a>). This strengthens the argument that model evaluation must include the actual low-bit deployment path.</li>
+</ol>
+<ol>
+<li><strong>Speech translation can learn when to speak.</strong> The streaming SpeechLLM trains emission timing from alignments and reports 1–2 second latency while staying near non-streaming quality (<a href="https://arxiv.org/abs/2605.14766v1" target="_blank" rel="noopener">arXiv</a>). That is a mechanism-level advance for audio agents where timing is central.</li>
+</ol>
+<ol>
+<li><strong>Speaker reasoning is being folded into audio LLMs.</strong> SpeakerLLM creates structured speaker-verification reasoning targets that separate conditions, profile evidence, and decisions (<a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">arXiv</a>). This makes speaker identity a language-reasoned factor rather than only a scalar verifier score.</li>
+</ol>
+<ol>
+<li><strong>Prosody-aware text tokens may reduce the speech/text gap cheaply.</strong> TextPro-SLM’s input-side approach suggests synchronized text tokens plus prosody embeddings can preserve text-LM semantics while adding paralinguistic understanding (<a href="https://arxiv.org/abs/2605.05927v2" target="_blank" rel="noopener">arXiv</a>). This is directly relevant to speech-factor survival tests.</li>
+</ol>
+<ol>
+<li><strong>Speculative decoding needs load-aware models.</strong> The latency paper explains why draft length, acceptance probability, and verifier/drafter size behave differently under production request load (<a href="https://arxiv.org/abs/2605.15051v1" target="_blank" rel="noopener">arXiv</a>). For experiments, it says speedup claims should be plotted against load and effective batch size, not just average tokens/sec.</li>
+</ol>
+<ol>
+<li><strong>KV-cache retention is becoming trainable, but negative results matter.</strong> SP-KV learns future utility from next-token loss (<a href="https://arxiv.org/abs/2605.14037v1" target="_blank" rel="noopener">arXiv</a>), while Minimal-Intervention KV Retention shows many plausible designs fail under matched budgets (<a href="https://arxiv.org/abs/2605.14292v1" target="_blank" rel="noopener">arXiv</a>). Together they suggest cache policy is a model component and must be audited on rare/long reasoning slices.</li>
+</ol>
+<ol>
+<li><strong>Stateful sessions reframe streaming inference.</strong> Attention Once Is All You Need moves persistent KV state into a data-driven session model and removes repeated prefill from query latency (<a href="https://arxiv.org/abs/2605.13784v1" target="_blank" rel="noopener">arXiv</a>). This could matter for agents that continuously watch streams and answer later.</li>
+</ol>
+<ol>
+<li><strong>Internal-computation signals are entering both interpretability and data selection.</strong> Jets decomposition (<a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">OpenReview</a>) and neuron-aware instruction data selection (<a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">OpenReview</a>) both treat activations/path structure as operational evidence. This is a slower-burn signal for activation-guided curation and causal audits.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Deployment transformations are causal interventions.</strong> Quantization can undo unlearning, create attack surfaces, and change whether an intervention survives. Inference/cache/speculation choices likewise change latency, state availability, and possibly behavior. Evaluation should follow the deployed path.</li>
+</ol>
+<ol>
+<li><strong>State is becoming first-class.</strong> MeMo externalizes knowledge into a memory model; stateful transformers persist KV sessions; SP-KV learns cache writes; SpeechLLM learns emission timing. The shared pattern is not “more context” but learned/persistent state interfaces.</li>
+</ol>
+<ol>
+<li><strong>Dense supervision is useful only if the interface is trusted.</strong> SDAR and VPD both try to turn coarse trajectory outcomes or language feedback into token-level training targets, but both add mechanisms to avoid naive teacher errors. This reinforces the need to study the supervision channel, not just the reward model.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Quantization-survival audit for small interventions</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.15138v1" target="_blank" rel="noopener">Forgetting That Sticks</a>, <a href="https://arxiv.org/abs/2605.15152v1" target="_blank" rel="noopener">Widening the Gap</a>, <a href="https://arxiv.org/abs/2605.14844v1" target="_blank" rel="noopener">XFP quantization</a>.</p>
+<p>Mechanism: Small weight edits, unlearning updates, safety edits, or steering-adapter effects may lie below low-bit quantization bin widths or interact with outlier-sensitive codebooks. Deployment quantization can erase, invert, or activate behaviors.</p>
+<p>Minimal experiment/probe: On a small open LM, apply a known localized edit or unlearning objective to a tiny fact/refusal slice; evaluate fp16, NF4, GPTQ/AWQ/GGUF-style paths if available; log per-parameter update-to-bin ratios, behavior survival, and activation/logit drift. Add an outlier-injection sanity test on a harmless synthetic behavior.</p>
+<p>Falsifier: If behavior changes survive all quantizers whenever fp16 behavior changes, and update-to-bin ratios do not predict failures better than generic loss/accuracy, the mechanism is not locally useful.</p>
+<p>Confidence: medium-high.</p>
+<h3>2. Learned KV write policy vs diversity-retention on rare evidence</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.14037v1" target="_blank" rel="noopener">Self-Pruned KV Attention</a>, <a href="https://arxiv.org/abs/2605.14292v1" target="_blank" rel="noopener">Minimal-Intervention KV Retention</a>, <a href="https://arxiv.org/abs/2605.13784v1" target="_blank" rel="noopener">Attention Once Is All You Need</a>.</p>
+<p>Mechanism: Long-context behavior depends on which KVs are written/retained, not only on nominal context length. Utility predictors and diversity penalties are different hypotheses about future evidence value.</p>
+<p>Minimal experiment/probe: Build a small synthetic long-context benchmark with sparse clues, repeated distractors, and late queries. Compare full KV, recency, attention-score top-k, diversity-penalty retention, and a lightweight learned write predictor on accuracy, retained-evidence recall, attention entropy, and latency/memory.</p>
+<p>Falsifier: If simple recency/top-k dominates under matched cache and all rare-clue failures are explained by prompt difficulty rather than retention choice, the learned/diversity mechanisms are not worth pursuing locally.</p>
+<p>Confidence: high.</p>
+<h3>3. Agent RL dense-supervision channel audit</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">Self-Distilled Agentic RL</a>, <a href="https://arxiv.org/abs/2605.15113v1" target="_blank" rel="noopener">Variational Policy Distillation</a>, <a href="https://huggingface.co/papers/2605.13301" target="_blank" rel="noopener">Olympiad scaling recipe</a>.</p>
+<p>Mechanism: Dense token guidance can improve sparse RL, but teacher rejections, language-feedback interpretation, and privileged-context signals can be wrong or stale. The supervision channel may change the update direction more than the RL algorithm name.</p>
+<p>Minimal experiment/probe: In a toy tool/math environment, collect trajectories with verifier outcomes plus language critiques. Compare outcome-only RL, fixed-teacher token distillation, gated positive-gap distillation, and co-evolving teacher distillation. Measure success, zero-advantage rate, update-direction cosine against a wide clean reference, and failure localization by trajectory step.</p>
+<p>Falsifier: If all dense-supervision variants produce the same update direction and failure distribution as outcome-only RL under controlled seeds, the channel engineering is less important than expected.</p>
+<p>Confidence: medium.</p>
+<h3>4. Speech factor survival across input-side adapters</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.05927v2" target="_blank" rel="noopener">TextPro-SLM</a>, <a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">SpeakerLLM</a>, <a href="https://arxiv.org/abs/2605.14766v1" target="_blank" rel="noopener">Streaming Speech-to-Text Translation</a>, <a href="https://arxiv.org/abs/2605.09386v1" target="_blank" rel="noopener">GibbsTTS</a>.</p>
+<p>Mechanism: Speech LLMs can preserve semantic text content while losing or entangling prosody, speaker identity, timing, recording condition, or rare entities. Input-side adapters and codec/flow schedules decide which factors enter the language backbone.</p>
+<p>Minimal experiment/probe: Use public speech encoders/codecs and a small aligned dataset; fit probes for phoneme/content, speaker, accent/script, prosody, timing, and rare entity identity under raw audio, transcript-only, prosody-aware text tokens, and codec tokens. Add shuffled metadata and latency/streaming emission tests.</p>
+<p>Falsifier: If all representations preserve the same factors with no differential degradation under shuffled metadata or compression, the factor-survival hypothesis is too broad.</p>
+<p>Confidence: medium-high.</p>
+<h3>5. Activation-guided data selection vs causal intervention prediction</h3>
+<p>Evidence links: <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">OpenReview Jets</a>, <a href="https://openreview.net/forum?id=uq6UWRgzMr" target="_blank" rel="noopener">Neuron-Aware Data Selection</a>, <a href="https://arxiv.org/abs/2605.15183v1" target="_blank" rel="noopener">Tensor Similarity</a>.</p>
+<p>Mechanism: Internal computation/path signals may select training data or explain model components better than text/embedding similarity, but they should be judged by causal prediction: do they forecast what happens under patching, editing, or held-out skill interference?</p>
+<p>Minimal experiment/probe: Train or fine-tune a small LM on two synthetic latent skills. Select instruction examples by random, embedding similarity, neuron/activation similarity, and path/jet features. Then test held-out skill transfer/interference and whether selected features predict activation-patching effects.</p>
+<p>Falsifier: If activation/path selection improves neither sample efficiency nor intervention prediction over embedding similarity, internal signals are not yet operationally useful for this setting.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>MeMo’s retrieval-cost claim.</strong> Revisit when code or independent experiments are available; the corpus-size-independent retrieval cost is the crux, not the memory branding.</li>
+<li><strong>ATLAS functional tokens.</strong> Watch for ablations showing that the token actually internalizes visual operations rather than becoming a prompt shortcut.</li>
+<li><strong>Darwin Family checkpoint merging.</strong> Interesting but speculative; needs reproduction and slice-level reasoning evaluation before becoming an opportunity.</li>
+<li><strong>Speculative decoding under production load.</strong> Useful for local serving benchmarks if the latency model includes enough implementation detail to reproduce with vLLM/SGLang.</li>
+<li><strong>Tensor similarity.</strong> Check whether it applies beyond the tensor-based model class used in the paper and whether it predicts causal intervention outcomes.</li>
+<li><strong>Warmth/sycophancy tradeoff.</strong> Keep as a low-weight skeptical signal for style/preference tuning, not as a primary research direction unless more mechanism detail appears.</li>
+<li><strong>OpenReview ICLR 2026 submissions.</strong> Jets and neuron-aware selection are worth revisiting after reviews/accepted versions clarify claims and artifacts.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

@@ -229,10 +229,22 @@
 <ul>
 <li>No single dominant pattern today; durable updates split across state/channel allocation, RL credit/logging, causal interpretability/data selection, speech-factor robustness, and infra as experiment enabler.</li>
 <li>PyTorch/framework/runtime improvements should be tracked as cost-floor changes for local mechanism experiments, especially spectral probes and batched diagnostics.</li>
+</ul>
+<h2>Daily additions — 2026-05-16</h2>
+<ul>
+<li><strong>Deployment transformations must be included in intervention validity.</strong> Quantization-permanent unlearning and quantization-conditioned attacks independently show that low-bit deployment is a causal transformation, not passive compression. Experiment: small edit/unlearning/refusal intervention tested fp16 vs NF4/GPTQ/AWQ/GGUF-style paths with update-to-bin ratios, logit/activation drift, and behavior survival.</li>
+<li><strong>State interfaces are splitting into memory models, learned cache writes, and persistent sessions.</strong> MeMo, SP-KV, Minimal-Intervention KV Retention, and stateful streaming transformers point to state as a trainable/persistent interface rather than just longer prompts. Experiment: rare-evidence long-context benchmark comparing full context, learned KV writes, diversity retention, retrieval/memory module, and stateful session reuse under equal cost.</li>
+<li><strong>Dense agent-RL supervision needs channel audits.</strong> SDAR and VPD both convert coarse outcomes/language feedback into token-level guidance but add gates or co-evolving teachers to avoid stale/wrong supervision. Experiment: toy tool/math RL environment comparing outcome-only, fixed-teacher distillation, gated positive-gap distillation, and VPD-style teacher updates with gradient-cosine and failure-step localization.</li>
+<li><strong>Speech factor survival should include timing and speaker-evidence reasoning.</strong> Streaming SpeechLLM, SpeakerLLM, TextPro-SLM, and GibbsTTS broaden the audio harness from content/speaker/prosody to learned emission timing, recording-condition evidence, and discrete-flow schedule effects. Experiment: raw/transcript/prosody-aware/codec representations with probes for phoneme, entity, speaker, condition, prosody, and latency decisions.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across deployment-path validity, learned/persistent state, dense-supervision channel design, speech factor/timing interfaces, and activation-guided curation.</li>
+<li>Keep HN weak: the warmth/sycophancy item is useful only as supporting skeptical evidence for style/preference drift, not as a primary daily source.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-14 03:09</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
