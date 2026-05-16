@@ -78,6 +78,43 @@
 <li><strong>Long-context access benchmark:</strong> local corpus with exact constraints and distractors; compare retrieval/signature/raw-tool/full-context interfaces under equal budget.</li>
 <li><strong>KernelBench-X mini reproduction:</strong> small Triton task suite with repair-loop correctness-speed tradeoff logging.</li>
 </ul>
+<h2>Weekly synthesis — 2026-05-16</h2>
+<h3>Durable belief updates</h3>
+<ul>
+<li><strong>Promote sparse branch/update geometry for reasoning RL.</strong> The week’s RL evidence points to localized probability-mass movement over fixed rollout candidates: graph/listwise preference targets, entropy-gated corrections, OPD baselines, rubric decomposition, old-logit fidelity, and dense token teachers. Minimal next step: fixed math/code/tool rollout set; compare objective-induced prefix-local KL, promoted-token base rank, changed-token sparsity, teacher staleness, and gradient-cosine against an on-policy reference.</li>
+<li><strong>Promote state-interface benchmarks beyond generic long context.</strong> Multi-stream reasoning, compact online memory, learned KV writes, diversity-preserving retention, persistent sessions, retrieval, and full context are distinct carriers. Test them under equal token/time/KV/memory budgets on sparse clues, negative evidence, stale corrections, and rare early facts.</li>
+<li><strong>Promote deployment-path validity for interventions.</strong> Quantization-permanent unlearning and quantization-conditioned attacks show low-bit deployment can erase, alias, or invert small edits. Any unlearning/refusal/LoRA/steering claim should be evaluated fp16 vs NF4/GPTQ/AWQ/GGUF-style paths with update-to-bin ratios, logit/activation drift, and behavior survival.</li>
+<li><strong>Test temporary-lossy pretraining as optimization-path engineering.</strong> Lighthouse Attention and Token-Superposition Training suggest coarse training paths can accelerate broad competence, but only if rare/order-sensitive features recover. Measure per-slice gradient-energy retention and recovery lag under matched FLOPs.</li>
+<li><strong>Promote speech-factor survival sign-off with timing/provenance labels.</strong> The audio harness should now include emission timing, recording-condition evidence, transcript disagreement, and speaker-evidence reasoning, not only phoneme/speaker/prosody/entity factors.</li>
+<li><strong>Watch non-AR/byte/diffusion/flow diagnostics.</strong> Fast BLT, DLM layer collapse, STARFlow2, DiffRetriever, and Mean Mode Screaming warn against importing AR/KV/entropy intuitions directly. Promote only after runnable small artifacts make controlled comparison cheap.</li>
+<li><strong>Evaluate interpretability/data-selection structure causally.</strong> Shared MoE pools, SoftSAE/NLA, Jet/path decompositions, and neuron-aware selection should be judged by held-out patch/ablation/interference prediction, not readability or reconstruction alone.</li>
+</ul>
+<h3>Recurring bottlenecks</h3>
+<ul>
+<li><strong>State placement:</strong> context, KV, learned memory, retrieval, parallel streams, session state, speech timing state, and rollout traces preserve different information and fail differently.</li>
+<li><strong>Credit-channel width:</strong> final-answer rewards, graph/listwise labels, rubric components, internal values, token-level teachers, and verifiers create different gradients from the same behavior.</li>
+<li><strong>Deployment aliasing:</strong> quantization and optimized kernels can turn a validated intervention into a different causal object.</li>
+<li><strong>Rare-evidence eviction:</strong> adaptive controllers, KV retention, memory compression, signatures, and audio compression all tend to lose weak but decisive factors.</li>
+<li><strong>Stale supervision:</strong> off-policy old logits, fixed teachers, replay buffers, and persistent memories can be precise but semantically stale.</li>
+<li><strong>Aggregate metric camouflage:</strong> WER, final-answer reward, tokens/sec, compile success, perplexity, and broad safety pass rates remain insufficient.</li>
+</ul>
+<h3>Missing tools / annoying manual things</h3>
+<ul>
+<li>Rollout-objective diff tool for fixed candidate trajectories: DPO/GraphDPO/listwise/OPD/rubric/token-distill gradients plus prefix-local KL and gradient-cosine reports.</li>
+<li>Deployment intervention survival harness: edit/LoRA/steer/unlearn, quantize through several paths, report update-to-bin ratios, drift, behavior survival, latency, and memory.</li>
+<li>State-interface benchmark runner: full context vs retrieval vs signatures/summaries vs learned memory vs KV retention vs persistent sessions under one budget API.</li>
+<li>Speech-factor manifest with timing, recording condition, transcript disagreement, speaker/accent/prosody/entity/context labels.</li>
+<li>Causal interpretability scorecard: reconstruction/readability plus held-out patch-effect prediction, ablation prediction, and intervention transfer.</li>
+</ul>
+<h3>Cheap-paper opportunities</h3>
+<ul>
+<li><strong>Sparse branch RL audit:</strong> fixed rollout set; no full RL stack required.</li>
+<li><strong>State-interface rare-evidence benchmark:</strong> synthetic corpus with exact constraints, stale corrections, negative evidence, and distractors.</li>
+<li><strong>Quantization survival of interventions:</strong> one small edit across fp16 and common low-bit paths.</li>
+<li><strong>Temporary-lossy pretraining recovery:</strong> tiny LM, lossy phase, full-resolution recovery, slice-level lag.</li>
+<li><strong>Speech factor/timing survival notebook:</strong> frozen encoders/codecs plus carefully labeled clips.</li>
+<li><strong>MoE/global-pool causal capacity probe:</strong> synthetic factors, expert ablations, router entropy, rare-feature retention.</li>
+</ul>
 <h2>Daily additions — 2026-05-04</h2>
 <ul>
 <li><strong>Gradient-channel bottlenecks as measurable small-model pathology</strong> — General theme: some training signals get compressed, diluted, or routed through narrow interfaces before they become robust behavior. Experiment: train tiny models on controlled skewed data and log per-feature gradient norms, cosine drift, and downstream accuracy under several auxiliary-objective or adapter variants. Keep this broad; do not force new ideas through a single prior hypothesis.</li>
@@ -89,6 +126,43 @@
 <li>Inference settings as mechanistic perturbations remain under-instrumented.</li>
 <li>Tokenization/frequency-skew pathologies remain a good small-model testbed, but should not dominate unrelated scout outputs.</li>
 <li>Audio codec representations need small, disentangled probes before larger talking-face/audio systems.</li>
+</ul>
+<h2>Weekly synthesis — 2026-05-16</h2>
+<h3>Durable belief updates</h3>
+<ul>
+<li><strong>Promote sparse branch/update geometry for reasoning RL.</strong> The week’s RL evidence points to localized probability-mass movement over fixed rollout candidates: graph/listwise preference targets, entropy-gated corrections, OPD baselines, rubric decomposition, old-logit fidelity, and dense token teachers. Minimal next step: fixed math/code/tool rollout set; compare objective-induced prefix-local KL, promoted-token base rank, changed-token sparsity, teacher staleness, and gradient-cosine against an on-policy reference.</li>
+<li><strong>Promote state-interface benchmarks beyond generic long context.</strong> Multi-stream reasoning, compact online memory, learned KV writes, diversity-preserving retention, persistent sessions, retrieval, and full context are distinct carriers. Test them under equal token/time/KV/memory budgets on sparse clues, negative evidence, stale corrections, and rare early facts.</li>
+<li><strong>Promote deployment-path validity for interventions.</strong> Quantization-permanent unlearning and quantization-conditioned attacks show low-bit deployment can erase, alias, or invert small edits. Any unlearning/refusal/LoRA/steering claim should be evaluated fp16 vs NF4/GPTQ/AWQ/GGUF-style paths with update-to-bin ratios, logit/activation drift, and behavior survival.</li>
+<li><strong>Test temporary-lossy pretraining as optimization-path engineering.</strong> Lighthouse Attention and Token-Superposition Training suggest coarse training paths can accelerate broad competence, but only if rare/order-sensitive features recover. Measure per-slice gradient-energy retention and recovery lag under matched FLOPs.</li>
+<li><strong>Promote speech-factor survival sign-off with timing/provenance labels.</strong> The audio harness should now include emission timing, recording-condition evidence, transcript disagreement, and speaker-evidence reasoning, not only phoneme/speaker/prosody/entity factors.</li>
+<li><strong>Watch non-AR/byte/diffusion/flow diagnostics.</strong> Fast BLT, DLM layer collapse, STARFlow2, DiffRetriever, and Mean Mode Screaming warn against importing AR/KV/entropy intuitions directly. Promote only after runnable small artifacts make controlled comparison cheap.</li>
+<li><strong>Evaluate interpretability/data-selection structure causally.</strong> Shared MoE pools, SoftSAE/NLA, Jet/path decompositions, and neuron-aware selection should be judged by held-out patch/ablation/interference prediction, not readability or reconstruction alone.</li>
+</ul>
+<h3>Recurring bottlenecks</h3>
+<ul>
+<li><strong>State placement:</strong> context, KV, learned memory, retrieval, parallel streams, session state, speech timing state, and rollout traces preserve different information and fail differently.</li>
+<li><strong>Credit-channel width:</strong> final-answer rewards, graph/listwise labels, rubric components, internal values, token-level teachers, and verifiers create different gradients from the same behavior.</li>
+<li><strong>Deployment aliasing:</strong> quantization and optimized kernels can turn a validated intervention into a different causal object.</li>
+<li><strong>Rare-evidence eviction:</strong> adaptive controllers, KV retention, memory compression, signatures, and audio compression all tend to lose weak but decisive factors.</li>
+<li><strong>Stale supervision:</strong> off-policy old logits, fixed teachers, replay buffers, and persistent memories can be precise but semantically stale.</li>
+<li><strong>Aggregate metric camouflage:</strong> WER, final-answer reward, tokens/sec, compile success, perplexity, and broad safety pass rates remain insufficient.</li>
+</ul>
+<h3>Missing tools / annoying manual things</h3>
+<ul>
+<li>Rollout-objective diff tool for fixed candidate trajectories: DPO/GraphDPO/listwise/OPD/rubric/token-distill gradients plus prefix-local KL and gradient-cosine reports.</li>
+<li>Deployment intervention survival harness: edit/LoRA/steer/unlearn, quantize through several paths, report update-to-bin ratios, drift, behavior survival, latency, and memory.</li>
+<li>State-interface benchmark runner: full context vs retrieval vs signatures/summaries vs learned memory vs KV retention vs persistent sessions under one budget API.</li>
+<li>Speech-factor manifest with timing, recording condition, transcript disagreement, speaker/accent/prosody/entity/context labels.</li>
+<li>Causal interpretability scorecard: reconstruction/readability plus held-out patch-effect prediction, ablation prediction, and intervention transfer.</li>
+</ul>
+<h3>Cheap-paper opportunities</h3>
+<ul>
+<li><strong>Sparse branch RL audit:</strong> fixed rollout set; no full RL stack required.</li>
+<li><strong>State-interface rare-evidence benchmark:</strong> synthetic corpus with exact constraints, stale corrections, negative evidence, and distractors.</li>
+<li><strong>Quantization survival of interventions:</strong> one small edit across fp16 and common low-bit paths.</li>
+<li><strong>Temporary-lossy pretraining recovery:</strong> tiny LM, lossy phase, full-resolution recovery, slice-level lag.</li>
+<li><strong>Speech factor/timing survival notebook:</strong> frozen encoders/codecs plus carefully labeled clips.</li>
+<li><strong>MoE/global-pool causal capacity probe:</strong> synthetic factors, expert ablations, router entropy, rare-feature retention.</li>
 </ul>
 <h2>Daily additions — 2026-05-04</h2>
 <ul>
@@ -244,7 +318,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 03:07</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 09:05</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

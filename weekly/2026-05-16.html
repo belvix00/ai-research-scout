@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Weekly — 2026-05-16 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="active" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Weekly — 2026-05-16</h1>
+<h2>Executive thesis</h2>
+<p>This week’s strongest update is that <strong>state is no longer one thing</strong>. Context length, KV cache, learned memory, parallel streams, speech timing state, rollout traces, quantized weights, and deployment sessions are all becoming separate state interfaces with their own capacity, error modes, and credit-assignment rules. The research opportunity is not to ask whether “more context” or “more RL” works; it is to audit which state interface carries which factor, which transformations preserve it, and where the gradient or runtime silently changes the experiment.</p>
+<p>A good near-term agenda is therefore a set of small harnesses rather than one heroic model: (1) sparse branch/update geometry for reasoning RL, (2) mechanism-preserving deployment/inference audits, (3) learned/persistent state vs KV/full-context benchmarks, (4) speech factor/timing survival probes, and (5) capacity-allocation tests for MoE/SAE/data-selection methods.</p>
+<h2>What changed this week</h2>
+<p>The previous weekly synthesis already identified rollout lifecycle, MoE allocation, long-context evidence access, speech factor survival, and mechanism-preserving inference as the main directions. The new week did not overturn that map; it sharpened it in four ways.</p>
+<p>First, <strong>reasoning RL evidence moved from generic “better policy optimization” toward localized update geometry</strong>. ReasonMaxxer, GraphDPO, LPO, vOPD, StraTA/A^2TGPO/LoPE followups, RubricEM, AlphaGRPO, internal-state value estimation, failure-trajectory alignment, Missing Old Logits, SDAR, and VPD all point at different slices of the same pipeline: which branch is already in support, which step receives credit, which teacher/verifier is stale, and which token-level signal is allowed to become gradient. The likely cheap experiment is no longer “try GRPO”; it is to hold rollouts fixed and compare how pairwise, graph/listwise, entropy-gated, low-variance baseline, rubric, and token-distillation objectives move probability mass.</p>
+<p>Second, <strong>state/context mechanisms split into a taxonomy</strong>. Multi-Stream LLMs, δ-mem, MeMo, SP-KV, Minimal-Intervention KV Retention, learned KV writes, and stateful streaming transformers are not just variants of long context. They place information into different carriers: extra streams, compact online memory, selected KV slots, persistent session state, or external retrieval. Their failure modes should differ: cross-stream binding errors, memory pollution, rare-evidence eviction, stale-conflict resolution, and latency/memory regressions.</p>
+<p>Third, <strong>deployment transformations became part of intervention validity</strong>. Quantization-permanent unlearning and quantization-conditioned attacks make low-bit deployment a causal transformation, not a serialization detail. This strengthens the existing mechanism-preserving inference idea: if an unlearning edit, safety steering vector, LoRA, refusal feature, or rare-skill update only works before NF4/GPTQ/AWQ/GGUF-style deployment, then the intervention has not actually been validated.</p>
+<p>Fourth, <strong>speech/audio evidence broadened from content/speaker/prosody to timing and evidence reasoning</strong>. PairAlign, MiniMind-O, TextPro-SLM, X-Voice, voice-search embeddings, SLAM-LLM, streaming decoder-only ASR, audio narrative attacks, Streaming SpeechLLM, SpeakerLLM, and GibbsTTS all support the same core harness but demand new labels: emission latency, turn timing, recording condition, speaker-evidence reasoning, and transcript-vs-audio disagreement.</p>
+<h2>Research agenda diff: belief updates</h2>
+<h3>1. Reasoning RL as sparse branch/update geometry</h3>
+<ul>
+<li>Before this week: Rollout lifecycle looked like the right abstraction: generation, filtering, control, replay, and runtime matter before gradients.</li>
+<li>Evidence this week: ReasonMaxxer, GraphDPO, LPO, vOPD, RubricEM, AlphaGRPO, Missing Old Logits, SDAR, and VPD all modify specific credit channels rather than merely changing “the RL algorithm.” The new blog [[2026-05-13-sparse-branch-rl]] makes this concrete as probability-mass reallocation among already-sampled branches.</li>
+<li>After this week: Treat the fixed rollout set as the experimental object. The important measurements are prefix-local KL concentration, changed-token sparsity, base-rank of promoted tokens, zero-advantage rate, old-logit approximation error, teacher staleness, and gradient-cosine against an on-policy reference.</li>
+<li>Decision: <strong>promote/test</strong>.</li>
+</ul>
+<h3>2. Temporary-lossy pretraining as optimization-path engineering</h3>
+<ul>
+<li>Before this week: Compression and approximate attention were mostly inference/training-efficiency signals.</li>
+<li>Evidence this week: Lighthouse Attention and Token-Superposition Training both deliberately make the training path coarser than the final model, then recover full-resolution behavior. The blog [[2026-05-11-temporary-lossy-pretraining]] frames this as gradient projection followed by recovery.</li>
+<li>After this week: This is a separate mechanism class from deployment compression. It is allowed to be lossy during optimization if rare/order-sensitive features recover quickly under matched FLOPs. The central metric is recovery lag by feature slice, not just final validation loss.</li>
+<li>Decision: <strong>test</strong>, but only with strong falsifiers on rare tokens, order-sensitive dependencies, and long-context retrieval.</li>
+</ul>
+<h3>3. State interfaces: context, learned memory, KV retention, and parallel streams</h3>
+<ul>
+<li>Before this week: Long-context interfaces were framed as signatures vs retrieval vs raw tools vs full context.</li>
+<li>Evidence this week: Multi-Stream LLMs, δ-mem, MeMo, SP-KV, Minimal-Intervention KV Retention, and stateful streaming transformers move the frontier from “how much context” to “which state carrier writes/keeps/reads the evidence.”</li>
+<li>After this week: The benchmark should compare full context, retrieval, compact memory, learned KV writes, diversity-retention KV policies, and persistent sessions under equal latency/memory/token budgets. Include stale-conflict tasks and rare evidence that appears early, late, and in negative form.</li>
+<li>Decision: <strong>promote/test</strong>.</li>
+</ul>
+<h3>4. Deployment-path validity for interventions</h3>
+<ul>
+<li>Before this week: Runtime path was already treated as a possible perturbation for logits, activations, rare prompts, and RL rollouts.</li>
+<li>Evidence this week: Quantization-permanent unlearning and quantization-conditioned attacks directly show interventions can fail or change under low-bit deployment.</li>
+<li>After this week: Any claim about unlearning, refusal steering, LoRA edits, safety alignment, or rare-feature preservation should include deployment survival. A useful scalar is the update-to-bin-width ratio, paired with logit/activation drift and behavior survival.</li>
+<li>Decision: <strong>promote/test</strong>.</li>
+</ul>
+<h3>5. Speech factor survival expands to timing and evidence provenance</h3>
+<ul>
+<li>Before this week: The speech harness tracked speaker, script/language/accent, phoneme/content, prosody, rare entities, context, and compression damage.</li>
+<li>Evidence this week: Streaming SpeechLLM, SpeakerLLM, TextPro-SLM, GibbsTTS, voice-search embeddings, streaming ASR, and audio narrative attacks indicate that timing, recording-condition evidence, and transcript-independent safety cues are also factors.</li>
+<li>After this week: The benchmark should contain raw audio, transcript-only, prosody-aware, codec, and speech-LLM embedding paths. Labels should include phoneme/entity/speaker/prosody/accent plus timing/latency and recording-condition evidence.</li>
+<li>Decision: <strong>promote</strong> the unified speech-factor sign-off; avoid cloning demos and focus on probes.</li>
+</ul>
+<h3>6. MoE/SAE/data-selection capacity audits converge</h3>
+<ul>
+<li>Before this week: Shared MoE expert pools were a strong concrete experiment; SoftSAE/NLA and neuron-aware data selection were adjacent but separate.</li>
+<li>Evidence this week: Jet/path decompositions and neuron-aware data selection joined SoftSAE, Natural Language Autoencoders, and shared expert pools as methods that claim to expose or allocate internal computation.</li>
+<li>After this week: Evaluate by causal prediction, not readability or reconstruction: can the representation/routing/selection signal predict held-out patching effects, ablation losses, rare-feature retention, or interference?</li>
+<li>Decision: <strong>watch/test</strong> depending on artifacts. MoE remains the cleanest small experiment; data selection + path features is next.</li>
+</ul>
+<h3>7. Non-AR / byte / diffusion / flow models need family-specific diagnostics</h3>
+<ul>
+<li>Before this week: Most mechanism intuitions came from AR transformers.</li>
+<li>Evidence this week: Fast BLT, STARFlow2, DiffRetriever, DLM layer collapse, and Mean Mode Screaming suggest trajectory quality, residual collapse, cache behavior, and low-bit robustness do not transfer cleanly across model families.</li>
+<li>After this week: Keep this as a watch direction until a small controlled comparison is cheap. Do not project AR sparsity/KV/branch intuitions onto diffusion/flow/byte systems without family-specific probes.</li>
+<li>Decision: <strong>watch</strong>.</li>
+</ul>
+<h2>Major features</h2>
+<h3>1. Sparse branch selection is the most actionable reasoning-RL hypothesis</h3>
+<p>The repeated RL signal this week is not “reinforcement learning works better with a new acronym.” It is that the useful update is often localized to the part of the rollout tree where an alternative branch already exists but has the wrong probability mass. If a base model samples one correct plan among many incorrect plans, a post-training objective can improve outcomes by increasing that branch’s odds without changing the entire computation.</p>
+<p>Mechanistically, suppose a prompt has candidate trajectories $\tau_1,\ldots,\tau_k$ sampled from the base policy $\pi_0$. A preference/listwise/graph objective changes the policy through gradients of the form</p>
+<div class="math-block">$$\nabla_\theta \log \pi_\theta(\tau^+) - \sum_j w_j \nabla_\theta \log \pi_\theta(\tau_j^-)$$</div>
+<p>or through a KL-regularized variant. The branch-selection hypothesis says the norm and behavioral effect of this update should concentrate around prefixes where candidates diverge and the base distribution is uncertain. If true, we should see high prefix-local KL but not necessarily broad hidden-state reorganization.</p>
+<p>This differs from generic RLVR. The experiment should separate at least four mechanisms:</p>
+<ol>
+<li><strong>Support discovery:</strong> the good branch is absent from $\pi_0$ samples, so exploration/strategy priors matter.</li>
+<li><strong>Branch reweighting:</strong> the good branch exists but has low mass; preference/graph/listwise objectives should work.</li>
+<li><strong>Credit localization:</strong> labels identify the right step/token/edge rather than just the final answer.</li>
+<li><strong>Representation creation:</strong> the model genuinely needs new internal computation, so sparse branch selection is insufficient.</li>
+</ol>
+<p>Evidence this week strengthens all four slices. ReasonMaxxer and LPO point to sparse high-entropy or localized decision points; GraphDPO and listwise objectives move distributions over structured candidates; vOPD and old-logit issues emphasize variance/control of the update; RubricEM and AlphaGRPO add decomposed reward signals; SDAR and VPD add dense token-level supervision with gates or co-evolving teachers to avoid stale/wrong guidance.</p>
+<p>The cheap paper is a fixed rollout-set audit. Collect math/code/tool rollouts from a small model. Freeze the candidate set. Compare winner-SFT, DPO, graph/listwise objective, entropy-gated correction, OPD-style baseline, rubric reward, and token distillation. Measure prefix-local KL, promoted-token base rank, entropy/value-gap overlap, update-direction cosine, correctness diversity, and whether a held-out sampler improves for the same branch reason.</p>
+<h3>2. Temporary-lossy pretraining is not compression; it is a curriculum over information resolution</h3>
+<p>Lighthouse Attention and Token-Superposition Training make a subtle point: the model need not see the exact final information interface throughout all of training. A coarse representation can be useful early if it preserves the dominant gradient directions and lets optimization move quickly toward a good basin. Later, full-resolution training must restore detail.</p>
+<p>A useful abstraction is to view lossy pretraining as optimizing</p>
+<div class="math-block">$$L_c(\theta)=\mathbb{E}_{(x,y)}[\ell(f_\theta(C(x)), C_y(y))]$$</div>
+<p>for a compression/projection $C$, followed by the true loss</p>
+<div class="math-block">$$L(\theta)=\mathbb{E}_{(x,y)}[\ell(f_\theta(x), y)].$$</div>
+<p>The question is not whether $L_c$ is faithful pointwise. It is whether $\nabla L_c$ is aligned with the components of $\nabla L$ that determine broad competence, while not starving rare/order-sensitive features irreversibly. The right measurements are therefore feature-conditioned:</p>
+<div class="math-block">$$R_F=\frac{\|P_F \nabla L_c\|}{\|P_F \nabla L\|}, \qquad
+\mathrm{Lag}_F=t_F^{\mathrm{recover}}-t_F^{\mathrm{baseline}}.$$</div>
+<p>If common syntax and local semantics have high $R_F$ but rare entity binding has low $R_F$, a final aggregate perplexity curve may look fine while the experiment fails the mechanism test.</p>
+<p>This is especially good for Aman because it is small-model friendly. A tiny LM can be trained with lossy attention windows, token grouping/superposition, or temporary byte/token coarsening. The paper/blog would be strongest if it shows both a success and a failure: where temporary lossiness accelerates common competence, and where it permanently or slowly damages rare-order slices.</p>
+<h3>3. Learned state interfaces are the new long-context bottleneck</h3>
+<p>Long context used to be framed mostly as a length problem. This week’s signals make it a <strong>state placement</strong> problem. Multi-Stream LLMs place intermediate reasoning into parallel streams. δ-mem and MeMo-like systems put selected information into compact memory. SP-KV and Minimal-Intervention KV Retention manipulate which KV entries survive. Stateful streaming transformers preserve session state across time. These are not equivalent, even under equal average accuracy.</p>
+<p>A useful taxonomy:</p>
+<ul>
+<li><strong>Full context:</strong> maximal raw evidence, high KV cost, strong recency/attention dilution risks.</li>
+<li><strong>Retrieval/raw tools:</strong> explicit access operations, lower persistent KV, possible tool-selection failures.</li>
+<li><strong>Signatures/summaries:</strong> compressed semantic state, likely to drop negative evidence and exact constraints.</li>
+<li><strong>Learned memory modules:</strong> trainable writes/reads, memory pollution and stale conflict are central risks.</li>
+<li><strong>KV retention/write policies:</strong> cheap if correct, but may evict rare or low-salience evidence.</li>
+<li><strong>Parallel streams:</strong> wider channel for independent variables, but possible binding or synchronization failures.</li>
+<li><strong>Persistent sessions:</strong> realistic for agents, but contamination accumulates across interactions.</li>
+</ul>
+<p>The benchmark should be built around evidence, not text length. Examples need exact constraints, sparse clues, distractors, stale corrections, negative evidence, and cross-turn conflicts. The metric should include answer accuracy but also evidence attribution, memory/KV bytes, latency, read/write count, stale conflict resolution, and rare-evidence survival.</p>
+<p>This direction now deserves promotion because it unifies agent memory, long-context inference, KV systems, and on-device constraints. It also has a clean MLX/on-device angle: small local models can expose how much state each interface consumes and whether the extra bytes buy decision-relevant information.</p>
+<h3>4. Deployment-path validity turns quantization into a causal intervention audit</h3>
+<p>The quantization update this week is unusually important because it attacks a hidden assumption in intervention work. Many edits are validated in fp16/bf16 notebook conditions and implicitly assumed to survive deployment. But quantization changes weights, activation ranges, rounding thresholds, outlier handling, cache precision, and sometimes decoding kernels. If an intervention relies on a small vector or narrow weight delta, it can land below a quantization bin or interact with calibration in a new way.</p>
+<p>This suggests a simple scalar family:</p>
+<div class="math-block">$$\rho_i = \frac{|\Delta w_i|}{b_i}$$</div>
+<p>where $b_i$ is the local bin width or effective quantization step for parameter/activation component $i$. If many important update components have $\rho_i &lt; 1$, the edit may be erased or aliased by deployment. But this is only a predictor; the real audit should pair it with logit/activation drift and behavior survival.</p>
+<p>Candidate interventions to test:</p>
+<ul>
+<li>refusal/safety steering vector,</li>
+<li>small unlearning edit,</li>
+<li>LoRA skill patch,</li>
+<li>rare-feature fine-tune,</li>
+<li>activation patch/feature clamp,</li>
+<li>DPO/style-tuning delta.</li>
+</ul>
+<p>Candidate deployment paths: fp16 baseline, NF4/QLoRA-style, GPTQ/AWQ, llama.cpp/GGUF, low-bit KV if available, and an optimized serving path. The result should not be another quantization leaderboard. It should answer: <strong>which intervention claims remain true after the model is shipped?</strong></p>
+<h3>5. Speech-factor survival now needs timing, recording evidence, and transcript-disagreement probes</h3>
+<p>Speech evidence continues to say that WER is the wrong primary unit. A speech model can transcribe words correctly while losing speaker identity, prosody, timing, accent, uncertainty, recording condition, or safety-relevant audio cues. This week adds timing and evidence reasoning to the previous content/speaker/prosody harness.</p>
+<p>A robust small benchmark should include paired conditions:</p>
+<ul>
+<li>raw waveform vs transcript-only vs codec tokens vs speech-LLM embeddings;</li>
+<li>clean vs compressed vs noisy/room-shifted recordings;</li>
+<li>true metadata vs shuffled speaker/accent/prosody labels;</li>
+<li>entity-dense utterances and rare names;</li>
+<li>timing-sensitive turn-taking or streaming emission tasks;</li>
+<li>transcript-benign but audio-suspicious narrative/instruction cues.</li>
+</ul>
+<p>The mechanism question is where these factors live. Does speaker evidence survive in the same subspace as content? Does a streaming model’s emission timing have separable features from phoneme identity? Does text-side context actually alter acoustic decisions or merely the rationale? Linear probes, CKA/nearest-neighbor structure, simple causal erasures, gradient reversal for nuisance factors, and small downstream regressions are enough for an initial sign-off.</p>
+<p>This is also where ethics matters. The useful project is not voice cloning. It is a measurement harness for factor leakage, robustness, and provenance failure in speech interfaces.</p>
+<h3>6. Capacity allocation across MoE, SAE, and activation-guided data selection should be judged causally</h3>
+<p>MoE expert pools, SoftSAE/adaptive sparse features, Natural Language Autoencoders, Jet/path decompositions, and neuron-aware data selection all claim to expose or allocate internal computation. The common failure mode is seductive non-causal structure: a feature is readable, a route is sparse, a selected dataset looks semantically relevant, but interventions do not behave as predicted.</p>
+<p>The MoE experiment remains the cleanest because it has an obvious causal interface. Train a tiny model with known factors. Compare layer-local experts and a globally shared expert pool. Measure router entropy, $U_{\ell,g}$ usage matrices, mutual information $I(G;F\mid\ell)$, overflow/drop rate, cross-layer gradient cosine, and expert ablation losses $\Delta_{g,F}$. The question is whether global sharing creates reusable factor modules or simply blurs layer-specific computation.</p>
+<p>The same standard should be applied to interpretability and data selection:</p>
+<ul>
+<li>Does a Jet/path feature predict held-out activation-patching effects?</li>
+<li>Does neuron-aware data selection reduce interference between two latent skills better than embedding similarity?</li>
+<li>Does SoftSAE dynamic sparsity improve causal intervention prediction, or only reconstruction?</li>
+<li>Do natural-language activation explanations predict which intervention will change behavior?</li>
+</ul>
+<p>This is a good place to avoid hype. Promote only the variants with artifacts and small-model reproducibility.</p>
+<h3>7. Non-AR families are a caution flag, not yet a main agenda</h3>
+<p>Fast BLT, STARFlow2, DiffRetriever, DLM layer collapse, and Mean Mode Screaming are useful because they warn against overgeneralizing AR transformer intuitions. Byte-level, diffusion, flow, and latent-diffusion language systems have different trajectories, intermediate states, cache needs, and collapse modes. A first-token entropy probe or KV-retention story may not port.</p>
+<p>For now, this is a watch direction. The right first experiment is small: choose one controlled task and compare AR vs masked/diffusion/byte under equal forward-pass budgets. Log trajectory-quality probes, residual/mean collapse, quantization sensitivity, rare-token accuracy, and latency. Do not expand until artifacts are easy.</p>
+<h2>Idea DB changes</h2>
+<ul>
+<li><strong>Promoted/tested:</strong> rollout lifecycle / sparse branch-control for reasoning RL; learned state interfaces for rare-evidence retention; deployment-path validity for interventions; speech factor-preservation sign-off; temporary-lossy pretraining recovery; mechanism-preserving inference/runtime harness.</li>
+<li><strong>Already strong, keep tested:</strong> shared MoE expert pools / route masks as causal capacity probes.</li>
+<li><strong>Promoted conceptually but keep scoped:</strong> activation-guided data selection and Jet/path decompositions, only when evaluated by causal prediction.</li>
+<li><strong>Watch:</strong> non-AR trajectory/compression diagnostics; adaptive inference controllers under rare-case stress; latent language semantic-planning probes.</li>
+<li><strong>Merged conceptually:</strong> separate KV cache, long-context, memory, learned-state, and persistent-session ideas should be reported under the broader state-interface benchmark unless the evidence is specifically about deployment correctness or memory pollution.</li>
+<li><strong>Killed/low-priority:</strong> generic source-type questions and standalone HN weak signals. HN remains supporting evidence only.</li>
+</ul>
+<h2>Recurring bottlenecks</h2>
+<ul>
+<li><strong>State placement:</strong> useful information can live in context tokens, KV slots, learned memory, retrieval, parallel streams, session state, speech timing state, or hidden rollout traces. Each carrier has different write/read/eviction failures.</li>
+<li><strong>Credit channel width:</strong> RL and preference updates depend on where labels attach: final answer, graph/listwise candidate set, rubric component, internal value, token-level teacher, or verifier correction.</li>
+<li><strong>Quantization/deployment aliasing:</strong> small edits may fall below bin width or behave differently under low-bit kernels/caches.</li>
+<li><strong>Rare-evidence eviction:</strong> adaptive inference, KV retention, memory compression, long-context signatures, and speech compression all risk dropping weak but decisive signals.</li>
+<li><strong>Aggregate metric camouflage:</strong> final-answer reward, WER, tokens/sec, compile success, average safety pass rate, and perplexity still hide slice-level failures.</li>
+<li><strong>Stale supervision:</strong> off-policy old logits, fixed teachers, persistent memories, and replay buffers can provide precise-looking but semantically stale signals.</li>
+<li><strong>Causal-vs-readable interpretability:</strong> readable features/routes/explanations are insufficient unless they predict held-out interventions.</li>
+</ul>
+<h2>Missing tools / annoying manual things</h2>
+<ul>
+<li>A small <strong>rollout objective diff tool</strong>: fixed candidate trajectories in, DPO/GraphDPO/listwise/OPD/rubric/token-distill gradients out, with prefix-local KL and gradient-cosine reports.</li>
+<li>A <strong>deployment intervention survival harness</strong> for small models: apply edit/LoRA/steering/unlearning, quantize through several paths, report update-to-bin ratios, logit/activation drift, behavior survival, and latency.</li>
+<li>A <strong>state-interface benchmark runner</strong>: same evidence tasks across full context, retrieval, summaries/signatures, learned memory, KV-retention, and persistent sessions with equal budgets.</li>
+<li>A <strong>speech-factor manifest format</strong> with labels for speaker, accent, phoneme, entity, prosody, timing, recording condition, transcript disagreement, and context metadata.</li>
+<li>A <strong>causal interpretation scorecard</strong>: reconstruction/readability plus held-out patch-effect prediction, ablation prediction, and intervention transfer.</li>
+<li>Better local wrappers for <strong>MLX/llama.cpp/vLLM comparability</strong>: same prompts, seeds, quantization configs, logprob access, latency/memory/KV reporting.</li>
+</ul>
+<h2>Papers or demos now cheap because infra improved</h2>
+<ul>
+<li><strong>Quantization-survival audits</strong> are now cheap because local quantization paths are mature enough to run the same small model through fp16, QLoRA/NF4-like, GPTQ/AWQ-like, and GGUF-style deployments. Experiment unlocked: test whether a tiny refusal/unlearning/LoRA edit survives low-bit shipping.</li>
+<li><strong>State-interface benchmarks</strong> are cheaper because long-context serving, cache retention ideas, and local retrieval/tooling make it possible to compare full context vs retrieval vs memory on the same synthetic corpus without huge training runs.</li>
+<li><strong>Sparse branch RL audits</strong> are cheap because the main object is a fixed rollout set. You can compute objective-induced probability movements and small-model fine-tunes without building a frontier RL stack.</li>
+<li><strong>Temporary-lossy pretraining</strong> is cheap because the model can be tiny and the signal is slice recovery lag. No large model is needed to falsify irreversible rare-feature starvation.</li>
+<li><strong>Speech factor survival probes</strong> are cheap because public encoders/codecs/small speech-native stacks can be used as frozen representation sources. The work is mostly dataset manifest design and probe hygiene.</li>
+<li><strong>MoE global-pool tests</strong> are cheap because synthetic factors and small routers expose the mechanism more cleanly than a large-scale language pretraining run.</li>
+</ul>
+<h2>Questions inbox triage</h2>
+<ul>
+<li><strong>Promoted to experiment:</strong> sparse branch-selection audit for reasoning post-training; temporary-lossy pretraining recovery geometry; mechanism-preserving inference/runtime harness; speech factor survival probe; cost-normalized state/long-context access benchmark.</li>
+<li><strong>Promoted to candidate:</strong> deployment quantization survival for model interventions; learned memory/KV/session state preservation under stale conflicts; token-level language-feedback distillation for agent RL.</li>
+<li><strong>Merged:</strong> separate questions about online memory pollution, KV retention, stateful sessions, and long-context signatures should be tracked under “state interfaces for rare-evidence retention,” with subquestions for stale conflict, negative evidence, and rare evidence eviction.</li>
+<li><strong>Merged:</strong> voice-search embeddings, streaming ASR, speech timing, speaker evidence, and transcript-disagreement questions should be tracked under the speech factor survival benchmark.</li>
+<li><strong>Answered:</strong> aggregate metrics hiding interface failures remains answered from 2026-05-09; this week adds deployment survival and stale supervision to the list but does not require a new standalone question.</li>
+<li><strong>Killed/low priority:</strong> generic HN/source-quality monitoring and standalone “which source produced useful ideas?” questions remain operational, not research directions.</li>
+</ul>
+<h2>Next-week plan</h2>
+<ol>
+<li><strong>Design the sparse branch RL notebook.</strong> Use one fixed math/code rollout set and implement objective-only comparisons before any training: DPO, graph/listwise, entropy-gated, OPD baseline, and token-distillation proxies.</li>
+<li><strong>Specify the state-interface benchmark.</strong> Write 20–50 synthetic corpus tasks with exact constraints, sparse clues, stale corrections, negative evidence, and distractors; define equal-budget accounting.</li>
+<li><strong>Build the quantization-survival checklist.</strong> Choose one small intervention and two deployment paths; decide which logit/activation hooks are realistic locally.</li>
+<li><strong>Draft the speech-factor manifest.</strong> Include timing and recording-condition fields, not only transcript/speaker/prosody labels.</li>
+<li><strong>Keep one eye on non-AR artifacts.</strong> Only promote diffusion/flow/byte diagnostics if a runnable small model or benchmark becomes available.</li>
+</ol></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 09:05</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
