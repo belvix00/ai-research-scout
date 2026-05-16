@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-17 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-17</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest clusters were: dense supervision for reasoning/agent RL; quantization as a deployment-time causal transformation; KV/cache/attention systems becoming memory interfaces; audio models moving from transcript tasks toward speaker/timing/factor reasoning; and interpretability/data-selection work trying to make internal computation more causal.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The architecture signals were not about one new canonical Transformer replacement. Instead, several items asked how to allocate, preserve, or expose internal state. OpenReview’s <strong>Decomposing LLM Computation with Jets</strong> proposes a path-like expansion of model computation, trying to turn entangled LLM behavior into auditable components rather than flat feature descriptions. OpenReview’s <strong>Neuron-Aware Data Selection</strong> uses internal activation/neuron information to choose instruction-tuning examples, continuing the recent shift from text-similarity data curation to computation-aware curation.</p>
+<p>On the inference-facing architecture side, <strong>AB-Sparse</strong> and <strong>KVServe</strong> reinforce that long-context models are increasingly constrained by state movement, not just attention FLOPs. Sparse attention, compressed KV, learned cache retention, and disaggregated serving are not neutral engineering wrappers: they decide which evidence remains available at the future token. Relative to last week’s state-interface theme, today added more concrete mechanisms for adaptive block size and service-aware KV compression.</p>
+<h3>Training, RL, and optimization</h3>
+<p>The RL/post-training cluster was unusually coherent. <strong>Variational Policy Distillation</strong> and <strong>Self-Distilled Agentic Reinforcement Learning</strong> both attack the same bottleneck: outcome-only rewards give too little credit assignment for multi-step reasoning or agent trajectories. VPD converts language feedback into a denser teacher signal while trying to avoid a stale fixed teacher; self-distilled agentic RL converts successful on-policy behavior into finer supervision.</p>
+<p>The change relative to last week is that the “rollout lifecycle” idea now has another dense-supervision subthread. Instead of only asking which rollouts are sampled, filtered, or scored, today’s papers ask which parts of a successful trajectory become token/step-level training signal. The falsifier to keep in mind: dense teachers may improve headline success while overfitting teacher mistakes or narrowing strategy diversity.</p>
+<p>Optimization Online added a lower-level mathematical signal: stochastic block coordinate and function alternation for multi-objective optimization. It is not an LLM paper, but it maps onto a recurring training issue: preference, safety, reasoning, and style objectives are often alternated or partially updated rather than solved as one clean scalar objective. That is worth keeping as background math for preference/RL tuning experiments.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Mechanistic interpretability showed up in two complementary forms. <strong>When Are Two Networks the Same?</strong> focuses on tensor similarity as a way to decide whether two learned components implement the same computation. That matters because circuit claims rarely stay within one checkpoint: transfer, replication, and patching all need a notion of computational equivalence.</p>
+<p><strong>Jets</strong> asks for decompositions of LLM computation; <strong>Neuron-Aware Data Selection</strong> asks whether those internal units can guide curation; <strong>quantization-permanent unlearning</strong> asks whether targeted circuit edits survive deployment. Together they suggest a practical scorecard: an interpretability unit is only useful if it predicts held-out interventions, survives or explains deployment transformations, and guides a real edit/data-selection decision. Readability alone is too weak.</p>
+<p>The main skeptical signal is still aggregate metric camouflage. Audio evaluation via ASR, unlearning tested only in fp16, and quantization robustness tested only on average accuracy all hide slice-level failures. Today’s failure signals were especially deployment-oriented: the model that passes in full precision may not be the model users run.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio had a richer-than-usual factorization day. <strong>SpeakerLLM</strong> treats speaker identity and verification evidence as things an audio-LLM should reason about, not just metadata attached to a transcript. <strong>Streaming Speech-to-Text Translation with a SpeechLLM</strong> adds emission timing: in streaming translation, the model must decide before it has full future context, and paralinguistic cues may matter before transcript tokens stabilize.</p>
+<p><strong>AudioMosaic</strong> adds a representation-learning angle through contrastive masked audio learning, while <strong>Too Good to Be True</strong> warns that ASR-as-evaluator can mislead speech enhancement work. The durable update is to keep the speech harness multi-factor: phoneme/content, speaker, prosody, recording condition, entity identity, transcript disagreement, and latency/timing decisions should be separated. Relative to last week, today strengthened the timing and speaker-evidence parts of the harness.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference systems were the busiest cluster. <strong>XFP</strong> and <strong>Scaled Outer Product</strong> both make quantization more targeted: not all layers/channels should be compressed the same way, and hardware decode constraints matter. <strong>KVServe</strong> makes KV compression service-aware in disaggregated serving. <strong>AB-Sparse</strong> adapts sparse-attention block size to reduce KV traffic. <strong>An Interpretable Latency Model for Speculative Decoding</strong> tries to expose the knobs behind speculation speedups rather than treating them as magic.</p>
+<p>The broad change is that inference papers are increasingly mechanism-adjacent. They do not merely reduce latency; they alter state representations, cache movement, acceptance paths, and possibly sampled trajectories. For research use, the right question is no longer “is it faster?” but “what hidden state, logit, attention, or rollout distribution changed under the faster path?” PyTorch 2.12 is a quieter but useful enabler: faster CUDA batched linalg makes local diagnostics and spectral/probe work cheaper.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>The collected signals were not dominated by new model releases. Hugging Face daily papers surfaced relevant preprints, but the stronger items came from arXiv/OpenReview/blogs rather than hub cards. The model/data angle was mostly about what becomes inspectable: speaker-specialized audio LLMs, masked audio SSL, codebook/outlier quantizers, and activation/neuron-aware data selection.</p>
+<p>This is a good day to avoid launch-chasing. The most useful artifacts are likely small reproductions: a fixed rollout set for dense RL supervision, a quantization survival harness, a KV/sparse-attention rare-evidence test, and a speech-factor/timing probe.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Learning from Language Feedback via Variational Policy Distillation</strong> — https://arxiv.org/abs/2605.15113v1</li>
+</ol>
+<p>   VPD turns language feedback into denser policy supervision for RLVR, where final verifiable rewards leave large exploration gaps. The important mechanism is teacher evolution: a fixed teacher can become stale, but a co-evolving one may better track the policy’s current failure distribution.</p>
+<ol>
+<li><strong>Self-Distilled Agentic Reinforcement Learning</strong> — https://arxiv.org/abs/2605.15155v1</li>
+</ol>
+<p>   This extends the same dense-supervision problem to agent trajectories. The paper’s value is not the label “self-distillation,” but the claim that successful on-policy behavior can be mined into finer guidance for long-horizon interaction.</p>
+<ol>
+<li><strong>Decomposing LLM Computation with Jets</strong> — https://openreview.net/forum?id=u6JLh0BO5h</li>
+</ol>
+<p>   Jets are proposed as a decomposition framework for entangled LLM computation. The item is worth tracking if it can predict patching/ablation effects rather than only offering cleaner descriptions.</p>
+<ol>
+<li><strong>Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</strong> — https://openreview.net/forum?id=uq6UWRgzMr</li>
+</ol>
+<p>   This is a data-curation mechanism signal: choose instruction data by internal neuron/activation behavior, not only surface text similarity. It directly tests whether internal computation can guide tuning with less interference.</p>
+<ol>
+<li><strong>When Are Two Networks the Same? Tensor Similarity for Mechanistic Interpretability</strong> — https://arxiv.org/abs/2605.15183v1</li>
+</ol>
+<p>   The paper targets a foundational interpretability problem: comparing whether two network parts implement the same computation. This matters for circuit transfer, replicated interventions, and cross-model mechanistic claims.</p>
+<ol>
+<li><strong>Forgetting That Sticks: Quantization-Permanent Unlearning via Circuit Attribution</strong> — https://arxiv.org/abs/2605.15138v1</li>
+</ol>
+<p>   The paper argues that unlearning should be evaluated after the quantization path users actually deploy. It strengthens the idea that model edits/refusals/steering should include low-bit survival tests.</p>
+<ol>
+<li><strong>Widening the Gap: Exploiting LLM Quantization via Outlier Injection</strong> — https://arxiv.org/abs/2605.15152v1</li>
+</ol>
+<p>   This is the adversarial counterpart to quantization-permanent unlearning: a model can be benign in full precision but change after quantization. The mechanism is outlier-induced aliasing under low-bit representation.</p>
+<ol>
+<li><strong>XFP: Quality-Targeted Adaptive Codebook Quantization with Sparse Outlier Separation</strong> — https://arxiv.org/abs/2605.14844v1</li>
+</ol>
+<p>   XFP makes quantization quality-targeted by specifying per-channel reconstruction floors and isolating sparse outliers. This is useful for mechanism-preserving inference because fragile channels may need explicit protection.</p>
+<ol>
+<li><strong>A Hardware-Aware, Per-Layer Methodology for Post-Training Quantization of LLMs</strong> — https://arxiv.org/abs/2605.14929v1</li>
+</ol>
+<p>   Scaled Outer Product quantization highlights that per-layer and hardware-aware decisions matter. It is a reminder that abstract quantization results may not transfer cleanly to the actual decode path.</p>
+<ol>
+<li><strong>KVServe: Service-Aware KV Cache Compression for Disaggregated LLM Serving</strong> — https://arxiv.org/abs/2605.13734v1</li>
+</ol>
+<p>   KVServe treats KV movement as a first-class bottleneck in disaggregated serving. The research question is which cached information can be compressed without erasing rare or delayed evidence.</p>
+<ol>
+<li><strong>AB-Sparse: Sparse Attention with Adaptive Block Size</strong> — https://arxiv.org/abs/2605.12110v1</li>
+</ol>
+<p>   AB-Sparse adapts sparse-attention block size for long-context inference. It belongs in the state-interface watchlist because sparse rules can over-prune precisely the evidence that matters on rare cases.</p>
+<ol>
+<li><strong>SpeakerLLM</strong> — https://arxiv.org/abs/2605.15044v1</li>
+</ol>
+<p>   SpeakerLLM specializes audio-LLMs for speaker understanding and verification reasoning. The signal is that speaker identity should be represented as reasoning evidence, not just as an embedding or post-hoc classifier.</p>
+<ol>
+<li><strong>Streaming Speech-to-Text Translation with a SpeechLLM</strong> — https://arxiv.org/abs/2605.14766v1</li>
+</ol>
+<p>   Streaming SpeechLLM collapses ASR and translation under latency constraints. Its key mechanism is timing: emission decisions happen with partial evidence and may depend on non-text cues.</p>
+<ol>
+<li><strong>Too Good to Be True: ASR for Speech Enhancement Evaluation</strong> — https://arxiv.org/abs/2605.12107v1</li>
+</ol>
+<p>   This is an evaluation failure warning. ASR-based metrics may say enhancement improved while listener-relevant artifacts, prosody, or acoustic quality worsened.</p>
+<ol>
+<li><strong>PyTorch 2.12 Release Blog</strong> — https://pytorch.org/blog/pytorch-2-12-release-blog/</li>
+</ol>
+<p>   This is a practical cost-floor signal, not a conceptual paper. Faster batched CUDA linalg and framework improvements can make local mechanistic diagnostics, spectral probes, and batched evaluations cheaper.</p>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Deployment transformations are becoming part of the mechanism.</strong> Quantization is not just compression; it can preserve, erase, or invert edits and attacks. Any model-intervention claim should specify the deployment path.</li>
+</ol>
+<ol>
+<li><strong>Dense supervision is moving inside trajectories.</strong> VPD and self-distilled agent RL both convert sparse success/failure into internal guidance. The next question is whether dense teachers improve exploration or merely copy biased/stale traces.</li>
+</ol>
+<ol>
+<li><strong>State interfaces are the hidden architecture.</strong> KV compression, sparse attention, streaming speech timing, and speaker evidence all decide which information is available when decisions are made.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Quantization-survival audit for interventions</h3>
+<p>Evidence: quantization-permanent unlearning (https://arxiv.org/abs/2605.15138v1), outlier-injection quantization attack (https://arxiv.org/abs/2605.15152v1), XFP (https://arxiv.org/abs/2605.14844v1).</p>
+<p>Mechanism: low-bit deployment remaps weights/activations, so small edits, refusals, LoRAs, unlearning, and steering vectors may not be the same causal object after quantization.</p>
+<p>Minimal experiment/probe: apply one small refusal/edit/unlearning patch to a small open model; evaluate fp16, NF4/GPTQ/AWQ/GGUF-style paths; log update-to-bin ratios, logit drift, behavior survival, and latency/memory.</p>
+<p>Falsifier: intervention behavior and relevant logits/activations remain stable across quantization paths except for normal noise.</p>
+<p>Confidence: high.</p>
+<h3>2. Dense teacher audit for reasoning/agent RL</h3>
+<p>Evidence: VPD (https://arxiv.org/abs/2605.15113v1), self-distilled agentic RL (https://arxiv.org/abs/2605.15155v1), existing rollout-lifecycle notes in running.md.</p>
+<p>Mechanism: language feedback and self-distillation widen the credit channel from final reward to token/step-level guidance, but can also overfit teacher mistakes or collapse strategy diversity.</p>
+<p>Minimal experiment/probe: fixed toy math/tool rollout set; compare outcome-only reward, fixed-teacher distillation, VPD-style co-evolving teacher, and self-distilled successful traces; measure gradient-cosine to a clean on-policy reference, diversity of correct strategies, failure-step localization, and teacher-staleness errors.</p>
+<p>Falsifier: dense teacher variants improve only final score while reducing strategy diversity or increasing off-policy error.</p>
+<p>Confidence: medium-high.</p>
+<h3>3. KV/sparse-attention rare-evidence survival benchmark</h3>
+<p>Evidence: KVServe (https://arxiv.org/abs/2605.13734v1), AB-Sparse (https://arxiv.org/abs/2605.12110v1), speculative-decoding latency model (https://arxiv.org/abs/2605.15051v1).</p>
+<p>Mechanism: cache compression and adaptive sparse attention reduce memory traffic by deciding which state is worth preserving. Rare early facts, negations, and delayed constraints may be exactly what gets compressed away.</p>
+<p>Minimal experiment/probe: construct long-context prompts with rare early clues, conflicting later distractors, and delayed use; compare full attention/KV against compressed KV and sparse attention; log answer accuracy, logit drift, attention to evidence spans, cache bytes, and latency.</p>
+<p>Falsifier: adaptive compression/sparsity preserves rare-evidence slices under matched latency improvements.</p>
+<p>Confidence: medium.</p>
+<h3>4. Causal scorecard for internal-computation data selection and interpretability units</h3>
+<p>Evidence: Jets (https://openreview.net/forum?id=u6JLh0BO5h), neuron-aware data selection (https://openreview.net/forum?id=uq6UWRgzMr), tensor similarity for mechanistic interpretability (https://arxiv.org/abs/2605.15183v1).</p>
+<p>Mechanism: internal features, paths, or tensor similarities should be judged by whether they predict causal effects and guide better data/interventions, not by readability alone.</p>
+<p>Minimal experiment/probe: train a small LM on two synthetic skills; compute activation/path features; select tuning data by text similarity, embedding similarity, and neuron/path similarity; evaluate skill retention/interference plus held-out activation-patching prediction.</p>
+<p>Falsifier: internal-computation selection performs no better than embedding selection and does not predict patch/ablation effects.</p>
+<p>Confidence: medium.</p>
+<h3>5. Speech factor and timing survival probe</h3>
+<p>Evidence: SpeakerLLM (https://arxiv.org/abs/2605.15044v1), Streaming SpeechLLM (https://arxiv.org/abs/2605.14766v1), AudioMosaic (https://arxiv.org/abs/2605.14231v1), ASR-as-evaluator warning (https://arxiv.org/abs/2605.12107v1).</p>
+<p>Mechanism: audio systems may preserve transcript content while losing speaker, prosody, timing, recording condition, or artifact information. Streaming tasks add partial-evidence timing as a separate factor.</p>
+<p>Minimal experiment/probe: use public speech encoders/codecs or a small speech-LLM; label clips by phoneme/entity/speaker/prosody/condition/timing; test raw vs compressed vs transcript-only vs streaming states with linear probes and task slices.</p>
+<p>Falsifier: transcript-only or compressed representations retain the same factor information and timing decisions as raw/audio-native states.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>Speculative decoding latency as a modeling object</strong> — https://arxiv.org/abs/2605.15051v1. Useful if the latency model exposes enough knobs to predict when speculation changes rollout distribution, not just speed.</li>
+<li><strong>Quality-targeted quantization</strong> — https://arxiv.org/abs/2605.14844v1. Revisit after seeing whether per-channel floors correlate with downstream fragile-feature preservation.</li>
+<li><strong>Multi-objective block/function alternation math</strong> — https://optimization-online.org/2026/05/stochastic-block-coordinate-and-function-alternation-for-multi-objective-optimization-and-learning/. Useful background for alternating preference/safety/reasoning objectives.</li>
+<li><strong>ASR-as-speech-enhancement evaluator failure</strong> — https://arxiv.org/abs/2605.12107v1. Track whether the paper gives reusable test cases or only diagnosis.</li>
+<li><strong>PyTorch 2.12 diagnostic cost reductions</strong> — https://pytorch.org/blog/pytorch-2-12-release-blog/. Check which local notebooks can now batch spectral or activation probes more cheaply.</li>
+<li><strong>OpenReview ICLR 2026 stream</strong> — the current API returned several relevant submissions; continue using it as a complement to arXiv/HF rather than relying only on daily papers.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

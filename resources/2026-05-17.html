@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-17 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-17</h1>
+<h2>arXiv — Learning from Language Feedback via Variational Policy Distillation</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15113v1</p>
+<p>Summary: Core bucket: Training/RL/math/mech interp. This paper targets a concrete weakness in RLVR: sparse outcome rewards do not tell a reasoning model which intermediate moves were useful. It proposes a variational policy distillation loop where language feedback becomes denser supervision, while the teacher evolves instead of remaining a fixed stale target. Collected because it is a mechanism-level signal about credit-channel width in reasoning RL, not just another benchmark result.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Self-Distilled Agentic Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15155v1</p>
+<p>Summary: Core bucket: Training/RL/math/mech interp. The paper studies long-horizon LLM agents where trajectory-level reward is too coarse, and uses on-policy self-distillation to convert successful behavior into finer guidance. The mechanism signal is dense supervision inside the rollout lifecycle: which steps get copied, which failure steps remain invisible, and whether the distillation target follows the current policy distribution. This is useful for understanding why agent RL often depends as much on trajectory plumbing as on the named optimizer.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: Core bucket: Training/RL/math/mech interp. This ICLR 2026 submission introduces Jet Expansions as a way to expand entangled LLM computation into paths or modules that can be audited. The learning value is the representational unit: if jets predict held-out patching or ablation effects, they could become more causal than readable feature labels alone. Collected as a mechanistic-interpretability structure signal, not as a settled result.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Neuron-Aware Data Selection in Instruction Tuning for Large Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=uq6UWRgzMr</p>
+<p>Summary: Core bucket: Core DL/LLM research. The submission treats instruction-tuning data selection as an activation/neuron problem rather than only a text or embedding similarity problem. It matters because many daily signals now point to internal-computation-guided curation: selecting examples by what circuitry they exercise may reduce interference and excess-data degradation. The direct mechanism to test is whether activation signatures predict skill retention better than semantic retrieval.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — When Are Two Networks the Same? Tensor Similarity for Mechanistic Interpretability</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.15183v1</p>
+<p>Summary: Core bucket: Training/RL/math/mech interp. This paper asks how to compare whether parts of two networks implement the same computation, beyond behavioral similarity or simple representation metrics. It is useful because reproducibility and modular interpretability need a notion of computational equivalence before claims about circuits can transfer across models. The mechanism signal is tensor-level similarity as an audit primitive for circuits, subnetworks, and intervention transfer.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Forgetting That Sticks: Quantization-Permanent Unlearning via Circuit Attribution</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15138v1</p>
+<p>Summary: Core bucket: Skeptical or failure signal. The paper argues that normal unlearning tests can be misleading because deployed language models are usually quantized after training. It uses circuit attribution to make forgetting survive 4-bit post-training quantization, reinforcing that deployment compression is a causal transformation, not a passive packaging step. Collected as a skeptical signal for any editing, refusal, unlearning, or steering claim evaluated only in full precision.</p>
+<p>Personalization: high</p>
+<h2>arXiv — Widening the Gap: Exploiting LLM Quantization via Outlier Injection</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15152v1</p>
+<p>Summary: Core bucket: Skeptical or failure signal. This work studies an attack where a model can look benign in full precision but behave differently after quantization because outlier structure changes the low-bit representation. The mechanism is deployment aliasing: small or hidden weight-space features can be amplified or remapped by quantization bins. It pairs well with quantization-permanent unlearning as evidence that low-bit paths need their own safety and mechanism audits.</p>
+<p>Personalization: high</p>
+<h2>arXiv — XFP: Quality-Targeted Adaptive Codebook Quantization with Sparse Outlier Separation for LLM Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.14844v1</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. XFP inverts the usual quantization workflow by letting the operator specify reconstruction-quality floors, then adapting codebooks and separating sparse outliers. The useful mechanism is per-channel quality targeting rather than a fixed bit-width recipe, which is relevant for preserving fragile attention or MLP channels. It is a systems item with direct implications for mechanism-preserving inference experiments.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — A Hardware-Aware, Per-Layer Methodology for Post-Training Quantization of Large Language Models</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.14929v1</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. The paper presents Scaled Outer Product post-training quantization for near-lossless 4.5–6 bit LLM weights under hardware constraints with per-layer LUT decode. The mechanism signal is that different layers may need different compression structures if the deployment target is real hardware rather than an abstract quantizer. This broadens the quantization discussion from accuracy retention to hardware-specific representational distortion.</p>
+<p>Personalization: low</p>
+<h2>arXiv — KVServe: Service-Aware KV Cache Compression for Communication-Efficient Disaggregated LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.13734v1</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. Disaggregated prefill/decode serving makes KV movement a communication bottleneck; KVServe compresses KV state with service awareness. The mechanism to watch is which tokens, heads, or layers can be compressed without losing rare or delayed evidence. It is useful because long-context and agent runs increasingly depend on KV state as the actual memory interface.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — AB-Sparse: Sparse Attention with Adaptive Block Size for Accurate and Efficient Long-Context Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.12110v1</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. AB-Sparse targets the long-context bottleneck where attention becomes dominated by loading large KV caches. It adapts block size so sparse attention can preserve important regions while reducing memory traffic. Collected because adaptive sparsity is a state-interface choice: the failure mode is not just lower score, but silent eviction of rare clues or late-needed context.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — An Interpretable Latency Model for Speculative Decoding in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.15051v1</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. Speculative decoding speed depends on draft quality, acceptance, batch shape, verification cost, and serving conditions; this paper tries to make that latency model interpretable. The learning value is a bridge between algorithmic decoding and production serving: it gives measurable knobs rather than treating speculation as a black-box acceleration trick. It is relevant to cost-normalized experiments where speedups must not change the sampled trajectory distribution unnoticed.</p>
+<p>Personalization: low</p>
+<h2>arXiv — SpeakerLLM: A Speaker-Specialized Audio-LLM for Speaker Understanding and Verification Reasoning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15044v1</p>
+<p>Summary: Core bucket: Audio/TTS/speech. SpeakerLLM focuses an audio language model on speaker-specific understanding and verification reasoning, moving beyond transcript-only speech tasks. The mechanism signal is speaker evidence as an explicit reasoning object: identity, recording condition, and vocal traits may need to survive the audio encoder-to-LLM interface. Collected for the speech-factor-survival thread, especially speaker/content/prosody disentanglement.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Streaming Speech-to-Text Translation with a SpeechLLM</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.14766v1</p>
+<p>Summary: Core bucket: Audio/TTS/speech. This paper combines speech recognition and translation in a SpeechLLM under streaming constraints rather than using a clean offline cascade. The important mechanism is emission timing: partial audio context, latency policy, and paralinguistic cues influence what the model can translate and when. It is useful for testing whether speech-native models preserve information that transcript-first systems discard.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — AudioMosaic: Contrastive Masked Audio Representation Learning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.14231v1</p>
+<p>Summary: Core bucket: Audio/TTS/speech. AudioMosaic is a self-supervised audio representation paper emphasizing contrastive masked learning rather than only generative reconstruction. The useful concept is what invariances the objective encourages: contrastive masking may preserve event identity and temporal structure differently from reconstruction losses. Collected as a broad audio representation signal that could feed downstream speech, sound-event, or music probes.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Too Good to Be True: A Study on Modern Automatic Speech Recognition for the Evaluation of Speech Enhancement</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://arxiv.org/abs/2605.12107v1</p>
+<p>Summary: Core bucket: Skeptical or failure signal. The paper questions the increasingly common use of ASR systems as evaluation metrics for speech enhancement. The mechanism-level warning is metric substitution: a strong recognizer may hide artifacts, prosody loss, or listener-relevant distortions while improving WER-like scores. It is a useful skeptical signal for audio work because it separates recognizer convenience from actual speech-quality understanding.</p>
+<p>Personalization: low</p>
+<h2>PyTorch Blog — PyTorch 2.12 Release Blog</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/pytorch-2-12-release-blog/</p>
+<p>Summary: Core bucket: Inference/ML infra/GPU. The release notes mention practical improvements such as much faster batched CUDA linear algebra and other framework-level changes that lower the cost of diagnostics. This is not a research paper, but it changes what local experiments are cheap: spectral probes, batched eigendecompositions, and repeated small-model analysis can become less painful. Collected as an infrastructure-cost signal rather than a headline model item.</p>
+<p>Personalization: low</p>
+<h2>Optimization Online — Stochastic block coordinate and function alternation for multi-objective optimization and learning</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://optimization-online.org/2026/05/stochastic-block-coordinate-and-function-alternation-for-multi-objective-optimization-and-learning/?utm_source=rss&amp;utm_medium=rss&amp;utm_campaign=stochastic-block-coordinate-and-function-alternation-for-multi-objective-optimization-and-learning</p>
+<p>Summary: Core bucket: Broad learning / outside current project bubble. This optimization paper studies multi-objective learning where objectives are alternated or block-updated rather than merged into one static scalar. It is broadly useful for thinking about preference tuning, safety/helpfulness tradeoffs, and multi-loss training where objectives may interfere. Collected as math background, not because it directly releases an LLM system.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

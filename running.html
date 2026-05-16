@@ -315,10 +315,23 @@
 <ul>
 <li>No single dominant pattern today; durable memory splits across deployment-path validity, learned/persistent state, dense-supervision channel design, speech factor/timing interfaces, and activation-guided curation.</li>
 <li>Keep HN weak: the warmth/sycophancy item is useful only as supporting skeptical evidence for style/preference drift, not as a primary daily source.</li>
+</ul>
+<h2>Daily additions — 2026-05-17</h2>
+<ul>
+<li><strong>Quantization survival is now a required sign-off for interventions.</strong> Quantization-permanent unlearning and outlier-injection attacks jointly show low-bit deployment can preserve, erase, or invert targeted edits. Experiment: one small edit/unlearn/refusal/steering patch evaluated fp16 vs NF4/GPTQ/AWQ/GGUF-like paths with update-to-bin ratios, logit/activation drift, and behavior survival.</li>
+<li><strong>Dense teacher signals for reasoning/agent RL need stale-teacher and diversity audits.</strong> VPD and self-distilled agentic RL widen sparse rewards into token/step-level guidance, but may copy teacher mistakes or collapse strategy diversity. Experiment: fixed math/tool rollout set comparing outcome-only, fixed-teacher, co-evolving-teacher, and self-distilled traces with gradient-cosine and failure-step localization.</li>
+<li><strong>KV/sparse-attention systems should be evaluated as rare-evidence memory interfaces.</strong> KVServe, AB-Sparse, and speculative-decoding latency modeling are not only speedups; they decide which cached state remains usable. Experiment: long-context rare-clue/distractor benchmark with cache bytes, attention-to-evidence, output/logit drift, and latency.</li>
+<li><strong>Internal-computation units should be scored by causal utility.</strong> Jet decompositions, neuron-aware data selection, and tensor similarity metrics should be tested by held-out patch/ablation prediction and data-selection interference reduction, not only readability or reconstruction.</li>
+<li><strong>Speech factor survival should explicitly separate speaker evidence and streaming timing.</strong> SpeakerLLM and Streaming SpeechLLM add speaker-verification reasoning and partial-evidence emission timing to the existing phoneme/prosody/entity/condition harness.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across quantization/deployment validity, dense RL supervision, state-interface preservation, causal interpretability, and speech timing/speaker evidence.</li>
+<li>OpenReview ICLR 2026 is useful as a daily complement to arXiv/HF when filtered strictly for mechanism-bearing submissions.</li>
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 09:05</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

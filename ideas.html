@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-16 09:05:40</p>
+<p>Generated: 2026-05-17 03:07:24</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -738,6 +738,72 @@
 <ul>
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
+</ul>
+<h2>Dense teacher audits for reasoning and agent RL</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-17</li>
+<li>Last seen: 2026-05-17</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Language feedback and self-distillation widen sparse trajectory rewards into token/step-level guidance, but need stale-teacher and strategy-diversity audits.</p>
+<h3>Mechanism</h3>
+<p>Dense teachers change the credit channel inside rollouts, redistributing update mass from final outcomes to intermediate steps or tokens.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed toy math/tool rollout set comparing outcome-only, fixed-teacher distillation, co-evolving VPD-style teacher, and self-distilled successful traces; measure gradient-cosine, failure-step localization, teacher-staleness errors, and strategy diversity.</p>
+<h3>Falsifier</h3>
+<p>Dense teacher variants improve final scores only by reducing strategy diversity or increasing off-policy teacher errors.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-17.md</code> — VPD and self-distilled agentic RL widen sparse rewards into token/step-level guidance, but may copy teacher mistakes or collapse strategy diversity.</li>
+</ul>
+<h2>KV and sparse attention rare-evidence survival</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-17</li>
+<li>Last seen: 2026-05-17</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>KV compression and adaptive sparse attention should be evaluated as memory interfaces that may evict rare decisive facts, not only as latency optimizations.</p>
+<h3>Mechanism</h3>
+<p>Cache compression and sparse block rules allocate state bandwidth across tokens, heads, and layers.</p>
+<h3>Minimal experiment</h3>
+<p>Long-context rare-clue/distractor benchmark comparing full attention/KV with compressed KV and adaptive sparse attention; log answer accuracy, attention to evidence spans, output/logit drift, cache bytes, and latency.</p>
+<h3>Falsifier</h3>
+<p>Compression and sparse attention preserve rare evidence slices under matched latency improvements.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-17.md</code> — KVServe, AB-Sparse, and speculative-decoding latency modeling are not only speedups; they decide which cached state remains usable.</li>
+</ul>
+<h2>Quantization survival of model interventions</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-17</li>
+<li>Last seen: 2026-05-17</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Low-bit deployment can preserve, erase, or invert small interventions; full-precision-only edit/unlearning/steering results are insufficient.</p>
+<h3>Mechanism</h3>
+<p>Quantization changes weight/activation geometry through binning, outlier handling, codebooks, and layer/channel-specific reconstruction loss.</p>
+<h3>Minimal experiment</h3>
+<p>Apply one small refusal/edit/unlearning/steering patch to a small open model; evaluate fp16 versus NF4/GPTQ/AWQ/GGUF-like paths; log update-to-bin ratios, logit/activation drift, behavior survival, latency, and memory.</p>
+<h3>Falsifier</h3>
+<p>Behavior and relevant logits/activations remain stable across quantization paths except normal noise.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-17.md</code> — Quantization-permanent unlearning and outlier-injection attacks jointly show low-bit deployment can preserve, erase, or invert targeted edits.</li>
 </ul>
 <h2>Activation steering / intervention auditing</h2>
 <ul>
@@ -3828,7 +3894,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-16 09:05</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
