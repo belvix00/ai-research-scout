@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-17 03:07:24</p>
+<p>Generated: 2026-05-18 03:07:56</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -188,30 +188,6 @@
 <li><code>running.md</code> — MASCing and Laguna-style router designs make expert routing a controllable mechanism, not just an efficiency detail. Experiment: toy MoE on separable domains/rare features; intervene with route masks or router biases and measure causal effects on rare-feature behavior.</li>
 <li><code>daily/2026-05-04.md</code> — - Evidence / source links: - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - Mechanism: - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees without</li>
 <li><code>daily/2026-05-04.md</code> — - <strong>Evidence / source links</strong> - <a href="https://huggingface.co/papers/2604.27818" target="_blank" rel="noopener">MASCing: Configurable Mixture-of-Experts Behavior via Activation Steering Masks</a> - <a href="https://github.com/huggingface/transformers/releases/tag/v5.7.0" target="_blank" rel="noopener">Transformers v5.7.0 release / Laguna MoE support</a> - <a href="https://github.com/vllm-project/vllm/releases/tag/v0.20.1" target="_blank" rel="noopener">vLLM v0.20.1 DeepSeek/MoE serving fixes</a> - <strong>Mechanism</strong> - Sparse MoEs route tokens through a small subset of experts. Behavior therefore depends on both expert weights and the routing policy. Activation masks, router biases, sigmoid gates, and load-balancing rules can alter which computation path a token sees wi</li>
-</ul>
-<h2>Learned state interfaces for rare-evidence retention</h2>
-<ul>
-<li>Status: <code>test</code></li>
-<li>Confidence: <code>medium</code></li>
-<li>Tags: none</li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-16</li>
-<li>Last seen: 2026-05-16</li>
-<li>Evidence count: 3</li>
-</ul>
-<h3>Thesis</h3>
-<p>Long-context and agent memory systems should compare learned memory modules, KV write policies, diversity retention, and stateful sessions as alternative state interfaces under equal cost.</p>
-<h3>Mechanism</h3>
-<p>A state interface decides which evidence is retained, when it is written, and whether it remains accessible at the later decision point.</p>
-<h3>Minimal experiment</h3>
-<p>Construct sparse-clue/distractor long-context tasks; compare full context, retrieval, memory module, learned KV writing, diversity retention, and persistent session reuse with matched latency/memory/KV budgets.</p>
-<h3>Falsifier</h3>
-<p>If all interfaces fail/succeed on the same examples after cost matching, state-interface choice is not explaining rare evidence retention.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>https://arxiv.org/abs/2605.13784v1</code> — Stateful streaming transformers keep persistent KV sessions and move prefill off the critical query path.</li>
-<li><code>https://arxiv.org/abs/2605.14037v1</code> — SP-KV learns when to write older key-value pairs to global cache by predicting future utility from next-token loss.</li>
-<li><code>https://arxiv.org/abs/2605.15156v1</code> — MeMo treats updated knowledge as a separate memory model rather than changing base LLM weights or simply extending context.</li>
 </ul>
 <h2>Deployment-path validity for model interventions</h2>
 <ul>
@@ -436,6 +412,31 @@
 <ul>
 <li><code>daily/2026-05-06.md</code> — QKVShare combines token-level mixed precision, CacheCard representation, and HuggingFace-compatible cache injection for quantized KV-cache handoff between agents.</li>
 </ul>
+<h2>Learned state interfaces for rare-evidence retention</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-16</li>
+<li>Last seen: 2026-05-18</li>
+<li>Evidence count: 4</li>
+</ul>
+<h3>Thesis</h3>
+<p>Long-context and agent memory systems should compare learned memory modules, KV write policies, diversity retention, and stateful sessions as alternative state interfaces under equal cost.</p>
+<h3>Mechanism</h3>
+<p>A state interface decides which evidence is retained, when it is written, and whether it remains accessible at the later decision point.</p>
+<h3>Minimal experiment</h3>
+<p>Construct sparse-clue/distractor long-context tasks; compare full context, retrieval, memory module, learned KV writing, diversity retention, and persistent session reuse with matched latency/memory/KV budgets.</p>
+<h3>Falsifier</h3>
+<p>If all interfaces fail/succeed on the same examples after cost matching, state-interface choice is not explaining rare evidence retention.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-18.md</code> — 2026-05-18: MeMo, KVServe, and AB-Sparse strengthen the equal-budget state-interface benchmark: learned memory, retrieval, KV compression/write policies, sparse attention, persistent sessions, and full context should be compared on rare evidence, stale corrections, negative evidence, and distractors.</li>
+<li><code>https://arxiv.org/abs/2605.13784v1</code> — Stateful streaming transformers keep persistent KV sessions and move prefill off the critical query path.</li>
+<li><code>https://arxiv.org/abs/2605.14037v1</code> — SP-KV learns when to write older key-value pairs to global cache by predicting future utility from next-token loss.</li>
+<li><code>https://arxiv.org/abs/2605.15156v1</code> — MeMo treats updated knowledge as a separate memory model rather than changing base LLM weights or simply extending context.</li>
+</ul>
 <h2>Convert deployment/inference feedback into a small agent-learning experiment</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -501,6 +502,29 @@
 <li><code>daily/2026-05-12.md</code> — AutoTTS searches over branch/continue/probe/prune/stop controllers using pre-collected reasoning trajectories and cheap feedback.</li>
 <li><code>running.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
 <li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
+</ul>
+<h2>Dense teacher audits for reasoning and agent RL</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-17</li>
+<li>Last seen: 2026-05-18</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Language feedback and self-distillation widen sparse trajectory rewards into token/step-level guidance, but need stale-teacher and strategy-diversity audits.</p>
+<h3>Mechanism</h3>
+<p>Dense teachers change the credit channel inside rollouts, redistributing update mass from final outcomes to intermediate steps or tokens.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed toy math/tool rollout set comparing outcome-only, fixed-teacher distillation, co-evolving VPD-style teacher, and self-distilled successful traces; measure gradient-cosine, failure-step localization, teacher-staleness errors, and strategy diversity.</p>
+<h3>Falsifier</h3>
+<p>Dense teacher variants improve final scores only by reducing strategy diversity or increasing off-policy teacher errors.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-18.md</code> — 2026-05-18: FEST and self-distilled agentic RL show two credit-widening paths for sparse RLVR/agent rewards; audit few-shot guidance and teacher traces for rollout diversity, changed-token locality, teacher disagreement, and gradient-cosine against on-policy reference.</li>
+<li><code>daily/2026-05-17.md</code> — VPD and self-distilled agentic RL widen sparse rewards into token/step-level guidance, but may copy teacher mistakes or collapse strategy diversity.</li>
 </ul>
 <h2>Adaptive compute gates as a cross-domain abstraction</h2>
 <ul>
@@ -739,27 +763,41 @@
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
 </ul>
-<h2>Dense teacher audits for reasoning and agent RL</h2>
+<h2>Causal interpretability scorecard</h2>
 <ul>
 <li>Status: <code>watch</code></li>
 <li>Confidence: <code>low</code></li>
 <li>Tags: none</li>
 <li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-17</li>
-<li>Last seen: 2026-05-17</li>
+<li>First seen: 2026-05-18</li>
+<li>Last seen: 2026-05-18</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-18.md</code> — 2026-05-18: SAE rate-distortion-polysemanticity, exemplar partitioning, and jets all propose internal units; compare them by held-out patch/ablation/side-effect prediction, not reconstruction or explanation plausibility.</li>
+</ul>
+<h2>Dynamic MoE masks as rare-capacity gates</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-18</li>
+<li>Last seen: 2026-05-18</li>
 <li>Evidence count: 1</li>
 </ul>
 <h3>Thesis</h3>
-<p>Language feedback and self-distillation widen sparse trajectory rewards into token/step-level guidance, but need stale-teacher and strategy-diversity audits.</p>
+<p>Token-adaptive MoE expert masks can be deployable compute controllers, but may suppress low-frequency domain or rare-feature experts under latency pressure.</p>
 <h3>Mechanism</h3>
-<p>Dense teachers change the credit channel inside rollouts, redistributing update mass from final outcomes to intermediate steps or tokens.</p>
+<p>Binary/token-adaptive expert activation changes which expert capacity is available at inference time; throughput gains can hide rare-feature capacity loss.</p>
 <h3>Minimal experiment</h3>
-<p>Fixed toy math/tool rollout set comparing outcome-only, fixed-teacher distillation, co-evolving VPD-style teacher, and self-distilled successful traces; measure gradient-cosine, failure-step localization, teacher-staleness errors, and strategy diversity.</p>
+<p>Small MoE with synthetic common and rare factors; compare fixed top-k, binary masks, and forced route masks; measure router entropy, expert ablation specificity, rare-feature accuracy, active experts, and latency.</p>
 <h3>Falsifier</h3>
-<p>Dense teacher variants improve final scores only by reducing strategy diversity or increasing off-policy teacher errors.</p>
+<p>Dynamic masks preserve rare-feature accuracy and expert-ablation specificity across sparsity levels while improving latency.</p>
 <h3>Evidence</h3>
 <ul>
-<li><code>daily/2026-05-17.md</code> — VPD and self-distilled agentic RL widen sparse rewards into token/step-level guidance, but may copy teacher mistakes or collapse strategy diversity.</li>
+<li><code>daily/2026-05-18.md</code> — BEAM learns token-adaptive binary masks for MoE routing with CUDA/vLLM integration and large FLOP reductions; evaluate it as a rare-capacity gate rather than only a speedup.</li>
 </ul>
 <h2>KV and sparse attention rare-evidence survival</h2>
 <ul>
@@ -3894,7 +3932,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

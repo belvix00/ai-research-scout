@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-18 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-18</h1>
+<p>Plain resource list collected for the 2026-05-18 IST scout run. The day was heterogeneous: no single dominant pattern, but strong signals appeared around adaptive inference/state, RLVR credit shaping, MoE routing, interpretability-feature capacity, audio-agent evaluation, and deployment/quantization validity.</p>
+<p><strong>Core DL/LLM research</strong></p>
+<h2>arXiv — MeMo: Memory as a Model</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15156v1</p>
+<p>Summary: Proposes treating memory as an explicit model component rather than only longer prompts or periodic fine-tuning. This was collected because it sharpens the state-interface question: what information should live in weights, external memory, KV/session state, or retrieval? The learning value is a mechanism for timely domain adaptation without full model updates.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — Long Context Pre-Training with Lighthouse Attention</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.06554v1</p>
+<p>Summary: Uses a training-only hierarchical attention wrapper that compresses/decompresses sequence representations during most pretraining, then removes the approximation in a recovery phase. The mechanism is temporary lossy optimization: cheaper long-context training may work if rare/order-sensitive features recover. Code is linked from the paper, making this a concrete cheap-reproduction candidate.</p>
+<p>Personalization: medium</p>
+<p><strong>Training/RL/math/mech interp</strong></p>
+<h2>arXiv / HF Papers — Boosting Reinforcement Learning with Verifiable Rewards via Randomly Selected Few-Shot Guidance</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15012v1</p>
+<p>Summary: FEST combines RLVR with only 128 randomly selected demonstrations and decays the supervised weight to avoid overfitting. It matters because it makes RLVR sample efficiency look like a balance between supervised anchoring and on-policy exploration, not a binary SFT-vs-RL choice. The mechanism to test is how few-shot guidance changes rollout diversity and sparse reward discovery.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Self-Distilled Agentic Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15155v1</p>
+<p>Summary: Adds on-policy self-distillation to trajectory-level RL for long-horizon agents. The resource was collected because it widens sparse rewards into denser supervision, but may also copy stale mistakes or collapse strategy diversity. It is a direct signal for auditing teacher freshness, failure-step localization, and gradient direction in agentic RL.</p>
+<p>Personalization: medium</p>
+<h2>arXiv / HF Papers — BEAM: Binary Expert Activation Masking for Dynamic Routing in MoE</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.14438v1</p>
+<p>Summary: Learns token-adaptive binary masks for MoE expert activation and reports large FLOP/latency reductions with a custom CUDA/vLLM integration. The mechanism is routing as an inference-time compute controller rather than fixed top-k selection. It is useful for probing whether dynamic expert masks preserve rare-feature experts or merely optimize average throughput.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — The Rate-Distortion-Polysemanticity Tradeoff in SAEs</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.14694v1</p>
+<p>Summary: Frames sparse autoencoders through a three-way tradeoff: reconstruction distortion, feature rate/sparsity, and polysemanticity. This is a mechanism-first interpretability resource because it explains why lower reconstruction error can still produce less useful features. It suggests SAE comparisons should include causal feature purity/intervention prediction, not only reconstruction metrics.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Exemplar Partitioning for Mechanistic Interpretability</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.14347v1</p>
+<p>Summary: Introduces a dictionary-learning alternative that uses exemplar partitions and claims roughly three orders of magnitude fewer tokens than comparable SAEs. It was collected because cheaper dictionary construction changes the cost floor for local mechanistic interpretability experiments. The mechanism to verify is whether partition-derived features predict held-out patching/ablation effects, not just look interpretable.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview — Decomposing LLM Computation with Jets</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=u6JLh0BO5h</p>
+<p>Summary: Studies decomposition of entangled LLM computation into structured components called jets. This continues the recent internal-computation-unit thread: path/jet/neuron/SAE units need causal scoring, not just readability. The useful experiment is to ask whether a decomposition predicts held-out interventions or tuning interference better than ordinary activation similarity.</p>
+<p>Personalization: medium</p>
+<p><strong>Audio/TTS/speech</strong></p>
+<h2>OpenReview — From Text to Talk: Audio-Language Model Needs Non-Autoregressive Joint Training</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://openreview.net/forum?id=e3XLWHFrnr</p>
+<p>Summary: Argues that speech-to-speech/audio-language models need non-autoregressive joint training rather than simply extending text-style autoregression. This is valuable because audio generation has different latency, continuity, and prosody constraints from text. The mechanism is objective mismatch between text token prediction and acoustic factor generation.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — SpeakerLLM: A Speaker-Specialized Audio-LLM for Speaker Understanding and Verification Reasoning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15044v1</p>
+<p>Summary: Builds an audio-LLM specialized for speaker understanding and speaker-verification reasoning. The signal is that speaker identity is moving from a side embedding into a reasoning object for audio agents. It should be tested for factor separation: speaker evidence, transcript content, accent/language, and recording condition can easily entangle.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — From Text to Voice: A Reproducible and Verifiable Framework for Evaluating Tool Calling LLM Agents</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15104v1</p>
+<p>Summary: Converts text tool-calling benchmarks into controlled audio-based tool-use evaluations. The value is not a new TTS model but an evaluation mechanism: speech input introduces ASR/prosody/channel errors into the tool-call loop. It is useful for measuring whether voice agents fail because of language reasoning, audio perception, or schema execution.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Towards Fine-Grained Multi-Dimensional Speech Understanding: Data Pipeline, Benchmark, and Model</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.12036v1</p>
+<p>Summary: Targets speech understanding beyond basic transcription, emphasizing disentanglement of microphone/channel, speaker, emotion, content, and other dimensions. Collected because it fits the speech-factor survival theme and may provide benchmark structure for probes. The mechanism is multi-factor acoustic perception rather than WER-only ASR improvement.</p>
+<p>Personalization: medium</p>
+<p><strong>Inference/ML infra/GPU</strong></p>
+<h2>BAIR — Adaptive Parallel Reasoning: The Next Paradigm in Efficient Inference Scaling</h2>
+<p>Type: Lab blog</p>
+<p>Link: http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/</p>
+<p>Summary: Presents adaptive parallel reasoning as an inference-scaling alternative to fixed serial test-time compute. It was collected because it changes the controller question: when should a model branch, parallelize, stop, or allocate more computation? The mechanism is uncertainty/utility-based compute allocation rather than a single longer chain of thought.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — An Interpretable Latency Model for Speculative Decoding in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.15051v1</p>
+<p>Summary: Builds an interpretable latency model for speculative decoding rather than treating speedup as an empirical black box. This is useful because speculation changes not just tokens/sec but acceptance dynamics and serving economics. It provides knobs for choosing draft/target settings under workload constraints and for finding where speedups collapse.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — KVServe: Service-Aware KV Cache Compression for Communication-Efficient Disaggregated LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.13734v1</p>
+<p>Summary: Treats KV cache as a communication object in disaggregated prefill/decode serving. Collected because KV compression is now a deployment interface that can decide which context state survives across machines. The important mechanism is service-aware compression under latency/bandwidth constraints, which should be audited on rare-evidence prompts.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — AB-Sparse: Sparse Attention with Adaptive Block Size for Accurate and Efficient Long-Context Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.12110v1</p>
+<p>Summary: Uses adaptive block-size sparse attention to reduce long-context KV loading while preserving accuracy. It matters because sparse attention is an evidence-retention policy, not merely a speedup. The mechanism to test is whether adaptive block selection keeps low-frequency decisive facts or over-prunes rare early evidence.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Position: LLM Inference Should Be Evaluated as Energy-to-Token Production</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.11733v1</p>
+<p>Summary: Argues inference evaluation should include energy-to-token production under quality constraints, not only latency, throughput, and utilization. This is a broad infra/resource-accounting signal. It helps normalize local and deployed experiments by cost, energy, and quality rather than headline speed alone.</p>
+<p>Personalization: low</p>
+<p><strong>Broad learning / outside current project bubble</strong></p>
+<h2>arXiv / HF Papers — Aligning Latent Geometry for Spherical Flow Matching in Image Generation</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15193v1</p>
+<p>Summary: Shows that image VAE latents concentrate on spherical shells and argues that semantic/perceptual content is mostly angular, not radial. It replaces linear latent flow paths with spherical/geodesic paths while leaving the diffusion architecture unchanged. This is outside Aman&#x27;s immediate LLM bubble but useful for learning how representation geometry changes the objective path.</p>
+<p>Personalization: low</p>
+<p><strong>Skeptical or failure signal</strong></p>
+<h2>arXiv — Widening the Gap: Exploiting LLM Quantization via Outlier Injection</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15152v1</p>
+<p>Summary: Shows that quantization can be exploited by injecting outliers so a model looks benign in full precision but behaves differently when deployed low-bit. This is a strong skeptical signal for any intervention or safety claim evaluated only before quantization. The mechanism is deployment-path aliasing: quantizers can turn small outlier structure into large behavioral differences.</p>
+<p>Personalization: high</p>
+<h2>arXiv — Forgetting That Sticks: Quantization-Permanent Unlearning via Circuit Attribution</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15138v1</p>
+<p>Summary: Studies unlearning that remains effective after quantization, using circuit attribution to target edits. It pairs with the outlier-injection result as a two-sided signal: quantization can either break or preserve interventions depending on where the edit lives. The learning value is to evaluate model edits through the deployed precision path.</p>
+<p>Personalization: high</p>
+<h2>arXiv — LiSA: Lifelong Safety Adaptation via Conservative Policy Induction</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.14454v1</p>
+<p>Summary: Proposes adapting fixed guardrails from sparse, noisy deployment feedback using structured memory, conflict-aware local rules, and confidence gating. It is a skeptical/deployment signal because pre-deployment safety rules are underspecified for local contexts. The mechanism to inspect is when sparse failure memory generalizes vs overgeneralizes.</p>
+<p>Personalization: medium</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

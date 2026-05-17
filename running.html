@@ -30,6 +30,19 @@
 <h2>Mechanism questions</h2>
 <h2>Audio ML / speech signals</h2>
 <h2>Inference optimization signals</h2>
+<h2>Daily additions — 2026-05-18</h2>
+<ul>
+<li><strong>State interfaces need equal-budget rare-evidence tests.</strong> MeMo, KVServe, AB-Sparse, and speculative-decoding/runtime work reinforce that memory, retrieval, KV/cache, sparse attention, and persistent/session state are distinct state carriers. Experiment: compare full context, retrieval, learned memory, KV writes/compression, and sparse attention on rare clues, stale corrections, negative evidence, and distractors under equal token/time/KV/memory budgets.</li>
+<li><strong>RLVR credit widening should be audited for freshness and diversity.</strong> FEST and self-distilled agentic RL add supervised or teacher-like signal to sparse rewards. Experiment: fixed math/tool rollout set; compare outcome-only, few-shot-guided with decay, fixed-teacher, and self-distilled/co-evolving guidance; log rollout diversity, teacher disagreement, changed-token sparsity, and gradient-cosine.</li>
+<li><strong>Dynamic MoE masks are compute controllers that may erase rare capacity.</strong> BEAM makes token-adaptive expert masking deployable through CUDA/vLLM-style integration. Experiment: small MoE with rare/domain factors; compare fixed top-k vs binary masks; measure router entropy, active experts, expert ablation specificity, rare-feature retention, and latency.</li>
+<li><strong>Interpretability units need causal scorecards.</strong> SAE rate-distortion-polysemanticity, exemplar partitioning, and jets all propose feature/computation units. Experiment: compare units by held-out patch/ablation/side-effect prediction rather than reconstruction or explanation plausibility.</li>
+<li><strong>Audio-agent evaluation should localize failure source.</strong> From Text to Talk, SpeakerLLM, audio tool-calling evaluation, and fine-grained speech understanding suggest voice-agent failures need attribution to acoustic perception, speaker evidence, transcript content, prosody/timing, language reasoning, or tool schema execution.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across state placement, sparse RL credit channels, MoE routing masks, causal interpretability evaluation, speech-to-tool factor localization, and deployment-path validity.</li>
+<li>Quantization remains a hard sign-off requirement for interventions: outlier-injection and quantization-permanent unlearning show low-bit deployment can invert, erase, or preserve targeted edits depending on mechanism.</li>
+</ul>
 <h2>User roadmap links</h2>
 <ul>
 <li>MTP as gradient-channel widening</li>
@@ -331,7 +344,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-17 08:03</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-18 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-18</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The most useful signals were not generic model-release news. They were mechanism-bearing papers and posts around state/memory interfaces, sparse RL supervision, MoE routing, interpretability feature capacity, audio-agent evaluation, and the uncomfortable fact that deployment transformations such as quantization can change the causal object being evaluated.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The strongest architecture-side signal was that “state” is splitting into multiple explicit interfaces rather than only longer prompts. <a href="https://arxiv.org/abs/2605.15156v1" target="_blank" rel="noopener">MeMo: Memory as a Model</a> frames memory as a model component for timely domain-specific information, which is close to the recent state-interface thread but sharper: the question is not “more context or not,” it is which facts belong in weights, KV/session state, external memory, retrieval, or a learned memory model. Relative to last week’s learned-KV/persistent-session notes, today’s value is to compare memory placement mechanisms directly instead of treating them as interchangeable.</p>
+<p>Long-context training also continued to look like an optimization-path problem. <a href="https://arxiv.org/abs/2605.06554v1" target="_blank" rel="noopener">Lighthouse Attention</a>, surfaced again through HF Papers, uses a training-only hierarchical attention wrapper and then recovers a standard full-attention model. This reinforces the temporary-lossy-pretraining hypothesis from last week: a cheaper coarse path may be fine if rare/order-sensitive features recover quickly. The falsifier remains important: if exact-order or rare early facts lag after recovery, the method is an average-loss shortcut rather than a reliable long-context recipe.</p>
+<p>A broader representation-geometry item, <a href="https://arxiv.org/abs/2605.15193v1" target="_blank" rel="noopener">Aligning Latent Geometry for Spherical Flow Matching</a>, was worth keeping even though it is image-generation rather than LLM work. It argues that VAE latent tokens live on spherical shells and that content is mostly angular, so flow paths should stay on the sphere. The learning value is general: when a latent space has non-Euclidean geometry, a standard linear interpolation objective may train along unnatural paths.</p>
+<h3>Training, RL, and optimization</h3>
+<p>RLVR and agentic-RL signals are still converging on credit-channel design, but today added two different ways to widen sparse reward. <a href="https://arxiv.org/abs/2605.15012v1" target="_blank" rel="noopener">FEST</a> uses a small number of demonstrations inside RLVR and decays the supervised weight, making the recipe less “SFT versus RL” and more “supervised anchor plus on-policy exploration.” <a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">Self-Distilled Agentic Reinforcement Learning</a> adds dense/self-distilled guidance to trajectory-level agent RL. Together they suggest the right small experiment is not to compare algorithm names, but to log how each extra channel changes rollout diversity, corrected-token locality, teacher staleness, and gradient direction.</p>
+<p>Open-ended coding data also appeared as a post-training/data-generation direction. <a href="https://arxiv.org/abs/2605.14445v1" target="_blank" rel="noopener">FrontierSmith</a> synthesizes open-ended coding problems from closed-ended seeds, using idea-divergence and verifier/test generation to select tasks that elicit diverse solver behavior. This is useful because current code training overweights well-specified problems; open-ended tasks may create longer-horizon trajectories and richer verifier failure modes. It is not an immediate opportunity unless the synthetic tasks can be audited for genuine objective diversity rather than just longer prompts.</p>
+<h3>MoE, routing, and compute allocation</h3>
+<p><a href="https://arxiv.org/abs/2605.14438v1" target="_blank" rel="noopener">BEAM</a> made MoE routing concrete as a dynamic inference controller. Instead of fixed top-k expert routing, it learns binary token-adaptive expert masks and reports large FLOP/latency reductions with CUDA/vLLM integration. Relative to the previous shared-expert-pool and route-mask ideas, today’s new angle is deployment practicality: dynamic masks can be plug-in speedups, but they also decide which expert capacity is suppressed. The mechanism question is whether rare-feature or low-frequency domain experts are preserved under aggressive masking.</p>
+<p>BAIR’s <a href="http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/" target="_blank" rel="noopener">Adaptive Parallel Reasoning</a> broadened compute allocation from MoE routing to reasoning-time control. It frames inference scaling as adaptive branching/parallelism rather than just longer serial thought. This matters because the failure mode differs: serial CoT can waste tokens, while adaptive parallel controllers can over-prune rare-but-correct branches. The right evaluation is accuracy per compute plus branch-retention on rare-evidence cases, not just average benchmark gains.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Interpretability resources today clustered around feature capacity and causal usefulness. <a href="https://arxiv.org/abs/2605.14694v1" target="_blank" rel="noopener">The Rate-Distortion-Polysemanticity Tradeoff in SAEs</a> argues that good reconstruction and sparse rate do not guarantee monosemantic features. <a href="https://arxiv.org/abs/2605.14347v1" target="_blank" rel="noopener">Exemplar Partitioning</a> proposes a much cheaper route to interpretable dictionaries. <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Decomposing LLM Computation with Jets</a> adds another structured unit for internal computation.</p>
+<p>The change relative to last week is not “more interpretability methods exist”; it is that the evaluation burden is becoming unavoidable. SAEs, exemplar partitions, jets, path decompositions, and neuron-aware data selection should be scored by causal prediction: can the unit predict held-out patching effects, ablation losses, side effects, or tuning interference? If not, the method may only be producing plausible descriptions.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio/speech signals were practical and evaluation-heavy. OpenReview’s <a href="https://openreview.net/forum?id=e3XLWHFrnr" target="_blank" rel="noopener">From Text to Talk</a> argues audio-language models need non-autoregressive joint training, suggesting that text-style AR objectives may be mismatched for acoustic continuity, prosody, and real-time interaction. <a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">SpeakerLLM</a> moves speaker identity into an audio-LLM reasoning task rather than a side embedding. <a href="https://arxiv.org/abs/2605.15104v1" target="_blank" rel="noopener">From Text to Voice</a> proposes controlled audio tool-calling evaluation, and <a href="https://arxiv.org/abs/2605.12036v1" target="_blank" rel="noopener">Fine-Grained Multi-Dimensional Speech Understanding</a> emphasizes multi-factor acoustic perception.</p>
+<p>Relative to yesterday/last week, the speech-factor harness should not only probe speaker/content/prosody. It should include voice-agent tool schemas, speaker-verification reasoning, channel/recording conditions, and whether an audio benchmark can localize failure to perception, language reasoning, or tool execution. The risk remains aggregate WER or task success hiding factor-specific failure.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference infrastructure signals were strong but plural. <a href="https://arxiv.org/abs/2605.15051v1" target="_blank" rel="noopener">An Interpretable Latency Model for Speculative Decoding</a> tries to make speculation speedups predictable instead of purely empirical. <a href="https://arxiv.org/abs/2605.13734v1" target="_blank" rel="noopener">KVServe</a> treats KV cache as a communication object in disaggregated serving. <a href="https://arxiv.org/abs/2605.12110v1" target="_blank" rel="noopener">AB-Sparse</a> uses adaptive block-size sparse attention for long-context inference. <a href="https://arxiv.org/abs/2605.11733v1" target="_blank" rel="noopener">Energy-to-Token Production</a> argues for energy/quality-aware inference evaluation.</p>
+<p>The important change is that serving optimizations are increasingly explicit state policies. KV compression, sparse attention, speculation, and disaggregated prefill/decode do not merely alter latency; they alter which cached state is retained, transmitted, verified, or skipped. For mechanism experiments, the runtime path should be logged as an experimental condition.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>HF Papers was useful today as a discovery surface rather than as a model-hype feed. It highlighted FEST, Lighthouse Attention, BEAM, and the spherical-flow paper. OpenReview was useful for surfacing less-publicized submissions in audio-language training, jets/decomposition, RAG/RL, and mobile-agent evaluation. HN was weak today; the only potentially relevant item was an arXiv-linked kernel optimization post, but it did not earn promotion into the main digest because the source signal was thin.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Memory becomes a first-class model interface.</strong> <a href="https://arxiv.org/abs/2605.15156v1" target="_blank" rel="noopener">MeMo</a> pushes the recent long-context/memory discussion toward explicit memory-as-model design. The technical question is how learned memory differs from retrieval, KV writes, persistent sessions, and weight updates under equal token/time/memory budgets.</li>
+</ol>
+<ol>
+<li><strong>Temporary lossy long-context training remains plausible but needs slice tests.</strong> <a href="https://arxiv.org/abs/2605.06554v1" target="_blank" rel="noopener">Lighthouse Attention</a> trains most of the way with a compress/decompress attention wrapper and then recovers full attention. It matters if the recovery phase restores rare/order-sensitive capabilities; otherwise it is only an average-loss acceleration.</li>
+</ol>
+<ol>
+<li><strong>Few-shot demonstrations can act as an RLVR anchor.</strong> <a href="https://arxiv.org/abs/2605.15012v1" target="_blank" rel="noopener">FEST</a> reports strong RLVR gains from only 128 demonstrations when supervised weights decay. This suggests small amounts of supervised signal can help discover correct rollouts without permanently overpowering on-policy learning.</li>
+</ol>
+<ol>
+<li><strong>Self-distilled agent RL widens sparse rewards but may copy stale behavior.</strong> <a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">Self-Distilled Agentic Reinforcement Learning</a> adds dense guidance to trajectory-level agent RL. The benefit is localized feedback; the failure mode is teacher staleness, reduced exploration, or strategy collapse.</li>
+</ol>
+<ol>
+<li><strong>MoE routing is becoming a deployable dynamic mask.</strong> <a href="https://arxiv.org/abs/2605.14438v1" target="_blank" rel="noopener">BEAM</a> reports token-adaptive expert masks, large FLOP savings, and vLLM/CUDA integration. The next evaluation should ask which experts or rare features disappear under the mask, not only how throughput changes.</li>
+</ol>
+<ol>
+<li><strong>Adaptive parallel reasoning reframes test-time compute.</strong> BAIR’s <a href="http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/" target="_blank" rel="noopener">Adaptive Parallel Reasoning</a> argues for branch/parallel/stop controllers. The technical risk is over-pruning minority branches; the opportunity is compute allocation based on uncertainty or branch utility.</li>
+</ol>
+<ol>
+<li><strong>SAE evaluation needs a third axis beyond reconstruction and sparsity.</strong> <a href="https://arxiv.org/abs/2605.14694v1" target="_blank" rel="noopener">Rate-Distortion-Polysemanticity</a> makes explicit that low distortion and low rate can coexist with polysemantic features. This supports a causal scorecard: patch/ablation prediction should become a standard check.</li>
+</ol>
+<ol>
+<li><strong>Cheaper interpretability dictionaries may change experiment economics.</strong> <a href="https://arxiv.org/abs/2605.14347v1" target="_blank" rel="noopener">Exemplar Partitioning</a> claims far fewer tokens than SAE baselines. If the features are causally predictive, this could make small local interpretability experiments cheaper; if not, it is only a naming shortcut.</li>
+</ol>
+<ol>
+<li><strong>Jets add another candidate unit for decomposing LLM computation.</strong> <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Decomposing LLM Computation with Jets</a> is useful because it can be compared against SAEs/path decompositions/neuron selection. The right question is which unit best predicts held-out interventions.</li>
+</ol>
+<ol>
+<li><strong>Audio-language models may need non-AR joint training.</strong> <a href="https://openreview.net/forum?id=e3XLWHFrnr" target="_blank" rel="noopener">From Text to Talk</a> argues that speech-to-speech systems should not blindly inherit text-generation objectives. This matters for latency, prosody, and acoustic continuity.</li>
+</ol>
+<ol>
+<li><strong>Speaker reasoning is becoming a native audio-agent task.</strong> <a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">SpeakerLLM</a> specializes an audio-LLM for speaker understanding and verification reasoning. It should be probed for entanglement between speaker identity, transcript, accent/language, and recording condition.</li>
+</ol>
+<ol>
+<li><strong>Voice-agent evaluation is starting to isolate tool-use failures.</strong> <a href="https://arxiv.org/abs/2605.15104v1" target="_blank" rel="noopener">From Text to Voice</a> builds a reproducible/verifiable framework for audio tool-calling agents. This can separate ASR/perception errors from schema/execution/reasoning errors.</li>
+</ol>
+<ol>
+<li><strong>KV and sparse-attention systems are state-preservation policies.</strong> <a href="https://arxiv.org/abs/2605.13734v1" target="_blank" rel="noopener">KVServe</a> and <a href="https://arxiv.org/abs/2605.12110v1" target="_blank" rel="noopener">AB-Sparse</a> are not just speed papers. They choose what context state is compressed, communicated, or sparsified, so rare-evidence retention should be measured.</li>
+</ol>
+<ol>
+<li><strong>Speculative decoding needs predictive latency models.</strong> <a href="https://arxiv.org/abs/2605.15051v1" target="_blank" rel="noopener">An Interpretable Latency Model for Speculative Decoding</a> gives a way to reason about when speculation helps or collapses. This is useful for designing local inference experiments with predictable cost rather than trial-and-error settings.</li>
+</ol>
+<ol>
+<li><strong>Quantization is a causal deployment transformation.</strong> <a href="https://arxiv.org/abs/2605.15152v1" target="_blank" rel="noopener">Outlier-injection attacks</a> and <a href="https://arxiv.org/abs/2605.15138v1" target="_blank" rel="noopener">quantization-permanent unlearning</a> point in opposite directions but teach the same lesson: full-precision behavior is not enough evidence for deployed behavior. Intervention claims should include the precision path.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Interfaces are again the bottleneck, but not one interface.</strong> Today’s interfaces include learned memory, lossy long-context attention, MoE expert masks, RL demonstration/self-distillation channels, speech-to-tool pipelines, KV compression, and quantization. The shared lesson is to inspect what survives each boundary.</li>
+</ol>
+<ol>
+<li><strong>Dense guidance is useful only if freshness and diversity are audited.</strong> FEST and self-distilled agent RL both add more signal to sparse reward settings. The danger is over-anchoring to demonstrations or stale teachers; the opportunity is controlled credit widening.</li>
+</ol>
+<ol>
+<li><strong>Runtime and deployment paths are experimental conditions.</strong> BEAM, KVServe, AB-Sparse, speculative decoding latency models, energy-to-token evaluation, and quantization papers all imply that a model&#x27;s measured mechanism can depend on how it is served.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. State-interface rare-evidence benchmark across memory, KV, retrieval, and learned memory</h3>
+<ul>
+<li><strong>Evidence:</strong> <a href="https://arxiv.org/abs/2605.15156v1" target="_blank" rel="noopener">MeMo</a>, <a href="https://arxiv.org/abs/2605.13734v1" target="_blank" rel="noopener">KVServe</a>, <a href="https://arxiv.org/abs/2605.12110v1" target="_blank" rel="noopener">AB-Sparse</a>, and recent persistent-session/KV-retention notes.</li>
+<li><strong>Mechanism:</strong> Different state carriers preserve different facts: exact tokens, compressed summaries, learned memory slots, KV vectors, or retrieved passages. Rare early evidence may vanish in one interface and survive in another.</li>
+<li><strong>Minimal experiment/probe:</strong> Build a small synthetic corpus with sparse clues, stale corrections, negative evidence, and distractors. Compare full context, retrieval, compact memory, learned KV/write policy, and sparse/compressed KV under equal token/time/KV-memory budgets.</li>
+<li><strong>Falsifier:</strong> If all state interfaces fail and succeed on the same examples once total token budget is matched, the interface-specific hypothesis is weak.</li>
+<li><strong>Confidence:</strong> medium-high.</li>
+</ul>
+<h3>2. Sparse RL credit-channel audit for few-shot-guided and self-distilled RLVR</h3>
+<ul>
+<li><strong>Evidence:</strong> <a href="https://arxiv.org/abs/2605.15012v1" target="_blank" rel="noopener">FEST</a>, <a href="https://arxiv.org/abs/2605.15155v1" target="_blank" rel="noopener">Self-Distilled Agentic Reinforcement Learning</a>, and the previous VPD/SDAR/dense-teacher thread.</li>
+<li><strong>Mechanism:</strong> Demonstrations and self-distilled traces widen sparse reward, but they can also make updates stale or reduce exploration diversity.</li>
+<li><strong>Minimal experiment/probe:</strong> Use a fixed math/tool rollout set. Compare outcome-only RLVR, few-shot demonstration guidance with decay, fixed-teacher token distillation, and co-evolving/self-distilled guidance. Log changed-token sparsity, teacher disagreement, rollout diversity, and gradient-cosine against a clean on-policy reference.</li>
+<li><strong>Falsifier:</strong> If dense/anchored methods improve final score without changing rollout diversity, update locality, or failure-step localization, the mechanism may be ordinary extra data rather than credit-channel design.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>3. Dynamic MoE mask rare-feature survival test</h3>
+<ul>
+<li><strong>Evidence:</strong> <a href="https://arxiv.org/abs/2605.14438v1" target="_blank" rel="noopener">BEAM</a>, previous shared expert-pool/MoE route-mask signals, and runtime-throughput work.</li>
+<li><strong>Mechanism:</strong> Token-adaptive expert masking lowers compute but may suppress experts that carry low-frequency factors or domains.</li>
+<li><strong>Minimal experiment/probe:</strong> Train or use a small MoE on synthetic domains with rare features. Compare fixed top-k routing, learned binary masks, and forced route masks. Measure router entropy, active expert count, rare-feature accuracy, expert ablation losses, and latency.</li>
+<li><strong>Falsifier:</strong> If dynamic masks preserve rare-feature accuracy and expert-ablation specificity across sparsity levels while improving latency, the concern is reduced.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>4. Causal scorecard for interpretability units: SAE vs exemplar partition vs jets</h3>
+<ul>
+<li><strong>Evidence:</strong> <a href="https://arxiv.org/abs/2605.14694v1" target="_blank" rel="noopener">Rate-Distortion-Polysemanticity in SAEs</a>, <a href="https://arxiv.org/abs/2605.14347v1" target="_blank" rel="noopener">Exemplar Partitioning</a>, and <a href="https://openreview.net/forum?id=u6JLh0BO5h" target="_blank" rel="noopener">Jets</a>.</li>
+<li><strong>Mechanism:</strong> Different interpretability units trade reconstruction, sparsity, polysemanticity, and structure. The useful unit is the one that predicts causal effects, not the one with the nicest description.</li>
+<li><strong>Minimal experiment/probe:</strong> On a small open model and a small prompt suite, fit/derive three unit types. For held-out prompts, test prediction of activation-patching effects, ablation loss, side-effect behavior, and feature interference.</li>
+<li><strong>Falsifier:</strong> If none of the units predicts held-out causal effects better than activation similarity or random high-variance directions, the methods should stay descriptive.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>5. Audio-agent factor-localization benchmark for speech-to-tool use</h3>
+<ul>
+<li><strong>Evidence:</strong> <a href="https://openreview.net/forum?id=e3XLWHFrnr" target="_blank" rel="noopener">From Text to Talk</a>, <a href="https://arxiv.org/abs/2605.15044v1" target="_blank" rel="noopener">SpeakerLLM</a>, <a href="https://arxiv.org/abs/2605.15104v1" target="_blank" rel="noopener">From Text to Voice</a>, and <a href="https://arxiv.org/abs/2605.12036v1" target="_blank" rel="noopener">Fine-Grained Multi-Dimensional Speech Understanding</a>.</li>
+<li><strong>Mechanism:</strong> Voice-agent failures can arise from acoustic perception, speaker verification, transcript errors, prosody/timing, language reasoning, or tool schema execution. Aggregate task success hides the failure location.</li>
+<li><strong>Minimal experiment/probe:</strong> Convert a small text tool-calling benchmark into audio with controlled speaker/accent/noise/prosody/entity variations. Log ASR text, audio embeddings, tool schema errors, speaker-verification decisions, and final task success.</li>
+<li><strong>Falsifier:</strong> If controlled audio perturbations only affect ASR transcript quality and never change downstream tool reasoning after transcript is fixed, the audio-agent-specific mechanism is weaker.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>Quantization and intervention validity:</strong> <a href="https://arxiv.org/abs/2605.15152v1" target="_blank" rel="noopener">Outlier injection</a> plus <a href="https://arxiv.org/abs/2605.15138v1" target="_blank" rel="noopener">quantization-permanent unlearning</a> deserve a dedicated deployment-path sign-off harness rather than daily-only tracking.</li>
+<li><strong>Energy-to-token accounting:</strong> <a href="https://arxiv.org/abs/2605.11733v1" target="_blank" rel="noopener">Energy-to-token production</a> may become important for normalizing local experiments, but it needs practical measurement hooks before becoming an opportunity.</li>
+<li><strong>Open-ended coding data synthesis:</strong> <a href="https://arxiv.org/abs/2605.14445v1" target="_blank" rel="noopener">FrontierSmith</a> is promising if idea-divergence predicts genuine solver-strategy diversity rather than verbosity.</li>
+<li><strong>Spherical/geodesic latent objectives:</strong> <a href="https://arxiv.org/abs/2605.15193v1" target="_blank" rel="noopener">Spherical flow matching</a> is outside the core LLM track but worth revisiting as a representation-geometry teaching example.</li>
+<li><strong>LiSA-style sparse safety memory:</strong> <a href="https://arxiv.org/abs/2605.14454v1" target="_blank" rel="noopener">LiSA</a> is interesting for deployment guardrails, but the main question is overgeneralization under sparse/noisy feedback.</li>
+<li><strong>Voice benchmarks:</strong> <a href="https://arxiv.org/abs/2605.13841v1" target="_blank" rel="noopener">EVA-Bench</a> and related audio-agent evaluation papers may help build a better speech-to-tool failure taxonomy.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
