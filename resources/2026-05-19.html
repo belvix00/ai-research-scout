@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-19 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-19</h1>
+<h3>Core DL/LLM research</h3>
+<h2>arXiv — GQLA: Group-Query Latent Attention for Hardware-Adaptive Large Language Model Decoding</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15250v1</p>
+<p>Summary: Proposes a hardware-adaptive variant around DeepSeek-style Multi-head Latent Attention, separating the trained latent-attention representation from a single absorbed decoding path. Collected because it turns attention layout into an explicit serving-time design variable rather than a fixed architecture choice. Mechanism signal: low-rank KV/latent state can be remapped to hardware rooflines, but the remapping itself should be tested for quality and rare-context drift.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — STS: Efficient Sparse Attention with Speculative Token Sparsity</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15508v1</p>
+<p>Summary: Introduces sparse attention for long LLM inference by speculating which token interactions matter, targeting multi-million-token agentic contexts. This is useful because sparse attention is not just a throughput trick: it decides which evidence remains reachable. Mechanism signal: token-sparsity predictors need rare-evidence and distractor audits under equal latency/KV budgets.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — PSD: Pushing the Pareto Frontier of Diffusion LLMs via Parallel Speculative Decoding</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15609v1</p>
+<p>Summary: Applies speculative-decoding ideas to diffusion language models, whose iterative masked-token denoising differs from autoregressive next-token decoding. Collected as a non-AR inference signal: acceleration may change trajectory quality, not only wall-clock time. Mechanism signal: diffusion LLMs need their own speculation diagnostics instead of importing AR acceptance-rate intuitions directly.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Follow the Mean: Reference-Guided Flow Matching</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.10302</p>
+<p>Summary: Uses flow-matching structure to create a control interface based on reference examples rather than fine-tuning, auxiliary networks, or heavy test-time search. Collected because it is a clean example of controllability moving into the generative dynamics. Mechanism signal: compare whether reference-conditioned velocity changes preserve global factors more robustly than prompt or adapter control.</p>
+<p>Personalization: low</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>arXiv — GRLO: Towards Generalizable Reinforcement Learning in Open-Ended Environments from Zero</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15464v1</p>
+<p>Summary: Frames open-ended RL post-training beyond the narrow verifiable-reward setup, trying to generalize from zero in environments where exploration and task structure matter. Collected because it adds to the ongoing shift from “which optimizer?” to “which rollout distribution and feedback channel?”. Mechanism signal: measure exploration diversity, trajectory novelty, and transfer rather than only final reward.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Nudging Beyond the Comfort Zone: Efficient Strategy-Guided Exploration for RLVR</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15726v1</p>
+<p>Summary: Targets a central RLVR failure: a model can only improve on strategies it samples, so policies get trapped in comfortable but narrow solution regions. Collected because it is directly about exploration geometry in reasoning post-training. Mechanism signal: strategy guidance should be audited for whether it creates genuinely new successful branches or merely reweights existing ones.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Hölder Policy Optimisation</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12058</p>
+<p>Summary: Revisits how trajectory-level advantages are aggregated into token-level policy updates in GRPO-like training. Collected because the aggregation rule is a hidden credit-assignment interface, not a minor implementation detail. Mechanism signal: compare token-probability aggregation choices by prefix-local KL, changed-token sparsity, and gradient cosine on a fixed rollout set.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — MetaAgent-X: Breaking the Ceiling of Automatic Multi-Agent Systems via End-to-End Reinforcement Learning</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.14212</p>
+<p>Summary: Trains automatic multi-agent system design end-to-end instead of relying only on manual orchestration or test-time search. Collected as an agent-RL lifecycle signal: the optimized object becomes the workflow, not just a single model’s response. Mechanism signal: log spawn/delegate/tool/aggregate events and check whether reward improves reusable coordination or overfits orchestration traces.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — When Are Two Networks the Same? Tensor Similarity for Mechanistic Interpretability</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15183v1</p>
+<p>Summary: Proposes tensor-based similarity for deciding whether two model components implement the same computation, addressing limits of behavior-only or activation-only comparisons. Collected because interpretability units need equivalence tests before being trusted as mechanisms. Mechanism signal: evaluate against held-out intervention and patch-effect prediction, not only nearest-neighbor similarity.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Exemplar Partitioning for Mechanistic Interpretability</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.14347v1</p>
+<p>Summary: Builds interpretable feature dictionaries from far fewer activation examples than typical SAE training. Collected as a cheap interpretability-method signal: reducing token requirements could make daily small-model audits more accessible. Mechanism signal: compare EP dictionaries with SAEs on causal ablation/patch predictions and side-effect specificity.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Forgetting That Sticks: Quantization-Permanent Unlearning via Circuit Attribution</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.15138</p>
+<p>Summary: Studies unlearning that remains effective after quantization, responding to evidence that low-bit deployment can reverse full-precision unlearning. Collected because it strengthens the deployment-path-validity theme. Mechanism signal: an intervention should be signed off through fp16 and actual quantized paths with update-to-bin ratios, logit drift, and target-margin survival.</p>
+<p>Personalization: high</p>
+<h3>Audio/TTS/speech</h3>
+<h2>arXiv — SpeakerLLM: A Speaker-Specialized Audio-LLM for Speaker Understanding and Verification Reasoning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15044v1</p>
+<p>Summary: Builds an audio-LLM specialized for speaker understanding and verification reasoning, aimed at authorization, personalization, and speaker-aware agents. Collected because speaker evidence is becoming a reasoning input, not just an embedding lookup. Mechanism signal: probe whether speaker identity, transcript content, accent, prosody, and verification rationale occupy separable subspaces.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Streaming Speech-to-Text Translation with a SpeechLLM</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.14766v1</p>
+<p>Summary: Combines speech recognition and translation in a SpeechLLM for streaming speech-to-text translation, potentially using paralinguistic information while reducing cascaded errors. Collected because streaming emission timing is a distinct audio factor. Mechanism signal: evaluate latency decisions, partial evidence, and speaker/prosody preservation separately from translation BLEU or WER.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Improving Automatic Speech Recognition for Speakers Treated for Oral Cancer using Data Augmentation and LLM Error Correction</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.15854v1</p>
+<p>Summary: Studies ASR for speakers with oral-cancer-related speech impairments using augmentation plus LLM-based correction. Collected because impaired-speech ASR exposes where generic speech models fail outside clean speech distributions. Mechanism signal: separate acoustic robustness from language-model correction; otherwise the correction layer can hide which phonetic factors were lost.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Too Good to Be True: A Study on Modern Automatic Speech Recognition for the Evaluation of Speech Enhancement</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://arxiv.org/abs/2605.12107v1</p>
+<p>Summary: Critiques using modern ASR systems as evaluators for speech enhancement, especially when WER appears too strong or insensitive. Collected as a metric-failure warning for audio work. Mechanism signal: ASR-based evaluation can reward recognizability while missing perceptual quality, speaker preservation, or enhancement artifacts.</p>
+<p>Personalization: low</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>arXiv — Performance-Driven Policy Optimization for Speculative Decoding with Adaptive Windowing</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.14978v2</p>
+<p>Summary: Optimizes speculative-decoding window sizes as a performance policy instead of using fixed heuristics. Collected because adaptive inference controllers decide when to spend or save verification compute. Mechanism signal: test acceptance, latency, and failure slices together; adaptive windows may overfit easy-token regimes and harm rare or high-entropy decisions.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — An Interpretable Latency Model for Speculative Decoding in LLM Serving</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.15051v1</p>
+<p>Summary: Models speculative-decoding latency in serving systems, moving beyond isolated speedup claims. Collected because it gives a framework for deciding when speculation actually helps under real serving constraints. Mechanism signal: pair latency models with output/logit drift and rollout-distribution changes when the serving path is part of RL or agent data generation.</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — Running PyTorch Models on Apple Silicon GPUs with the ExecuTorch MLX Delegate</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/</p>
+<p>Summary: Introduces an ExecuTorch delegate using MLX for optimized Apple Silicon GPU inference. Collected because it lowers the cost floor for local/on-device experiments on Aman&#x27;s hardware ecosystem without needing every model to be hand-ported. Mechanism signal: compare PyTorch/ExecuTorch/MLX paths for output agreement, latency, and quantization behavior.</p>
+<p>Personalization: high</p>
+<h2>Modular AI — Why LLM Inference Needs a New Kind of Router, Part 1</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.modular.com/blog/why-llm-inference-needs-a-new-kind-of-router-part-1</p>
+<p>Summary: Discusses routing as an inference-system primitive for LLM serving rather than simple request balancing. Collected because modern serving routers allocate heterogeneous models, hardware, context, and latency budgets. Mechanism signal: routing policies should be evaluated by quality/cost tradeoffs on hard slices, not just global throughput.</p>
+<p>Personalization: medium</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>Hugging Face Papers — No One Knows the State of the Art in Geospatial Foundation Models</h2>
+<p>Type: Newsletter/critique</p>
+<p>Link: https://huggingface.co/papers/2605.12678</p>
+<p>Summary: Audits geospatial foundation-model literature and argues that inconsistent protocols, missing weights, and weak controls make “SOTA” unclear. Collected outside the immediate LLM/audio bubble because the failure mode generalizes to foundation-model evaluation. Mechanism signal: demand data-vs-architecture-vs-algorithm controls and shared harnesses before believing cross-paper leaderboards.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — ProofGrid: Stress-Testing the Reasoning Competence of LLMs With Proofs Under Minimal Formalism</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.12524</p>
+<p>Summary: Evaluates LLM reasoning with machine-checkable proof tasks rather than answer-only scoring. Collected because proof checking gives cleaner process evidence than ordinary benchmark final answers. Mechanism signal: measure gap-filling, proof masking, and proof checking separately to localize where reasoning fails.</p>
+<p>Personalization: low</p>
+<h3>Skeptical or failure signal</h3>
+<h2>Hugging Face Papers — Physics-R1: An Audited Olympiad Corpus and Recipe for Visual Physics Reasoning</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://huggingface.co/papers/2605.14040</p>
+<p>Summary: Audits multimodal physics-reasoning evaluation and identifies contamination, translation drift, and MCQ saturation. Collected because it is a concrete warning against benchmark-only visual-reasoning claims. Mechanism signal: before treating VLM/RL improvements as reasoning gains, check data provenance, answer-format shortcuts, and modality-specific evidence use.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Known By Their Actions: Fingerprinting LLM Browser Agents via UI Traces</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://huggingface.co/papers/2605.14786</p>
+<p>Summary: Shows browser agents can be fingerprinted from UI traces, creating targeted attack surfaces. Collected as an agent-evaluation and deployment-failure signal rather than generic security news. Mechanism signal: action traces leak model identity and policy quirks; agent training/eval should include trace-level privacy and robustness checks.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

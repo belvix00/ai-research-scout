@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-19 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-19</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The day was unusually strong for inference-system papers, reasoning/RL credit-assignment variants, speech-factor work, and skeptical evaluation audits. The useful synthesis is not one arrow, but a set of interfaces that are becoming visible: attention/KV layouts, rollout distributions, speech factor boundaries, and deployment/evaluation paths.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The clearest architecture signal was attention/state layout becoming hardware- and task-adaptive. <strong>GQLA</strong> reframes DeepSeek-style Multi-head Latent Attention as a representation that can be decoded through different group-query paths instead of a single absorbed MQA path. <strong>STS</strong> adds speculative token sparsity for long-context attention, while <strong>block attention with automatic segmentation/distillation</strong> appeared as another attempt to get KV reuse without permanently severing important cross-block evidence.</p>
+<p>Relative to last week’s state-interface theme, today’s work made the interface more concrete: state is no longer only “long context vs retrieval vs memory”; it is also the exact latent-attention layout, sparse-token predictor, block segmentation rule, and serving-time decoding path. The risk is the same as before: average speed can hide rare-evidence loss.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Reasoning/RL signals stayed focused on rollout distribution and credit assignment, not optimizer branding. <strong>GRLO</strong> points toward open-ended RL post-training beyond narrow verifiable-reward settings. <strong>Nudging Beyond the Comfort Zone</strong> targets RLVR exploration collapse, where a model only improves on strategies it already samples. <strong>Hölder Policy Optimisation</strong> questions how sequence-level advantages get mapped into token-level updates, and <strong>MetaAgent-X</strong> moves RL up to the level of automatic multi-agent workflow design.</p>
+<p>Compared with yesterday/last week, the shift is from “dense teacher signals and stale teacher risk” toward “strategy coverage and aggregation geometry.” This suggests the next useful probes should hold a rollout set fixed and compare how objectives move probability mass over prefixes, strategies, and agent-event traces.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Interpretability papers continued to move from readable features toward causal comparability. <strong>Tensor Similarity for Mechanistic Interpretability</strong> asks when two networks/components implement the same computation, which matters if one wants to compare circuits across checkpoints, quantized models, or interventions. <strong>Exemplar Partitioning</strong> tries to build feature dictionaries with far fewer examples than SAE pipelines, while recent SAE failure-mode papers warn that natural-language explanations can collide or describe many features at once.</p>
+<p>The important change relative to the recent running memory is that “causal scorecard” is becoming more necessary, not less. More feature-dictionary methods exist, but their value depends on whether they predict held-out patch/ablation effects, transfer across models, and avoid side effects.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Speech work was one of the strongest clusters. <strong>SpeakerLLM</strong> treats speaker understanding and verification as an audio-LLM reasoning problem, not just speaker embedding retrieval. <strong>Streaming Speech-to-Text Translation with a SpeechLLM</strong> collapses ASR and translation into one streaming model, raising questions about partial evidence, timing, and paralinguistic cues. The oral-cancer ASR paper uses augmentation plus LLM error correction for impaired speech, while <strong>Too Good to Be True</strong> warns that modern ASR can be a misleading evaluator for speech enhancement.</p>
+<p>Relative to last week, the audio theme sharpened: factor survival now needs to include speaker evidence, impairment/accent robustness, streaming timing, and metric misuse. WER or translation score alone is not enough; the harness should localize whether the acoustic path, text correction layer, speaker evidence, prosody, or language reasoning caused the output.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference systems had multiple independent signals. Speculative decoding papers appeared in three forms: adaptive window policy optimization, an interpretable serving-latency model, and parallel speculative decoding for diffusion LLMs. <strong>PyTorch’s ExecuTorch MLX delegate</strong> brings optimized Apple Silicon inference closer to the PyTorch ecosystem, while Modular’s router post frames serving routers as policy objects that allocate models, hardware, context, and latency budgets.</p>
+<p>The change from last week is that “runtime is an experimental condition” now has more instrumentation hooks. Instead of only measuring tokens/sec, today’s evidence suggests measuring latency, accepted-token windows, output/logit drift, rare-slice accuracy, and whether the serving path changes RL rollout distributions.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>HF daily papers supplied useful evaluation and dataset-governance signals. <strong>No One Knows the State of the Art in Geospatial Foundation Models</strong> is outside the main LLM/audio bubble but valuable because it audits how foundation-model fields lose comparability when weights, protocols, variance, and pretraining controls differ. <strong>ProofGrid</strong> evaluates reasoning through machine-checkable minimal-formalism proofs, while <strong>Physics-R1</strong> audits multimodal physics reasoning for contamination, translation drift, and MCQ saturation.</p>
+<p>These are not just “benchmark papers.” They are reminders that mechanism claims depend on evaluation plumbing. If the dataset or harness cannot separate contamination, answer-format shortcuts, modality evidence, and rerun-vs-copied baselines, it cannot support architectural or RL conclusions.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>GQLA makes latent attention a hardware-adaptive decoding interface.</strong> The paper’s key contribution is not merely another attention acronym; it asks whether the same trained latent representation can expose different decoding paths for different hardware. This is directly relevant to mechanism-preserving inference: if the layout changes, check whether long-context and rare-evidence behavior changes too. Evidence: https://arxiv.org/abs/2605.15250v1</li>
+</ol>
+<ol>
+<li><strong>STS brings speculative sparsity into long-context attention.</strong> Sparse attention becomes a predictor of which token interactions matter, rather than a static mask. That makes it attractive for million-token agents, but dangerous if the sparsity model drops low-frequency decisive clues. Evidence: https://arxiv.org/abs/2605.15508v1</li>
+</ol>
+<ol>
+<li><strong>Speculative decoding is spreading beyond fixed AR token windows.</strong> Today had adaptive window policy optimization, latency modeling, and diffusion-LLM speculative decoding. The practical message is that speculation should be evaluated as a controller with failure modes, not as a universal speedup. Evidence: https://arxiv.org/abs/2605.14978v2, https://arxiv.org/abs/2605.15051v1, https://arxiv.org/abs/2605.15609v1</li>
+</ol>
+<ol>
+<li><strong>RLVR exploration is being treated as strategy coverage.</strong> “Nudging Beyond the Comfort Zone” directly targets the fact that RLVR cannot reinforce a solution strategy the model never samples. This complements recent dense-supervision work by asking whether the candidate trajectory pool itself is diverse enough. Evidence: https://arxiv.org/abs/2605.15726v1</li>
+</ol>
+<ol>
+<li><strong>Hölder Policy Optimisation turns sequence-to-token advantage mapping into a first-class object.</strong> GRPO-style methods rely on a rule for translating trajectory advantages into token probability updates. Changing that rule can change which prefixes and tokens receive credit, so it deserves prefix-local KL and gradient-cosine audits. Evidence: https://huggingface.co/papers/2605.12058</li>
+</ol>
+<ol>
+<li><strong>MetaAgent-X pushes RL onto the agent workflow.</strong> Instead of only optimizing one response policy, it optimizes automatic multi-agent system design end-to-end. The interesting mechanism is whether reward improves reusable coordination structure or just overfits particular orchestration traces. Evidence: https://huggingface.co/papers/2605.14212</li>
+</ol>
+<ol>
+<li><strong>Tensor similarity addresses a missing interpretability primitive: computational equivalence.</strong> If two components look similar behaviorally but differ off-distribution, or look different but implement the same tensor computation, ordinary cosine/probe comparisons can mislead. This is especially relevant for comparing circuits across checkpoints, distillation, and quantization. Evidence: https://arxiv.org/abs/2605.15183v1</li>
+</ol>
+<ol>
+<li><strong>Exemplar Partitioning tries to make feature dictionaries cheaper.</strong> If it works causally, EP could lower the barrier for routine feature audits without training large SAEs on massive token dumps. The key test is whether EP units predict patch/ablation effects, not whether explanations are short and plausible. Evidence: https://arxiv.org/abs/2605.14347v1</li>
+</ol>
+<ol>
+<li><strong>Quantization-permanent unlearning strengthens the deployment-validity warning.</strong> The paper responds to the fact that full-precision unlearning can be reversed by quantization and proposes circuit-attribution-guided unlearning that sticks. For any future steering/unlearning/refusal intervention, fp16 success is not enough. Evidence: https://huggingface.co/papers/2605.15138</li>
+</ol>
+<ol>
+<li><strong>SpeakerLLM makes speaker evidence part of audio reasoning.</strong> This moves speech agents beyond transcript-first processing: speaker identity, verification, personalization, and authorization become model reasoning inputs. The right eval should separate speaker evidence from transcript content, accent, prosody, and recording condition. Evidence: https://arxiv.org/abs/2605.15044v1</li>
+</ol>
+<ol>
+<li><strong>Streaming SpeechLLM translation exposes timing as a speech factor.</strong> A cascaded ASR→MT system and an integrated SpeechLLM can fail differently because streaming partial evidence and paralinguistic cues are used differently. The mechanism to track is emission timing under uncertainty, not just final translation quality. Evidence: https://arxiv.org/abs/2605.14766v1</li>
+</ol>
+<ol>
+<li><strong>ASR for oral-cancer speech shows why LLM correction can hide acoustic failures.</strong> Augmentation plus LLM error correction may improve text output, but the correction layer can blur whether the acoustic representation handled impaired phonetics. This is a good target for factor-localized evaluation. Evidence: https://arxiv.org/abs/2605.15854v1</li>
+</ol>
+<ol>
+<li><strong>ASR-as-speech-enhancement-evaluator got a skeptical audit.</strong> “Too Good to Be True” warns that modern ASR can make enhancement look better than it is or miss artifacts that matter perceptually. This should temper any audio pipeline that treats WER as the whole story. Evidence: https://arxiv.org/abs/2605.12107v1</li>
+</ol>
+<ol>
+<li><strong>ExecuTorch MLX delegate makes Apple Silicon a more realistic local inference target.</strong> This is practical infrastructure, but it matters scientifically because local experiments become cheaper and different runtimes become comparable. The next step is to test output agreement and drift across PyTorch, ExecuTorch, and MLX paths. Evidence: https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/</li>
+</ol>
+<ol>
+<li><strong>Evaluation audits were strong today: geospatial FMs, ProofGrid, and Physics-R1.</strong> These papers independently warn that benchmark claims collapse when protocol, contamination, evidence attribution, or answer format is wrong. The general lesson is that mechanism claims need harnesses that isolate the variable being claimed. Evidence: https://huggingface.co/papers/2605.12678, https://huggingface.co/papers/2605.12524, https://huggingface.co/papers/2605.14040</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>Interfaces are becoming trainable or policy-controlled.</strong> Attention sparsity, latent-attention decoding, speculative windows, agent workflows, and speech streaming all expose interfaces that were formerly fixed heuristics.</li>
+</ol>
+<ol>
+<li><strong>Average metrics are increasingly untrustworthy without slice-level mechanism checks.</strong> WER, tokens/sec, final-answer reward, and benchmark accuracy all appeared today as metrics that can hide the actual failure source.</li>
+</ol>
+<ol>
+<li><strong>Deployment paths are causal transformations.</strong> Quantization, MLX/ExecuTorch routing, speculative decoding, and sparse attention are not passive wrappers; they can change behavior, state accessibility, and intervention validity.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Rare-evidence audit for adaptive sparse/state attention</h3>
+<ul>
+<li><strong>Evidence links:</strong> STS (https://arxiv.org/abs/2605.15508v1), GQLA (https://arxiv.org/abs/2605.15250v1), block attention/distillation (https://arxiv.org/abs/2605.15913v1).</li>
+<li><strong>Mechanism:</strong> Sparse-token predictors, latent KV layouts, and block boundaries decide which old or rare evidence remains reachable under long-context latency constraints.</li>
+<li><strong>Minimal experiment/probe:</strong> Build a small long-context synthetic corpus with early rare facts, stale corrections, negative evidence, and distractors. Compare dense attention, block attention, sparse attention, and latent/KV-compressed paths under equal latency or KV budget; log evidence attention, answer accuracy, and logit drift.</li>
+<li><strong>Falsifier:</strong> Sparse/state methods preserve rare evidence at the same rate as dense attention under matched budget, with no systematic degradation on stale-correction or low-frequency clues.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>2. Fixed-rollout credit-geometry comparison for RLVR</h3>
+<ul>
+<li><strong>Evidence links:</strong> Nudging Beyond the Comfort Zone (https://arxiv.org/abs/2605.15726v1), Hölder Policy Optimisation (https://huggingface.co/papers/2605.12058), GRLO (https://arxiv.org/abs/2605.15464v1).</li>
+<li><strong>Mechanism:</strong> Exploration guidance and sequence-to-token advantage aggregation determine which branches receive gradient, even when the final reward labels are unchanged.</li>
+<li><strong>Minimal experiment/probe:</strong> On a fixed math/code rollout set, compare outcome-only GRPO, strategy-guided exploration, Hölder-style aggregation, and dense teacher feedback. Measure prefix-local KL, promoted-token base rank, changed-token sparsity, strategy diversity, and gradient-cosine against a wide on-policy sampler.</li>
+<li><strong>Falsifier:</strong> Different credit/aggregation methods produce similar token-update geometry and strategy diversity once rollout quality is controlled.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>3. Speech factor-localization harness with speaker, impairment, and streaming timing</h3>
+<ul>
+<li><strong>Evidence links:</strong> SpeakerLLM (https://arxiv.org/abs/2605.15044v1), Streaming SpeechLLM translation (https://arxiv.org/abs/2605.14766v1), oral-cancer ASR (https://arxiv.org/abs/2605.15854v1), ASR evaluation critique (https://arxiv.org/abs/2605.12107v1).</li>
+<li><strong>Mechanism:</strong> Speech models can preserve transcript content while losing speaker identity, impaired-phonetic evidence, prosody, uncertainty, or timing decisions.</li>
+<li><strong>Minimal experiment/probe:</strong> Use public speech encoders/codecs plus a small SpeechLLM where available; create labels for speaker, accent/impairment, phoneme/entity, prosody, recording condition, and streaming latency. Compare raw audio, transcript-only, corrected transcript, and codec/encoder states with probes and shuffled-metadata controls.</li>
+<li><strong>Falsifier:</strong> Transcript-only and audio-conditioned paths produce equivalent speaker/timing/factor decisions, and LLM correction does not hide acoustic-factor failures.</li>
+<li><strong>Confidence:</strong> medium-high.</li>
+</ul>
+<h3>4. Causal scorecard for interpretability units</h3>
+<ul>
+<li><strong>Evidence links:</strong> Tensor similarity (https://arxiv.org/abs/2605.15183v1), Exemplar Partitioning (https://arxiv.org/abs/2605.14347v1), descriptive collision in SAE auto-interpretability (https://arxiv.org/abs/2605.12874v1).</li>
+<li><strong>Mechanism:</strong> Feature dictionaries can look interpretable while failing to identify computationally equivalent or causally useful units.</li>
+<li><strong>Minimal experiment/probe:</strong> Train or collect SAE, EP, and path/tensor-similarity units on a small model. Score each by reconstruction/readability, held-out patch-effect prediction, ablation-effect prediction, cross-checkpoint equivalence, and side-effect specificity.</li>
+<li><strong>Falsifier:</strong> Simpler readability/reconstruction metrics predict intervention effects as well as tensor/causal scorecards.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h3>5. Runtime-path drift test for local Apple Silicon inference</h3>
+<ul>
+<li><strong>Evidence links:</strong> ExecuTorch MLX delegate (https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/), speculative latency model (https://arxiv.org/abs/2605.15051v1), adaptive speculative windows (https://arxiv.org/abs/2605.14978v2), quantization-permanent unlearning (https://huggingface.co/papers/2605.15138).</li>
+<li><strong>Mechanism:</strong> Runtime changes such as MLX delegates, quantization, and speculation can alter output distribution, intervention survival, and rollout data even when the nominal model is unchanged.</li>
+<li><strong>Minimal experiment/probe:</strong> Run one small LLM across PyTorch CPU/GPU, ExecuTorch/MLX where possible, fp16, low-bit, and speculative paths. Use rare-fact, calibration, refusal/edit, and long-context prompts; log output agreement, logprob/logit drift where accessible, latency, memory, and intervention behavior survival.</li>
+<li><strong>Falsifier:</strong> Runtime paths show negligible output/logit drift and no slice-specific failures under matched prompts and decoding seeds.</li>
+<li><strong>Confidence:</strong> medium.</li>
+</ul>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>Reference-guided flow matching</strong> (https://huggingface.co/papers/2605.10302): promising control interface for generative dynamics, but needs a small runnable comparison against prompt/adaptor control.</li>
+<li><strong>Diffusion LLM speculative decoding</strong> (https://arxiv.org/abs/2605.15609v1): revisit when code or enough implementation detail appears; non-AR speculation may have different failure geometry.</li>
+<li><strong>Agent workflow RL / MetaAgent-X</strong> (https://huggingface.co/papers/2605.14212): watch for traces or ablations showing reusable coordination rather than overfitted orchestration.</li>
+<li><strong>ProofGrid and machine-checkable reasoning evaluation</strong> (https://huggingface.co/papers/2605.12524): useful for process-localized reasoning probes; worth comparing to RLVR training tasks.</li>
+<li><strong>Known By Their Actions</strong> (https://huggingface.co/papers/2605.14786): agent UI traces as fingerprint/privacy leakage may become important if browser-agent training becomes a local project.</li>
+<li><strong>Geospatial foundation-model audit</strong> (https://huggingface.co/papers/2605.12678): outside the main scope, but its evaluation-governance checklist is broadly reusable.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

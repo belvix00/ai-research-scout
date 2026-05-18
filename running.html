@@ -30,6 +30,19 @@
 <h2>Mechanism questions</h2>
 <h2>Audio ML / speech signals</h2>
 <h2>Inference optimization signals</h2>
+<h2>Daily additions — 2026-05-19</h2>
+<ul>
+<li><strong>Adaptive attention/state interfaces need rare-evidence sign-off.</strong> GQLA, STS, block attention, and speculative decoding variants all expose state layout or token reachability as a policy/control variable. Experiment: dense vs block vs sparse vs latent/KV-compressed attention under equal latency/KV budget on early rare facts, stale corrections, negative evidence, and distractors; log evidence reachability, output/logit drift, and latency.</li>
+<li><strong>RLVR progress is shifting toward strategy coverage plus aggregation geometry.</strong> GRLO, strategy-guided RLVR, Hölder Policy Optimisation, and MetaAgent-X reinforce that rollout distribution and sequence-to-token credit mapping are the real objects. Experiment: fixed rollout set comparing exploration nudges, aggregation rules, dense teachers, and workflow-level rewards; measure prefix-local KL, changed-token sparsity, strategy diversity, and gradient-cosine.</li>
+<li><strong>Speech-factor survival should now include speaker verification, impaired speech, and streaming timing.</strong> SpeakerLLM, streaming SpeechLLM translation, oral-cancer ASR, and ASR-as-enhancement-evaluator critiques show that transcript/WER metrics can hide factor failures. Experiment: raw audio vs transcript vs corrected transcript vs codec/encoder states with speaker/accent/impairment/phoneme/prosody/latency probes and shuffled-metadata controls.</li>
+<li><strong>Interpretability units need equivalence and intervention prediction tests.</strong> Tensor similarity and Exemplar Partitioning add cheaper or more formal unit-comparison tools, while SAE explanation-collision work warns against readability-only validation. Experiment: compare SAE/EP/tensor/path units by held-out patch-effect prediction, ablation prediction, cross-checkpoint equivalence, and side-effect specificity.</li>
+<li><strong>Local runtime paths are now cheap enough to audit as causal transformations.</strong> ExecuTorch MLX plus speculative latency/window papers and quantization-permanent unlearning make PyTorch/MLX/low-bit/speculative paths a practical intervention-survival testbed. Experiment: one small model across runtime paths with rare facts, long context, refusal/edit behavior, latency, memory, and output/logit drift.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across adaptive attention/state reachability, RL rollout/credit geometry, speech factor localization, causal interpretability scorecards, and runtime-path drift.</li>
+<li>Evaluation audits (geospatial FMs, ProofGrid, Physics-R1, ASR enhancement critique) reinforce that mechanism claims collapse without data provenance, process evidence, and metric-slice controls.</li>
+</ul>
 <h2>Daily additions — 2026-05-18</h2>
 <ul>
 <li><strong>State interfaces need equal-budget rare-evidence tests.</strong> MeMo, KVServe, AB-Sparse, and speculative-decoding/runtime work reinforce that memory, retrieval, KV/cache, sparse attention, and persistent/session state are distinct state carriers. Experiment: compare full context, retrieval, learned memory, KV writes/compression, and sparse attention on rare clues, stale corrections, negative evidence, and distractors under equal token/time/KV/memory budgets.</li>
@@ -344,7 +357,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

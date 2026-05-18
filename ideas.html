@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-18 03:07:56</p>
+<p>Generated: 2026-05-19 03:06:03</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -762,6 +762,72 @@
 <ul>
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
+</ul>
+<h2>Adaptive attention/state rare-evidence audit</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-19</li>
+<li>Last seen: 2026-05-19</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Sparse-token predictors, latent-attention layouts, and block boundaries should be evaluated as evidence-reachability policies, not only speedups.</p>
+<h3>Mechanism</h3>
+<p>State layout and sparse token reachability control whether early rare facts, stale corrections, and negative evidence remain accessible under fixed latency/KV budgets.</p>
+<h3>Minimal experiment</h3>
+<p>Compare dense, block, sparse, and latent/KV-compressed attention on a synthetic long-context rare-evidence corpus under equal latency/KV budgets.</p>
+<h3>Falsifier</h3>
+<p>Adaptive state methods match dense attention on rare/stale/negative-evidence slices with no systematic output or logit drift.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-19.md</code> — GQLA, STS, block attention, and speculative decoding variants expose attention/state layout as a serving-time policy variable.</li>
+</ul>
+<h2>RLVR strategy coverage versus token credit geometry</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-19</li>
+<li>Last seen: 2026-05-19</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Reasoning-RL gains should be decomposed into candidate-strategy coverage and the rule that maps trajectory advantage into token updates.</p>
+<h3>Mechanism</h3>
+<p>Exploration nudges determine which branches exist; aggregation rules determine which prefixes receive gradient after reward is observed.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed rollout set comparing strategy-guided RLVR, Hölder-style aggregation, dense teachers, and baseline GRPO with prefix-local KL and strategy-diversity metrics.</p>
+<h3>Falsifier</h3>
+<p>Methods with different exploration and aggregation rules produce indistinguishable update geometry once reward labels and rollout set are controlled.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-19.md</code> — GRLO, strategy-guided RLVR, Hölder Policy Optimisation, and MetaAgent-X suggest rollout distribution and sequence-to-token credit mapping are the real objects.</li>
+</ul>
+<h2>Speech factor localization with speaker, impairment, and streaming timing</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-19</li>
+<li>Last seen: 2026-05-19</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Speech-agent evaluation should localize failures to speaker evidence, impaired acoustics, transcript correction, prosody, or streaming timing instead of relying on WER.</p>
+<h3>Mechanism</h3>
+<p>Integrated speech LLMs and LLM correction layers can preserve text while hiding acoustic, speaker, or timing factor loss.</p>
+<h3>Minimal experiment</h3>
+<p>Probe raw audio, transcript-only, corrected-transcript, and codec/encoder states for speaker/accent/impairment/phoneme/prosody/latency labels with shuffled controls.</p>
+<h3>Falsifier</h3>
+<p>Transcript-only/corrected paths and audio-conditioned paths preserve the same factor information and make the same timing/speaker decisions.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-19.md</code> — SpeakerLLM, streaming SpeechLLM translation, oral-cancer ASR, and ASR-as-enhancement-evaluator critiques show transcript and WER metrics can hide factor failures.</li>
 </ul>
 <h2>Causal interpretability scorecard</h2>
 <ul>
@@ -3932,7 +3998,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-18 03:08</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
