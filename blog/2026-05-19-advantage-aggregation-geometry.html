@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Advantage Aggregation: Where Sequence Rewards Become Token Gradients · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>Advantage Aggregation: Where Sequence Rewards Become Token Gradients</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>The 2026-05-19 scout had a tight reasoning-RL cluster:</p>
+<ul>
+<li><strong>Nudging Beyond the Comfort Zone</strong> emphasized that RLVR cannot reinforce strategies the model never samples.</li>
+<li><strong>Hölder Policy Optimisation</strong> made the sequence-to-token mapping itself a research object rather than an implementation detail.</li>
+<li><strong>GRLO</strong> and <strong>MetaAgent-X</strong> widened the setting from math-answer RLVR to open-ended and workflow-level optimization.</li>
+<li>The running notes keep converging on the same measurement problem: hold rollouts fixed, then ask how objectives move probability mass over prefixes, strategies, and event traces.</li>
+</ul>
+<p>The previous post [[2026-05-13-sparse-branch-rl]] focused on whether post-training mostly reallocates probability mass among already-sampled branches. This post zooms into the next layer down:</p>
+<blockquote>Given a trajectory-level reward or preference, what operator turns that sequence signal into token-level gradient, and how does that operator change the geometry of the update?</blockquote>
+<p>This is not a beginner refresher on policy gradients. Aman already knows the stack. The useful foundations object is the <strong>credit map</strong> from sequence outcomes to token log-prob updates: uniform sequence credit, normalized sequence credit, token teachers, rubric decomposition, value baselines, listwise objectives, and Hölder/p-norm-style aggregators are different ways of choosing this map.</p>
+<h2>The hidden operator: from trajectories to token weights</h2>
+<p>Let a response or reasoning trajectory be</p>
+<div class="math-block">$$y=(y_1,\ldots,y_T),$$</div>
+<p>with policy</p>
+<div class="math-block">$$\pi_\theta(y\mid x)=\prod_{t=1}^T \pi_\theta(y_t\mid h_t),
+\qquad h_t=(x,y_{&lt;t}).$$</div>
+<p>A sequence-level objective usually gives one scalar score, reward, or advantage:</p>
+<div class="math-block">$$A(y) = R(y)-b(x).$$</div>
+<p>The most direct policy-gradient estimator uses</p>
+<div class="math-block">$$g_{\mathrm{seq}}(y)=A(y)\nabla_\theta \log \pi_\theta(y\mid x)
+= A(y)\sum_{t=1}^{T}\nabla_\theta \log \pi_\theta(y_t\mid h_t).$$</div>
+<p>This equation quietly makes a strong credit-assignment choice: every sampled token in the successful trajectory inherits the same scalar advantage. The final answer was correct, so the opening phrase, the useful decomposition, the irrelevant filler, and the lucky arithmetic step all receive positive credit.</p>
+<p>More generally, define a token credit map</p>
+<div class="math-block">$$C: A(y) \mapsto (a_1,\ldots,a_T),$$</div>
+<p>and use</p>
+<div class="math-block">$$g_C(y)=\sum_{t=1}^{T} a_t(y)\nabla_\theta \log \pi_\theta(y_t\mid h_t).$$</div>
+<p>Uniform sequence credit is the special case</p>
+<div class="math-block">$$a_t(y)=A(y).$$</div>
+<p>Length-normalized credit might use</p>
+<div class="math-block">$$a_t(y)=\frac{A(y)}{T}.$$</div>
+<p>A verifier or teacher with step labels might use</p>
+<div class="math-block">$$a_t(y)=\widehat{A}_t.$$</div>
+<p>A rubric decomposition might use a sparse mixture:</p>
+<div class="math-block">$$a_t(y)=\sum_{k} \lambda_k r_k(y)\,m_{k,t}(y),$$</div>
+<p>where $$r_k$$ is a rubric component and $$m_{k,t}$$ says which token, step, or event the component should touch.</p>
+<p>The point: when two papers claim different RLVR improvements, the actual difference may be less “new optimizer” and more “different credit map $$C$$.”</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="sequence rewards become token gradients through a credit aggregation map">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="35" y="88" width="150" height="96" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+  <text x="110" y="123" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">trajectory y</text>
+  <text x="110" y="148" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">tokens, tool calls,</text>
+  <text x="110" y="166" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">agent events</text>
+
+  <rect x="255" y="62" width="160" height="70" rx="16" fill="#dcfce7" stroke="#16a34a" stroke-width="2" />
+  <text x="335" y="93" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">sequence score</text>
+  <text x="335" y="113" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">A(y)</text>
+
+  <rect x="255" y="162" width="160" height="70" rx="16" fill="#fef3c7" stroke="#d97706" stroke-width="2" />
+  <text x="335" y="191" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">credit map C</text>
+  <text x="335" y="212" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">uniform / rubric / teacher</text>
+
+  <rect x="500" y="64" width="250" height="150" rx="16" fill="#f8fafc" stroke="#64748b" stroke-width="2" />
+  <text x="625" y="95" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">token-gradient field</text>
+  <text x="625" y="122" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">Σ aₜ ∇ log π(yₜ | hₜ)</text>
+
+  <g font-family="sans-serif" font-size="12" fill="#334155">
+    <text x="538" y="155">early prefix</text>
+    <text x="538" y="178">branch token</text>
+    <text x="538" y="201">format/filler</text>
+  </g>
+  <g stroke-width="7" stroke-linecap="round">
+    <line x1="645" y1="151" x2="700" y2="151" stroke="#94a3b8" />
+    <line x1="645" y1="174" x2="735" y2="174" stroke="#16a34a" />
+    <line x1="645" y1="197" x2="672" y2="197" stroke="#cbd5e1" />
+  </g>
+
+  <line x1="185" y1="126" x2="247" y2="99" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="335" y1="132" x2="335" y2="154" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="415" y1="196" x2="492" y2="144" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+</svg></div>
+<h2>Why uniform sequence credit has a geometry, not just variance</h2>
+<p>For logits $$z_v(h_t)$$, the gradient of a sampled token log-probability is</p>
+<div class="math-block">$$\frac{\partial \log \pi(y_t\mid h_t)}{\partial z_v(h_t)}
+=\mathbf{1}[v=y_t]-\pi(v\mid h_t).$$</div>
+<p>With token credit $$a_t$$, gradient descent on</p>
+<div class="math-block">$$\mathcal{L}_C(y)=-\sum_t a_t\log\pi_\theta(y_t\mid h_t)$$</div>
+<p>gives logit gradient</p>
+<div class="math-block">$$\frac{\partial \mathcal{L}_C}{\partial z_v(h_t)}
+= -a_t\left(\mathbf{1}[v=y_t]-\pi(v\mid h_t)\right).$$</div>
+<p>So $$a_t$$ does not merely scale the update. It selects where probability mass moves.</p>
+<p>If $$a_t&gt;0$$, the sampled token is promoted against its local alternatives. If $$a_t&lt;0$$, it is demoted. If $$a_t=0$$, that prefix receives no direct likelihood pressure. Therefore a credit map defines a field over prefixes:</p>
+<div class="math-block">$$h_t \mapsto a_t\,\nabla_\theta\log\pi(y_t\mid h_t).$$</div>
+<p>Uniform sequence credit spreads this field across all tokens in a winning rollout. That can be correct if the whole trace is causally useful. But in reasoning traces, only a few positions may decide the outcome: a decomposition, a branch, a tool call, a stopping decision, or a correction. The uniform map then produces two pathologies:</p>
+<ol>
+<li><strong>Credit dilution:</strong> the decisive branch receives only one unit of credit among many non-decisive tokens.</li>
+<li><strong>Credit pollution:</strong> stylistic or incidental tokens get reinforced because they co-occurred with success.</li>
+</ol>
+<p>Length normalization fixes one bias but creates another. If</p>
+<div class="math-block">$$a_t=\frac{A}{T},$$</div>
+<p>then long successful traces do not automatically have larger total update norm, but every decisive token in a long trace also receives smaller local pressure. If a correct solution requires a long setup plus one key branch, normalization can under-train the branch.</p>
+<p>A useful scalar is the <strong>branch credit share</strong>. For a set of outcome-sensitive positions $$B(y)$$,</p>
+<div class="math-block">$$\mathrm{Share}_B(C;y)=\frac{\sum_{t\in B(y)} |a_t|}{\sum_{t=1}^{T}|a_t|}.$$</div>
+<p>Sparse branch-selection methods implicitly want this share to be high. Uniform sequence credit gives</p>
+<div class="math-block">$$\mathrm{Share}_B=\frac{|B|}{T}.$$</div>
+<p>If $$|B|\ll T$$, the update geometry is mostly pointed somewhere else.</p>
+<h2>The expected update: value contrast times policy support</h2>
+<p>To see what an ideal local credit signal would do, define the continuation value at prefix $$h$$:</p>
+<div class="math-block">$$Q(h,v)=\mathbb{E}[R(y)\mid h_t=h, y_t=v].$$</div>
+<p>The expected softmax-logit update for token $$u$$ under a local advantage $$Q(h,v)-b(h)$$ is proportional to</p>
+<div class="math-block">$$\mathbb{E}_{v\sim\pi}\left[(Q(h,v)-b(h))(\mathbf{1}[u=v]-\pi(u\mid h))\right].$$</div>
+<p>Choosing $$b(h)=\bar Q(h)=\sum_v \pi(v\mid h)Q(h,v)$$ yields</p>
+<div class="math-block">$$\Delta z_u(h) \propto \pi(u\mid h)\left(Q(h,u)-\bar Q(h)\right).$$</div>
+<p>This equation is the local target that sequence-level RL is trying to approximate with much weaker information. It says three things.</p>
+<p>First, a token only receives useful positive update if its continuation value is above the local average. Second, the update is multiplied by $$\pi(u\mid h)$$, so unsupported strategies are hard to discover from reweighting alone. Third, the right credit is prefix-local; it depends on what alternatives were available at that state, not only whether the final sequence won.</p>
+<p>This is why strategy-coverage papers and aggregation-geometry papers are complementary. Exploration changes which $$u$$ enter support. Aggregation changes how the reward signal is distributed once candidates are present.</p>
+<h2>Sequence-level objectives can be viewed as projections of the ideal credit</h2>
+<p>Let $$q_t$$ be the unknown ideal local advantage at each token:</p>
+<div class="math-block">$$q_t = Q(h_t,y_t)-\bar Q(h_t).$$</div>
+<p>A practical objective chooses an approximate credit vector</p>
+<div class="math-block">$$a=(a_1,\ldots,a_T).$$</div>
+<p>The quality of the credit map is not just its scalar reward correlation. It is the alignment between the produced gradient and a better reference gradient:</p>
+<div class="math-block">$$\cos(g_C,g_*)=
+\frac{\langle g_C,g_*\rangle}{\|g_C\|\|g_*\|}.$$</div>
+<p>If we ignore parameter-sharing for a moment and treat token-gradient directions as locally orthogonal, this reduces approximately to credit-vector alignment:</p>
+<div class="math-block">$$\cos(g_C,g_*)\approx
+\frac{\sum_t a_t q_t \|\nabla\log\pi_t\|^2}{
+\sqrt{\sum_t a_t^2\|\nabla\log\pi_t\|^2}
+\sqrt{\sum_t q_t^2\|\nabla\log\pi_t\|^2}}.$$</div>
+<p>Uniform sequence credit is good only when the decisive local advantages have the same sign across most of the trajectory. It is bad when a winning trace contains wrong-but-recovered steps, irrelevant explanations, or a lucky final correction. Dense teachers are good only if their token labels correlate with $$q_t$$ rather than merely copying a stale teacher trace.</p>
+<p>This framing also explains why old-logit fidelity matters. Many preference/RL objectives include a KL term to a reference policy:</p>
+<div class="math-block">$$\mathcal{L}= -\sum_t a_t\log\pi_\theta(y_t\mid h_t)
++\beta\sum_t D_{\mathrm{KL}}\left(\pi_\theta(\cdot\mid h_t)\|\pi_{\mathrm{ref}}(\cdot\mid h_t)\right).$$</div>
+<p>If $$\pi_{\mathrm{ref}}$$ is stale, approximated, or collected under a different runtime path, then the trust-region geometry is wrong at exactly the positions where credit is being assigned. The optimizer is not just maximizing reward; it is solving a constrained movement problem in the wrong local coordinate system.</p>
+<h2>Hölder / p-norm aggregation as a choice about concentration</h2>
+<p>Without relying on any one paper&#x27;s exact notation, it is useful to think about aggregation rules as choosing a norm over token or step advantages. Suppose a trajectory exposes nonnegative local evidence magnitudes</p>
+<div class="math-block">$$s_t \ge 0,$$</div>
+<p>perhaps from verifier gaps, teacher confidence, value errors, or branch disagreement. A p-norm aggregator has the shape</p>
+<div class="math-block">$$S_p(s)=\left(\sum_{t=1}^{T} s_t^p\right)^{1/p}.$$</div>
+<p>Its derivative with respect to a local score is</p>
+<div class="math-block">$$\frac{\partial S_p}{\partial s_t}
+=\frac{s_t^{p-1}}{\left(\sum_j s_j^p\right)^{(p-1)/p}}.$$</div>
+<p>So the induced local weight is proportional to</p>
+<div class="math-block">$$w_t^{(p)}\propto s_t^{p-1}.$$</div>
+<p>This is a clean knob:</p>
+<ul>
+<li>$$p=1$$ treats nonzero evidence roughly uniformly.</li>
+<li>$$p&gt;1$$ concentrates credit on large local evidence gaps.</li>
+<li>$$p\to\infty$$ approaches max-like credit on the strongest step.</li>
+<li>$$p&lt;1$$, if used directly, becomes more diffuse and can overweight small evidence; one must be careful about stability and interpretation.</li>
+</ul>
+<p>The mechanism tradeoff is immediate. Concentrated aggregation can reduce credit pollution and sharpen branch updates. But if the evidence score $$s_t$$ is noisy, it can overfit a verifier artifact or teacher quirk. Diffuse aggregation is robust to noisy localization but reinforces more irrelevant tokens.</p>
+<p>This is the same geometry as attention over training signal. The question is not “which p is best?” It is: which p gives high gradient alignment with the update you would get from a cleaner on-policy or step-local evaluator, under the rollout distribution you actually have?</p>
+<h2>Prefix-local KL reveals where the objective moved the policy</h2>
+<p>If you run two objectives on the same fixed rollout set, final answer accuracy is too coarse. The first diagnostic should be where the policy moved.</p>
+<p>Define prefix-local KL after an update:</p>
+<div class="math-block">$$D_t = D_{\mathrm{KL}}\left(\pi_{\theta&#x27;}(\cdot\mid h_t)\|\pi_{\theta}(\cdot\mid h_t)\right).$$</div>
+<p>For a small natural-gradient step, local KL is approximately quadratic in the local update:</p>
+<div class="math-block">$$D_t \approx \frac{1}{2}\delta z_t^\top F_t\delta z_t,$$</div>
+<p>where $$F_t$$ is the softmax Fisher at prefix $$h_t$$. Since $$\delta z_t$$ is driven by $$a_t$$,</p>
+<div class="math-block">$$D_t \propto a_t^2\,\left\|\mathbf{e}_{y_t}-\pi(\cdot\mid h_t)\right\|_{F_t}^2$$</div>
+<p>up to parameter sharing and optimizer effects.</p>
+<p>That gives a practical measurement: for each objective, plot KL mass over token positions, divergence points, tool events, rubric spans, and high-entropy prefixes. A good sparse-credit objective should move probability near causal branch points, not mostly in formatting, boilerplate, or late answer phrasing.</p>
+<p>A related diagnostic is changed-token sparsity:</p>
+<div class="math-block">$$\mathrm{Sparsity}_\epsilon = \frac{1}{T}\sum_t \mathbf{1}[D_t&gt;\epsilon].$$</div>
+<p>Low sparsity is not automatically good. It is good only if the changed positions overlap the positions where alternatives actually differ in outcome. Therefore log both:</p>
+<div class="math-block">$$\mathrm{Overlap}_B=\frac{\sum_{t\in B}D_t}{\sum_t D_t}.$$</div>
+<p>This is the empirical version of the credit-share equation.</p>
+<h2>Why fixed-rollout comparisons are the right first experiment</h2>
+<p>If two methods sample different trajectories, train under different runtimes, and use different verifiers, you cannot tell whether the gain came from exploration, credit aggregation, teacher quality, or serving-path artifacts. The minimal clean object is a fixed candidate set.</p>
+<p>For each prompt $$x_i$$, collect candidates</p>
+<div class="math-block">$$\mathcal{Y}_i=\{y_{i1},\ldots,y_{ik}\}$$</div>
+<p>with stored token logprobs, prefixes, verifier outcomes, teacher annotations if available, and strategy labels. Then compute objective-induced gradients without initially training:</p>
+<div class="math-block">$$g_m(x_i)=\sum_{y\in\mathcal{Y}_i}\sum_t a^{(m)}_{y,t}\nabla_\theta\log\pi_\theta(y_t\mid h_t),$$</div>
+<p>for methods $$m$$ such as outcome-only GRPO-style credit, winner SFT, pairwise DPO, listwise/graph targets, rubric credit, token-level teacher distillation, and p-norm/Hölder-style aggregation.</p>
+<p>Now compare:</p>
+<div class="math-block">$$\cos(g_m,g_n),$$</div>
+<p>prefix-local KL predicted by each gradient, and which strategies receive mass. Only after this objective-only audit should you run small fine-tunes.</p>
+<p>This separates four mechanisms that are otherwise confounded:</p>
+<ol>
+<li><strong>Support discovery:</strong> did the good strategy appear in the candidate set?</li>
+<li><strong>Credit localization:</strong> did the objective put gradient on the decisive step?</li>
+<li><strong>Aggregation concentration:</strong> did the sequence-to-token map spread or focus credit?</li>
+<li><strong>Policy movement geometry:</strong> did the KL constraint permit the intended local movement?</li>
+</ol>
+<h2>What to measure</h2>
+<p>For any RLVR/agent-RL objective comparison, log the sequence-to-token geometry, not just final score:</p>
+<ol>
+<li><strong>Candidate support:</strong> base rank and probability of successful strategies at divergence prefixes.</li>
+<li><strong>Credit vector statistics:</strong> $$a_t$$ histograms by position, length, entropy, tool event, and rubric span.</li>
+<li><strong>Branch credit share:</strong></li>
+</ol>
+<div class="math-block">$$   \mathrm{Share}_B=\frac{\sum_{t\in B}|a_t|}{\sum_t|a_t|}.$$</div>
+<ol>
+<li><strong>Prefix-local KL:</strong> before/after or gradient-predicted $$D_t$$ over tokens and event traces.</li>
+<li><strong>Changed-token sparsity:</strong> fraction of prefixes with KL above a threshold.</li>
+<li><strong>Gradient-cosine matrix:</strong> objective-induced update directions across DPO/listwise/rubric/teacher/p-norm variants.</li>
+<li><strong>Strategy diversity:</strong> number of distinct correct strategies whose probability increases, not just final accuracy.</li>
+<li><strong>Teacher/verifier staleness:</strong> disagreement between fixed teacher labels, updated verifier labels, and on-policy rollouts.</li>
+<li><strong>Length and formatting bias:</strong> correlation between credit mass and response length, verbosity, boilerplate, or answer format.</li>
+</ol>
+<h2>Minimal experiment</h2>
+<p>Build a fixed-rollout audit before running a full RL stack.</p>
+<ol>
+<li>Choose a small math/code/tool task set with multiple solution strategies.</li>
+<li>Sample $$k$$ rollouts per prompt from one base model; store token logprobs and prefixes.</li>
+<li>Label final correctness, rough strategy type, and a small set of causal branch points by diffing successful vs failed traces.</li>
+<li>Compute token credit maps for:</li>
+</ol>
+<p>   - outcome-only uniform sequence credit;</p>
+<p>   - length-normalized sequence credit;</p>
+<p>   - pairwise DPO over winner/loser pairs;</p>
+<p>   - listwise or graph target over candidates;</p>
+<p>   - rubric/component credit where available;</p>
+<p>   - token-teacher or self-distilled credit;</p>
+<p>   - p-norm/Hölder-style concentrated aggregation over local evidence scores.</p>
+<ol>
+<li>Without training, compare gradient cosine, branch credit share, predicted prefix-local KL, and strategy mass movement.</li>
+<li>Fine-tune tiny adapters or a small model for the top two contrasting credit maps.</li>
+<li>Re-sample and ask whether improvements came from more probability on existing correct branches, new strategy discovery, or superficial trace changes.</li>
+</ol>
+<p>A useful falsifier for the aggregation-geometry thesis would be:</p>
+<div class="math-block">$$\cos(g_m,g_n)\approx 1$$</div>
+<p>and similar prefix-local KL profiles for all credit maps once rollout candidates and verifier labels are fixed. If that happens, the observed method differences probably came from sampling, data, model scale, or implementation details rather than sequence-to-token aggregation.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Credit pollution:</strong> success credit reinforces formatting, boilerplate, or lucky but irrelevant tokens.</li>
+<li><strong>Credit dilution:</strong> decisive branch tokens receive too little update because advantage is spread across long traces.</li>
+<li><strong>Unsupported-strategy ceiling:</strong> aggregation cannot promote strategies absent from the sampled rollout set.</li>
+<li><strong>Teacher staleness:</strong> dense token labels copy a teacher&#x27;s old mistakes or collapse strategy diversity.</li>
+<li><strong>Verifier-localization error:</strong> rubric or step labels point to plausible explanation spans rather than causal decision points.</li>
+<li><strong>Length bias:</strong> unnormalized sequence credit over-updates long traces; over-normalization under-updates long but necessary reasoning.</li>
+<li><strong>KL-coordinate mismatch:</strong> stale old logits or different serving paths make the trust region constrain the wrong local policy.</li>
+<li><strong>p-norm over-concentration:</strong> max-like aggregation chases a noisy local score and ignores distributed dependencies.</li>
+<li><strong>Aggregate metric camouflage:</strong> final-answer reward improves while prefix KL moves mainly in style or answer formatting.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant scout notes and questions:</p>
+<ul>
+<li>[[2026-05-19]]: RLVR evidence shifted toward strategy coverage plus aggregation geometry, especially Nudging Beyond the Comfort Zone and Hölder Policy Optimisation.</li>
+<li>[[2026-05-18]]: FEST and self-distilled agent RL framed demonstrations and dense traces as extra credit channels with staleness/diversity risks.</li>
+<li>[[2026-05-16]]: the weekly synthesis promoted sparse branch/update geometry and called for fixed-rollout objective comparisons.</li>
+<li>[[2026-05-13-sparse-branch-rl]]: branch selection supplies the support/reweighting frame; this post adds the sequence-to-token credit map.</li>
+<li>[[questions#Open questions]]: “In RLVR, how much of a method’s gain comes from broader strategy sampling versus the sequence-to-token advantage aggregation rule?”</li>
+<li>[[questions#Candidate experiments]]: <strong>Sparse branch-selection audit for reasoning post-training</strong> should include credit-map comparisons, not only pairwise/listwise objective labels.</li>
+</ul>
+<p>Refined question after this derivation: under a fixed rollout set, which credit map maximizes branch credit share and gradient alignment with a clean on-policy reference while preserving strategy diversity?</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 09:22</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
