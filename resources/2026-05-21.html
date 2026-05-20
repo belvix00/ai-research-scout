@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-21 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-21</h1>
+<h3>Core DL/LLM research</h3>
+<h2>Hugging Face Papers / arXiv — RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.15514</p>
+<p>Summary: A theoretical long-context paper arguing that RoPE has intrinsic non-identifiability: the embedding transform alone does not uniquely distinguish positions or tokens once the analysis abstracts away from implementation details. It is useful because it turns a familiar positional encoding into a concrete failure mechanism for long-context extrapolation and rare-evidence retrieval, not just an empirical quirk. The mechanism signal is positional aliasing under rotary geometry.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — Stage-adaptive Token Selection for Efficient Omni-modal LLMs</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.20035</p>
+<p>Summary: Omni-modal LLMs interleave audio and video token streams, making token count the central bottleneck. This paper proposes selecting tokens adaptively by processing stage, which is a direct mechanism for deciding which perceptual evidence survives into language reasoning. It belongs in the scout because adaptive token dropping can either make multimodal models cheap or silently erase rare acoustic/visual cues.</p>
+<p>Personalization: medium</p>
+<h2>OpenReview ICLR — Task Tokens: A Flexible Approach to Adapting Behavior Foundation Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://openreview.net/forum?id=6T3wJQhvc3</p>
+<p>Summary: This submission studies task-token conditioning as a flexible adapter for behavior foundation models. The resource is outside pure text LLMs but relevant because task tokens are a clean interface for routing behavior without full fine-tunes, similar to soft prompts, skill tokens, or control registers. The mechanism signal is whether a small learned token interface can bind task identity, policy style, and transfer behavior.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers / arXiv — Code-Guided Reasoning for Small Language Models: Evaluating Executable MCQA Scaffolds</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.18827</p>
+<p>Summary: A small-language-model reasoning paper using executable code scaffolds for multiple-choice QA. It is useful because it asks whether external symbolic execution can provide structure that small models cannot internally maintain. The mechanism is not “better benchmark score” but an interface between generated reasoning and executable verification.</p>
+<p>Personalization: medium</p>
+<h3>Training/RL/math/mech interp</h3>
+<h2>Hugging Face Papers / arXiv — Anti-Self-Distillation for Reasoning RL via Pointwise Mutual Information</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.11609</p>
+<p>Summary: A reasoning-RL paper that explicitly questions naive self-distillation: if the model copies its own high-probability traces, it may reinforce common but uninformative behavior. The pointwise-mutual-information framing suggests a way to reward information-bearing reasoning moves rather than popularity under the current policy. This is a strong signal for studying RLVR as distribution shaping over branches.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — GoLongRL: Capability-Oriented Long Context Reinforcement Learning with Multitask Alignment</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.19577</p>
+<p>Summary: Long-context RL is framed here as capability-oriented alignment across multiple tasks rather than a passive context-window extension. The resource matters because it connects RL feedback to evidence access over long sequences, where credit assignment must reward actually using remote information. Mechanism signal: RL objectives may train state-access policies, not only answer style.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — CEPO: RLVR Self-Distillation using Contrastive Evidence Policy Optimization</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.19436</p>
+<p>Summary: CEPO combines RL with contrastive evidence in a self-distillation loop. It is useful because it treats evidence-bearing traces as the unit of contrast, which can expose whether a model learns from the decisive evidence or merely imitates final answers. The mechanism signal is contrast construction for reasoning credit assignment.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — Mid-Training with Self-Generated Data Improves Reinforcement Learning in Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.08472</p>
+<p>Summary: This paper studies how self-generated data before or during RL changes later reinforcement learning performance. It belongs in the scout because it makes “data phase before RL” an explicit intervention, not an incidental pretraining detail. Mechanism signal: self-generated mid-training may alter exploration support, strategy diversity, and the policy’s reachable improvement directions.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — Bug or Feature^2: Weight Drift, Activation Sparsity, and Spikes</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.17659</p>
+<p>Summary: A training-dynamics/mechanism paper about weight drift, activation sparsity, and spikes in modern architectures. It was collected because these are internal training events that can explain why incremental architecture choices create unstable or useful regimes. The mechanism signal is whether spikes and sparsity are defects to suppress or features that shape representation learning.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers / arXiv — Language-Switching Triggers Take a Latent Detour Through Language Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.18646</p>
+<p>Summary: This paper investigates backdoor triggers involving language switching and asks how they hijack internal computation. It is a mechanistic interpretability/security signal: a trigger may not act locally at the token surface but route through latent language circuitry. Useful as skeptical evidence for testing hidden-state pathways, not only prompt-level behavior.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers / arXiv — Where Does Authorship Signal Emerge in Encoder-Based Language Models?</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.19908</p>
+<p>Summary: The paper studies when authorship information appears inside fine-tuned encoder models and how scoring mechanisms change attribution performance. It is useful because it exposes a familiar representation question—where does a factor become linearly or causally available?—in a controlled text setting. Mechanism signal: factor emergence depends on head/scoring design, not only pretrained encoder content.</p>
+<p>Personalization: low</p>
+<h3>Audio/TTS/speech</h3>
+<h2>Hugging Face Papers / arXiv — Stage-adaptive Token Selection for Efficient Omni-modal LLMs</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.20035</p>
+<p>Summary: Beyond the general multimodal angle, this is an audio resource because omni-modal token sequences include audio aligned with video over time. The key learning value is to watch whether adaptive token selection preserves speaker, phoneme, prosody, and timing factors separately or collapses them into average task success. It gives a concrete intervention for a speech-factor survival probe.</p>
+<p>Personalization: high</p>
+<h2>NVIDIA NeMo / technical blogs — NeMo speech and audio infrastructure feed</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://developer.nvidia.com/blog/tag/nemo/feed/</p>
+<p>Summary: No single new NeMo item dominated the day, but the source remains relevant for speech foundation-model training, dataset curation, and deployment details. It was retained as a watch source rather than promoted as a main development. The mechanism value is practical: NeMo posts often expose the training/inference interfaces where speech factors are compressed or preserved.</p>
+<p>Personalization: low</p>
+<h3>Inference/ML infra/GPU</h3>
+<h2>Together AI — Serving DeepSeek-V4: why million-token context is an inference systems problem</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem</p>
+<p>Summary: This post frames million-token context as a serving-system problem involving prefill, decode, KV memory, scheduling, and cost rather than just a model-card number. It is useful because long-context capability depends on whether the serving path can preserve and retrieve state at usable latency. Mechanism signal: context length is an infrastructure-mediated evidence-access interface.</p>
+<p>Personalization: medium</p>
+<h2>BAIR — Adaptive Parallel Reasoning: The Next Paradigm in Efficient Inference Scaling</h2>
+<p>Type: Lab blog</p>
+<p>Link: http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/</p>
+<p>Summary: BAIR’s post argues for parallel reasoning paths with adaptive allocation instead of a single fixed serial chain. The resource matters because test-time compute becomes a controller over branch width, depth, and stopping, which can improve efficiency or prune rare but necessary paths. Mechanism signal: inference scaling as branch allocation rather than “more tokens.”</p>
+<p>Personalization: medium</p>
+<h2>PyTorch Blog — Running PyTorch Models on Apple Silicon GPUs with the ExecuTorch MLX Delegate</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/</p>
+<p>Summary: This post connects ExecuTorch to Apple’s MLX delegate for local Apple Silicon GPU execution. It is relevant because it lowers the cost of on-device experiments and lets runtime choices become controlled variables in small mechanism probes. Mechanism signal: deployment path, operator lowering, and local GPU execution can alter what experiments are cheap enough to run.</p>
+<p>Personalization: high</p>
+<h2>PyTorch Blog — In-Kernel Broadcast Optimization: Co-Designing Kernels for RecSys Inference</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/</p>
+<p>Summary: Although framed around recommender inference, the post is a useful kernel-design case study: move broadcast work into the kernel when memory traffic dominates. It was collected because the same co-design principle applies to LLM serving kernels where bandwidth, fusion, and layout decide real throughput. Mechanism signal: optimize data movement, not just arithmetic.</p>
+<p>Personalization: low</p>
+<h2>NVIDIA Developer Blog — Automating GPU Kernel Translation with AI Agents: cuTile Python to cuTile.jl</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://developer.nvidia.com/blog/automating-gpu-kernel-translation-with-ai-agents-cutile-python-to-cutile-jl/feed/</p>
+<p>Summary: This is a systems/tooling signal about using agents to translate GPU-kernel code across DSLs/languages. It is worth tracking because LLM-generated or translated kernels need correctness-speed audits, not just compile success. Mechanism signal: agentic code transformation can change memory layout and numerical behavior while appearing syntactically successful.</p>
+<p>Personalization: medium</p>
+<h3>Broad learning / outside current project bubble</h3>
+<h2>BAIR — RL without TD learning</h2>
+<p>Type: Lab blog</p>
+<p>Link: http://bair.berkeley.edu/blog/2025/11/01/rl-without-td-learning/</p>
+<p>Summary: Older than today but surfaced in the monitored feed and useful as broad RL grounding. It challenges the default temporal-difference framing and is valuable for thinking about credit assignment alternatives in language-model RL. The mechanism signal is that RL improvement can be decomposed into different estimators and backup assumptions, which matters before importing RL vocabulary into LLM post-training.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers / arXiv — SAGA: A Sequence-Adaptive Generative Architecture for Multi-Horizon Probabilistic Forecasting with Adaptive Attentional Decoders</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.19014</p>
+<p>Summary: Forecasting is outside the main LLM/audio bubble, but the architecture is relevant because it uses sequence-adaptive generation and attention over horizons. It offers a way to think about adaptive decoders in non-language sequence domains. Mechanism signal: horizon-conditioned attention and generation policies may transfer intuitions back to long-context or multimodal sequence modeling.</p>
+<p>Personalization: low</p>
+<h3>Skeptical or failure signal</h3>
+<h2>Hugging Face Papers / arXiv — Be Kind, Rewrite: Benign Projections via Rewriting Defend Against LLM Data Poisoning Attacks</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.19147</p>
+<p>Summary: A defensive paper arguing that rewriting poisoned samples can project them toward benign prompt space, especially with open-book benign examples. It is a useful skeptical signal because data curation and rewriting are not neutral preprocessing; they can change the training distribution and possibly erase rare legitimate behaviors. Mechanism signal: preprocessing as representation-space projection.</p>
+<p>Personalization: low</p>
+<h2>HN / GitHub — Ternative: C++/CUDA inference engine for ternary LLMs with runtime LoRA</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://github.com/michelangeloromerochisco/ternative</p>
+<p>Summary: A weak but technical signal that ternary/low-bit inference engines with runtime LoRA remain an active hacker-system niche. It is not promoted as evidence of quality, but it is useful as a reminder that deployed low-bit paths can diverge sharply from research-time assumptions. Mechanism signal: quantization and adapter application order should be tested as causal transformations.</p>
+<p>Personalization: medium</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

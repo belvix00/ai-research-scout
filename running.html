@@ -30,6 +30,19 @@
 <h2>Mechanism questions</h2>
 <h2>Audio ML / speech signals</h2>
 <h2>Inference optimization signals</h2>
+<h2>Daily additions — 2026-05-21</h2>
+<ul>
+<li><strong>Long-context evidence access now needs a positional-geometry + serving-stack split.</strong> RoPE non-identifiability and million-token serving evidence suggest long-context failures can arise from coordinate aliasing, KV/prefill/decode constraints, or both. Experiment: rare early facts plus distractor aliases under RoPE/alternative position encodings and serving/runtime variants; log evidence reachability, attention, logit margin, latency, and KV cost.</li>
+<li><strong>Reasoning-RL trace selection should be scored by information and diversity, not just correctness.</strong> PMI anti-self-distillation, CEPO, GoLongRL, and self-generated mid-training point to trace filtering, contrast construction, data support, and teacher staleness as separate variables. Experiment: fixed rollout set with correctness, PMI-like rarity, evidence contrast, and teacher confidence filters; compare prefix-local KL, branch diversity, promoted-token base rank, and held-out transfer.</li>
+<li><strong>Stage-adaptive multimodal token policies should be treated as factor gates.</strong> Omni-modal token selection may preserve transcript/task averages while losing speaker, phoneme, prosody, timing, or rare visual/acoustic cues. Experiment: emulate token dropping at early/mid/late stages in a frozen speech/multimodal encoder and measure factor probes plus downstream task score.</li>
+<li><strong>Local runtime paths are now a practical drift harness target.</strong> ExecuTorch MLX, low-bit/ternary inference engines, and kernel co-design posts make deployment path a cheap causal perturbation. Experiment: one small model through PyTorch/MLX/quantized/runtime-LoRA paths with rare-fact, long-context, refusal/edit, and code prompts; log output/logit drift, latency, memory, and slice failures.</li>
+<li><strong>Rewriting defenses should be audited for rare-legitimate-data erasure.</strong> Benign rewriting may neutralize poisoned triggers, while language-switching trigger work warns that latent trigger routes can survive surface changes. Experiment: poisoned plus benign rare code-switch/dialect/domain samples; measure trigger removal, rare-factor retention, and latent-route indicators.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across positional/serving evidence access, information-weighted RL traces, multimodal token gates, runtime-path drift, and preprocessing-as-projection.</li>
+<li>Audio/TTS had no main architecture breakthrough today; the durable audio update is to add stage-wise multimodal token selection to the speech-factor survival harness.</li>
+</ul>
 <h2>Daily additions — 2026-05-19</h2>
 <ul>
 <li><strong>Adaptive attention/state interfaces need rare-evidence sign-off.</strong> GQLA, STS, block attention, and speculative decoding variants all expose state layout or token reachability as a policy/control variable. Experiment: dense vs block vs sparse vs latent/KV-compressed attention under equal latency/KV budget on early rare facts, stale corrections, negative evidence, and distractors; log evidence reachability, output/logit drift, and latency.</li>
@@ -357,7 +370,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 09:22</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

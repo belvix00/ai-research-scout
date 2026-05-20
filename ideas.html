@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-19 03:06:03</p>
+<p>Generated: 2026-05-21 03:07:28</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -762,6 +762,72 @@
 <ul>
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
+</ul>
+<h2>Information-weighted reasoning RL trace selection</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-21</li>
+<li>Last seen: 2026-05-21</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Reasoning-RL gains should be attributed to trace information, contrast construction, teacher staleness, and branch diversity, not just final correctness or optimizer brand.</p>
+<h3>Mechanism</h3>
+<p>PMI-like trace scoring and contrastive evidence filters may select reasoning branches that add information relative to the current policy instead of copying high-probability self-distillation traces.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed math/code rollout set with correctness-only, PMI-like, contrastive-evidence, and teacher-confidence filters; compare prefix-local KL, promoted-token base rank, strategy diversity, and held-out transfer.</p>
+<h3>Falsifier</h3>
+<p>If information/contrastive filters do not improve diversity or held-out correctness over correct-trace SFT at equal budget, deprioritize.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-21.md</code> — Anti-self-distillation via PMI, CEPO, GoLongRL, and self-generated mid-training jointly point to trace filtering, contrast construction, data support, and teacher staleness as separate RL variables.</li>
+</ul>
+<h2>Long-context evidence access: positional geometry versus serving state</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-21</li>
+<li>Last seen: 2026-05-21</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>RoPE non-identifiability and million-token serving posts suggest long-context failures should be decomposed into positional aliasing, KV/prefill/decode constraints, retrieval/state interface, and runtime budget.</p>
+<h3>Mechanism</h3>
+<p>Position encodings, KV state layout, and serving schedulers jointly determine whether remote evidence is uniquely addressable and available at decode time.</p>
+<h3>Minimal experiment</h3>
+<p>Synthetic rare-fact/distractor/stale-correction corpus comparing RoPE and alternative position encodings plus serving/runtime variants under matched context, latency, and KV budgets; log evidence reachability, attention, logit margin, and latency.</p>
+<h3>Falsifier</h3>
+<p>If positional swaps and distractor aliases do not create selective failures after budget controls, this is less actionable than retrieval or objective probes.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-21.md</code> — RoPE Distinguishes Neither Positions Nor Tokens and million-token serving evidence suggest long-context access failures may originate in positional coordinate aliasing, serving/KV constraints, or both.</li>
+</ul>
+<h2>Stage-adaptive multimodal token selection as speech-factor gate</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-21</li>
+<li>Last seen: 2026-05-21</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Omni-modal token selection may preserve average task performance while erasing speaker, phoneme, prosody, timing, rare entity, or cross-modal alignment factors.</p>
+<h3>Mechanism</h3>
+<p>Adaptive token policies at different processing stages act as lossy bottlenecks over audio/video evidence before language reasoning.</p>
+<h3>Minimal experiment</h3>
+<p>Mask or drop tokens at early/mid/late stages in frozen speech or multimodal encoders; probe phoneme, speaker, prosody, rare entity, timing, and cross-modal alignment against downstream task score.</p>
+<h3>Falsifier</h3>
+<p>Uniform degradation across all factors and stages would make this less interesting than generic compression.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-21.md</code> — Stage-adaptive token selection in omni-modal LLMs gives a concrete mechanism for testing which speech/audio factors survive token-budget policies.</li>
 </ul>
 <h2>Adaptive attention/state rare-evidence audit</h2>
 <ul>
@@ -3998,7 +4064,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-19 09:22</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

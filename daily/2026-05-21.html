@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-21 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-21</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest clusters were reasoning-RL credit design, long-context/inference state as a systems problem, adaptive token/compute selection, deployment/runtime paths becoming experimental variables, and a few mechanistic failure signals around positional encodings, data poisoning, and latent trigger routes.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>Two architecture-mechanism signals were worth separating from ordinary model-release noise. First, <a href="https://arxiv.org/abs/2605.15514" target="_blank" rel="noopener">RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably</a> turns a widely used positional encoding into an analyzable long-context bottleneck: rotary geometry can create aliasing or non-identifiability problems that are not visible if “long context” is treated as just a larger number in a model card. Relative to the last week’s state-interface theme, this sharpens one subproblem: even before retrieval, memory, or KV retention, the positional coordinate system itself may fail to uniquely bind evidence.</p>
+<p>Second, <a href="https://arxiv.org/abs/2605.20035" target="_blank" rel="noopener">Stage-adaptive Token Selection for Efficient Omni-modal LLMs</a> makes multimodal token selection a stage-wise policy. That matters because omni-modal systems put video and audio into temporally aligned token streams; token dropping is no longer just a speed trick but a lossy perception-to-language interface. Compared with last week’s speech-factor notes, the new angle is that the same selection policy could affect audio, video, and cross-modal alignment differently at different processing stages.</p>
+<p>A smaller but useful architecture/control signal came from OpenReview: <a href="https://openreview.net/forum?id=6T3wJQhvc3" target="_blank" rel="noopener">Task Tokens</a> studies task-token conditioning for behavior foundation models. This is not directly an LLM text paper, but it is useful because task tokens are a crisp example of a learned control register: a small token interface that may bind policy identity, task mode, and transfer behavior without a full model update.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Reasoning-RL continues to fragment into questions about branch distribution, evidence contrast, and self-distillation quality rather than optimizer names. <a href="https://arxiv.org/abs/2605.11609" target="_blank" rel="noopener">Anti-Self-Distillation for Reasoning RL via Pointwise Mutual Information</a> is the cleanest example: it asks whether self-distillation simply copies high-probability traces, and proposes rewarding information-bearing reasoning moves instead. This directly extends the previous “sparse branch/update geometry” memory, but adds a more explicit information-theoretic criterion for what makes a trace worth reinforcing.</p>
+<p><a href="https://arxiv.org/abs/2605.19436" target="_blank" rel="noopener">CEPO: RLVR Self-Distillation using Contrastive Evidence Policy Optimization</a> and <a href="https://arxiv.org/abs/2605.08472" target="_blank" rel="noopener">Mid-Training with Self-Generated Data Improves Reinforcement Learning in Language Models</a> add two neighboring pieces. CEPO emphasizes contrastive evidence construction: what evidence-bearing traces are contrasted, and how that contrast becomes policy signal. The mid-training paper moves the intervention earlier, asking how self-generated data before/during RL changes the support of strategies available to the later RL optimizer. Together they imply that “RL worked” should be decomposed into data support, contrast construction, rollout diversity, teacher staleness, and update locality.</p>
+<p>There was also a long-context RL item, <a href="https://arxiv.org/abs/2605.19577" target="_blank" rel="noopener">GoLongRL</a>, which connects capability-oriented long-context behavior with multitask alignment. The interesting mechanism is that RL may be training evidence-access policies over long sequences, not only a better answer style. If a policy receives reward for a task requiring remote evidence, the credit assignment problem includes which state carrier or position encoding made that evidence available.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Several signals were skeptical or mechanistic rather than celebratory. <a href="https://arxiv.org/abs/2605.18646" target="_blank" rel="noopener">Language-Switching Triggers Take a Latent Detour Through Language Models</a> asks how language-switching backdoor triggers move through internal computation. The useful point is that a trigger can act through latent language circuitry instead of a shallow surface-token rule, which argues for path/activation-level audits when evaluating poisoning or jailbreak defenses.</p>
+<p><a href="https://arxiv.org/abs/2605.19908" target="_blank" rel="noopener">Where Does Authorship Signal Emerge in Encoder-Based Language Models?</a> is smaller but clean: the same encoder and data can yield very different authorship attribution depending on the scoring mechanism. That is a reminder that “the representation contains factor X” is often not a model-only statement; the readout/scoring head can determine whether the factor emerges as usable signal.</p>
+<p>The skeptical data-preprocessing signal was <a href="https://arxiv.org/abs/2605.19147" target="_blank" rel="noopener">Be Kind, Rewrite</a>, which treats LLM rewriting as a benign projection defense against data poisoning. This is useful not just as a security defense but as a warning: rewriting is a distribution-shaping operation. It may remove poisoned triggers, but it may also erase rare legitimate phrasing or minority-domain evidence unless measured carefully.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio did not have a single dominant new TTS architecture today. The main promoted audio signal is indirect: <a href="https://arxiv.org/abs/2605.20035" target="_blank" rel="noopener">stage-adaptive token selection</a> in omni-modal LLMs gives a concrete mechanism to test speech-factor survival. If audio and video tokens are selected at different stages, a model may keep transcript-level content while dropping speaker identity, prosody, timing, or rare acoustic cues.</p>
+<p>The NeMo feed and speech sources stayed on the watchlist rather than becoming headline items. That is a useful editorial distinction: the day’s audio movement is not “new SOTA TTS”; it is a new way to think about multimodal token budgets as speech-factor gates. Relative to the last week, the proposed speech probe should now include stage-specific token selection as another perturbation, alongside compression, codec choice, streaming timing, and transcript disagreement.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference systems produced the clearest practical movement today. Together AI’s <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">Serving DeepSeek-V4: why million-token context is an inference systems problem</a> frames long context as prefill/decode/KV/scheduling/cost engineering rather than a purely architectural feature. This fits the recurring state-interface thesis, but the post makes it operational: million-token evidence access is only real if the serving path can place, keep, schedule, and retrieve the relevant state at acceptable latency.</p>
+<p>BAIR’s <a href="http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/" target="_blank" rel="noopener">Adaptive Parallel Reasoning</a> pushes test-time compute away from one serial chain and toward branch allocation. The important mechanism is not “more reasoning tokens”; it is a controller over how many branches to spawn, which branches to deepen, and when to stop. The failure mode is symmetrical: an adaptive controller can improve average compute efficiency while pruning rare branches that contain the only correct path.</p>
+<p>PyTorch’s <a href="https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/" target="_blank" rel="noopener">ExecuTorch MLX delegate</a> post is important for local experimentation. It lowers the cost floor for Apple Silicon runtime experiments and makes the deployment path itself inspectable. This connects directly to the existing runtime-harness idea: run the same small model through different local paths and measure output/logit/activation drift, latency, and rare-slice failures rather than treating runtime as a transparent backend.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>The most useful tooling signals were not generic model launches. <a href="https://arxiv.org/abs/2605.18827" target="_blank" rel="noopener">Code-Guided Reasoning for Small Language Models</a> uses executable scaffolds for MCQA, which is a concrete interface between small-model generation and external verification. <a href="https://developer.nvidia.com/blog/automating-gpu-kernel-translation-with-ai-agents-cutile-python-to-cutile-jl/feed/" target="_blank" rel="noopener">NVIDIA’s cuTile Python to cuTile.jl agentic translation post</a> is similarly useful because it turns code transformation into an object that needs correctness-speed auditing.</p>
+<p>A weak HN signal, <a href="https://github.com/michelangeloromerochisco/ternative" target="_blank" rel="noopener">Ternative</a>, surfaced as a C++/CUDA inference engine for ternary LLMs with runtime LoRA. This is not strong evidence by itself, but it reinforces that low-bit runtime paths, adapter application order, and quantized inference engines are becoming the environment in which interventions actually live.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>RoPE’s long-context coordinate system got a theoretical failure lens.</strong> <a href="https://arxiv.org/abs/2605.15514" target="_blank" rel="noopener">RoPE Distinguishes Neither Positions Nor Tokens</a> argues that rotary positional embeddings have intrinsic limitations for distinguishing positions/tokens in long contexts. The practical implication is that long-context failure can originate in positional geometry before retrieval, memory, or serving systems are even considered.</li>
+</ol>
+<ol>
+<li><strong>Reasoning self-distillation is being challenged with information criteria.</strong> <a href="https://arxiv.org/abs/2605.11609" target="_blank" rel="noopener">Anti-Self-Distillation for Reasoning RL via PMI</a> suggests that copying one’s own likely traces may reinforce generic behavior. The PMI framing is valuable because it asks whether a reasoning step carries information relative to the current policy, not whether it is merely present in a successful trace.</li>
+</ol>
+<ol>
+<li><strong>Long-context RL is becoming evidence-access training.</strong> <a href="https://arxiv.org/abs/2605.19577" target="_blank" rel="noopener">GoLongRL</a> frames long-context capability with RL and multitask alignment. If this works, the trained policy is not only better at answer formatting; it may learn where and how to use remote context, which makes state-carrier tests central.</li>
+</ol>
+<ol>
+<li><strong>Contrastive evidence is becoming a RLVR design variable.</strong> <a href="https://arxiv.org/abs/2605.19436" target="_blank" rel="noopener">CEPO</a> uses contrastive evidence policy optimization in a self-distillation loop. This fits a broader shift from final-answer rewards to trace/evidence-level contrast construction.</li>
+</ol>
+<ol>
+<li><strong>Self-generated mid-training data may alter RL’s reachable improvement directions.</strong> <a href="https://arxiv.org/abs/2605.08472" target="_blank" rel="noopener">Mid-Training with Self-Generated Data</a> asks how data generated before/during RL changes later RL effectiveness. This is a reminder to measure exploration support and strategy diversity before attributing gains to the final RL objective.</li>
+</ol>
+<ol>
+<li><strong>Omni-modal models are exposing token selection as a perception gate.</strong> <a href="https://arxiv.org/abs/2605.20035" target="_blank" rel="noopener">Stage-adaptive Token Selection</a> makes token retention adaptive by processing stage. The key question is whether the policy preserves low-frequency but decisive audio/video evidence or optimizes average token efficiency.</li>
+</ol>
+<ol>
+<li><strong>Million-token context is being reframed as serving state management.</strong> Together AI’s <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">DeepSeek-V4 serving post</a> emphasizes prefill, decode, KV memory, scheduling, and cost. For research practice, this means long-context claims should be evaluated under real serving budgets, not only offline prompts.</li>
+</ol>
+<ol>
+<li><strong>Parallel reasoning is becoming a controller problem.</strong> BAIR’s <a href="http://bair.berkeley.edu/blog/2026/05/08/adaptive-parallel-reasoning/" target="_blank" rel="noopener">Adaptive Parallel Reasoning</a> argues for adaptively allocating test-time branches. The opportunity is accuracy-per-compute; the failure mode is rare-branch pruning.</li>
+</ol>
+<ol>
+<li><strong>Apple Silicon runtime paths got more useful for local mechanism experiments.</strong> The <a href="https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/" target="_blank" rel="noopener">ExecuTorch MLX delegate</a> gives a concrete path for local GPU execution. It makes runtime perturbation experiments cheaper: compare baseline vs MLX delegate behavior on the same prompts and inspect drift.</li>
+</ol>
+<ol>
+<li><strong>Backdoor triggers may route through latent language circuits.</strong> <a href="https://arxiv.org/abs/2605.18646" target="_blank" rel="noopener">Language-Switching Triggers</a> studies trigger hijacking through internal computation. It is useful skeptical evidence against purely surface-level data-poisoning defenses.</li>
+</ol>
+<ol>
+<li><strong>Authorship signals depend on readout/scoring choices.</strong> <a href="https://arxiv.org/abs/2605.19908" target="_blank" rel="noopener">Where Does Authorship Signal Emerge</a> shows that the scoring mechanism can strongly affect attribution performance even with the same encoder. This is a concrete factor-emergence example for interpretability probes.</li>
+</ol>
+<ol>
+<li><strong>Rewriting defenses are distribution-shaping interventions.</strong> <a href="https://arxiv.org/abs/2605.19147" target="_blank" rel="noopener">Be Kind, Rewrite</a> proposes benign rewriting against poisoned data. The upside is trigger neutralization; the caution is that rewriting can also erase legitimate rare-domain structure.</li>
+</ol>
+<ol>
+<li><strong>Agentic GPU-kernel translation needs correctness-speed audits.</strong> NVIDIA’s <a href="https://developer.nvidia.com/blog/automating-gpu-kernel-translation-with-ai-agents-cutile-python-to-cutile-jl/feed/" target="_blank" rel="noopener">cuTile translation post</a> is useful because generated/translated kernels can compile while changing memory behavior or speed. Treat this as a toolchain audit problem, not a pure coding demo.</li>
+</ol>
+<ol>
+<li><strong>Ternary inference with runtime LoRA remains a weak but relevant deployment signal.</strong> <a href="https://github.com/michelangeloromerochisco/ternative" target="_blank" rel="noopener">Ternative</a> is not primary evidence, but it reinforces that intervention validity should be tested in the low-bit/runtime environments people actually use.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ol>
+<li><strong>State/evidence access is splitting across layers of the stack.</strong> RoPE geometry, long-context RL, million-token serving, adaptive token selection, and runtime paths all decide what evidence is accessible, but at different levels: positional encoding, training objective, serving system, perceptual token policy, and deployment backend.</li>
+</ol>
+<ol>
+<li><strong>Reasoning-RL gains should be attributed to the full data/trace pipeline, not the named optimizer.</strong> PMI self-distillation, CEPO, GoLongRL, and self-generated mid-training point to data support, contrast construction, teacher staleness, rollout diversity, and branch-local update geometry.</li>
+</ol>
+<ol>
+<li><strong>No single dominant pattern today.</strong> The day was heterogeneous: architecture theory, RL credit design, multimodal token budgets, inference serving, local runtimes, and skeptical data/security signals all mattered independently.</li>
+</ol>
+<h2>Five research opportunities</h2>
+<h3>1. Test RoPE positional aliasing as rare-evidence failure, not only long-context perplexity</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.15514" target="_blank" rel="noopener">RoPE Distinguishes Neither Positions Nor Tokens</a>, <a href="https://www.together.ai/blog/serving-deepseek-v4-why-million-token-context-is-an-inference-systems-problem" target="_blank" rel="noopener">Serving DeepSeek-V4</a>.</p>
+<p>Mechanism: rotary positional geometry may fail to uniquely bind token identity and position in long contexts; serving/KV constraints may amplify the failure by making evidence retrieval sparse or approximate.</p>
+<p>Minimal experiment/probe: build a small synthetic long-context dataset with early rare facts, repeated distractor facts, stale corrections, and position-swapped near-duplicates. Compare RoPE baseline, alternative positional encoding, retrieval/signature access, and full-context prompting under equal context and latency budgets. Measure exact rare-fact accuracy, attention/evidence reachability, and logit margin on the decisive token.</p>
+<p>Falsifier: if controlled position swaps and distractor aliases do not selectively hurt RoPE-style models more than alternatives under matched scale/context, the aliasing concern is less actionable for small experiments.</p>
+<p>Confidence: medium.</p>
+<h3>2. Compare reasoning-RL trace filters by information gain and branch diversity</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.11609" target="_blank" rel="noopener">Anti-Self-Distillation via PMI</a>, <a href="https://arxiv.org/abs/2605.19436" target="_blank" rel="noopener">CEPO</a>, <a href="https://arxiv.org/abs/2605.08472" target="_blank" rel="noopener">Mid-Training with Self-Generated Data</a>.</p>
+<p>Mechanism: self-distillation may reinforce common traces unless the selected trace contains information relative to the current policy. Contrastive evidence and self-generated data may help only when they widen useful branch support rather than copying stale teacher behavior.</p>
+<p>Minimal experiment/probe: fixed set of math/code rollouts from a small model; score traces by final correctness, PMI-like rarity, evidence contrast, and teacher confidence. Compare tiny SFT/DPO/RL-style updates and log prefix-local KL, promoted-token base rank, diversity of correct strategies, and held-out generalization.</p>
+<p>Falsifier: if PMI/contrastive filtering does not improve diversity or held-out correctness over simple correct-trace SFT at the same token/update budget, the extra mechanism is not buying much.</p>
+<p>Confidence: medium-high.</p>
+<h3>3. Treat stage-adaptive multimodal token selection as a speech-factor survival test</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.20035" target="_blank" rel="noopener">Stage-adaptive Token Selection for Efficient Omni-modal LLMs</a>, NeMo speech infrastructure source: <a href="https://developer.nvidia.com/blog/tag/nemo/feed/" target="_blank" rel="noopener">NVIDIA NeMo feed</a>.</p>
+<p>Mechanism: adaptive token selection can preserve transcript-level semantics while dropping speaker identity, phonemes, prosody, timing, or rare acoustic events. Different processing stages may sacrifice different factors.</p>
+<p>Minimal experiment/probe: take a small public speech/video representation pipeline or frozen speech encoder. Emulate stage-wise token dropping by masking tokens at early/mid/late layers or time windows. Probe phoneme, speaker, prosody, rare entity, and timing labels; compare average task score against factor-specific survival.</p>
+<p>Falsifier: if factor probes and downstream speech tasks degrade uniformly with token dropping, there is no special stage/factor interaction to exploit.</p>
+<p>Confidence: medium.</p>
+<h3>4. Build a local runtime-path drift harness around PyTorch/ExecuTorch/MLX</h3>
+<p>Evidence links: <a href="https://pytorch.org/blog/running-pytorch-models-on-apple-silicon-gpus-with-the-executorch-mlx-delegate/" target="_blank" rel="noopener">ExecuTorch MLX delegate</a>, <a href="https://github.com/michelangeloromerochisco/ternative" target="_blank" rel="noopener">Ternative ternary inference engine</a>, <a href="https://pytorch.org/blog/in-kernel-broadcast-optimization-co-designing-kernels-for-recsys-inference/" target="_blank" rel="noopener">In-kernel broadcast optimization</a>.</p>
+<p>Mechanism: deployment paths are causal transformations. Operator lowering, low-bit weights, adapter application order, kernel fusion, and device-specific execution can change logits or failure slices while improving speed.</p>
+<p>Minimal experiment/probe: one small open model and one prompt suite: rare facts, long-context distractors, refusal/edit behavior, and arithmetic/code. Run baseline PyTorch, MLX/ExecuTorch path if available, quantized path, and optionally runtime LoRA. Log output agreement, logprob/logit drift where accessible, latency, memory, and slice failures.</p>
+<p>Falsifier: if all paths are behaviorally and numerically stable across the adversarial slices, runtime drift is lower priority than training/objective probes.</p>
+<p>Confidence: high for feasibility, medium for novelty.</p>
+<h3>5. Audit rewriting-based poisoning defenses for rare-legitimate-data erasure</h3>
+<p>Evidence links: <a href="https://arxiv.org/abs/2605.19147" target="_blank" rel="noopener">Be Kind, Rewrite</a>, <a href="https://arxiv.org/abs/2605.18646" target="_blank" rel="noopener">Language-Switching Triggers</a>.</p>
+<p>Mechanism: rewriting can project poisoned samples toward benign prompt space, but the same projection may erase rare but legitimate dialect, code-switching, domain terminology, or minority-language cues. Latent trigger routes may survive surface rewriting.</p>
+<p>Minimal experiment/probe: construct a tiny instruction dataset with benign rare dialect/code-switch/domain examples plus known trigger patterns. Apply rewriting with and without open-book benign exemplars. Measure trigger removal, rare-feature retention, language/dialect classification, and downstream task accuracy on rare slices.</p>
+<p>Falsifier: if rewriting removes triggers without measurable rare-slice degradation and latent-trigger probes show no hidden route survival, the concern is manageable.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><a href="https://openreview.net/forum?id=6T3wJQhvc3" target="_blank" rel="noopener">Task Tokens</a>: revisit if follow-up reviews or code clarify whether token interfaces causally bind behavior or merely encode task labels.</li>
+<li><a href="https://arxiv.org/abs/2605.18827" target="_blank" rel="noopener">Code-Guided Reasoning for Small Language Models</a>: useful for small-model executable scaffold experiments; revisit if artifacts are runnable.</li>
+<li><a href="https://arxiv.org/abs/2605.17659" target="_blank" rel="noopener">Bug or Feature^2: Weight Drift, Activation Sparsity, and Spikes</a>: potentially important for training dynamics, but needs a closer read before becoming an experiment.</li>
+<li><a href="https://arxiv.org/abs/2605.19908" target="_blank" rel="noopener">Where Does Authorship Signal Emerge</a>: candidate factor-emergence probe for readout/head dependence.</li>
+<li><a href="https://developer.nvidia.com/blog/automating-gpu-kernel-translation-with-ai-agents-cutile-python-to-cutile-jl/feed/" target="_blank" rel="noopener">NVIDIA cuTile agentic translation</a>: revisit for a kernel correctness-speed audit template.</li>
+<li><a href="http://bair.berkeley.edu/blog/2025/11/01/rl-without-td-learning/" target="_blank" rel="noopener">BAIR RL without TD learning</a>: older but useful background for avoiding sloppy RL analogies in LLM post-training.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
