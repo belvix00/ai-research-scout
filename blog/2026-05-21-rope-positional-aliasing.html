@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>RoPE Positional Aliasing: When Long Context Fails Before Retrieval · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>RoPE Positional Aliasing: When Long Context Fails Before Retrieval</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>The 2026-05-21 scout had a long-context cluster that is worth separating into two layers:</p>
+<ul>
+<li><strong>RoPE Distinguishes Neither Positions Nor Tokens in Long Contexts, Provably</strong> made the positional-coordinate system itself a possible failure source.</li>
+<li>Together AI&#x27;s million-token serving writeup reframed long context as a prefill/decode/KV/scheduling problem.</li>
+<li>GoLongRL and the running state-interface notes suggest RL may train evidence-access policies, but those policies can only use evidence if the representation and serving path keep it addressable.</li>
+</ul>
+<p>The foundations refresher here is not “what is RoPE?” or “why positional embeddings exist.” The useful object is the <strong>positional kernel</strong> induced by rotary phases. RoPE gives attention a relative-position-dependent geometry. That geometry is elegant locally, but periodic. In long contexts, different offsets can become hard to distinguish in the frequency bands that the model actually uses. If rare evidence is weak, early, and surrounded by aliases, the model can fail before retrieval, KV retention, or reasoning even get a fair chance.</p>
+<p>The mechanism question:</p>
+<blockquote>When does a token at the right content but wrong position become geometrically similar enough to the true evidence that attention, logits, or downstream credit cannot reliably bind the fact to its location?</blockquote>
+<h2>RoPE as a relative-position kernel</h2>
+<p>Take a single attention head with even head dimension $$d$$. Split a query/key vector into two-dimensional pairs. For pair $$j$$, RoPE rotates by an angle proportional to position:</p>
+<div class="math-block">$$R_j(p)=
+\begin{pmatrix}
+\cos(p\omega_j) &amp; -\sin(p\omega_j) \\
+\sin(p\omega_j) &amp; \cos(p\omega_j)
+\end{pmatrix},$$</div>
+<p>where $$\omega_j$$ is the angular frequency for that pair. The rotated query and key are</p>
+<div class="math-block">$$\tilde q_p^{(j)} = R_j(p) q_p^{(j)},
+\qquad
+\tilde k_s^{(j)} = R_j(s) k_s^{(j)}.$$</div>
+<p>The attention logit contribution from that pair is</p>
+<div class="math-block">$$\langle \tilde q_p^{(j)}, \tilde k_s^{(j)}\rangle
+= \left(q_p^{(j)}\right)^\top R_j(p)^\top R_j(s) k_s^{(j)}.$$</div>
+<p>Because rotations compose by angle differences,</p>
+<div class="math-block">$$R_j(p)^\top R_j(s)=R_j(s-p),$$</div>
+<p>so</p>
+<div class="math-block">$$\langle \tilde q_p^{(j)}, \tilde k_s^{(j)}\rangle
+= \left(q_p^{(j)}\right)^\top R_j(s-p) k_s^{(j)}.$$</div>
+<p>Summed over pairs,</p>
+<div class="math-block">$$\tilde q_p^\top \tilde k_s
+= \sum_{j=1}^{d/2} \left(q_p^{(j)}\right)^\top R_j(s-p) k_s^{(j)}.$$</div>
+<p>So RoPE does not insert an arbitrary learned absolute-position label into attention. It biases attention through a <strong>relative displacement</strong> $$\Delta=s-p$$, expressed by a bank of sinusoids:</p>
+<div class="math-block">$$\Delta \mapsto \{\cos(\omega_j\Delta),\sin(\omega_j\Delta)\}_{j=1}^{d/2}.$$</div>
+<p>This is the first important point: the model sees relative position through phases on a finite frequency grid.</p>
+<h2>If content is held fixed, positions are compared by phase fingerprints</h2>
+<p>To isolate the positional part, assume the content vectors are similar enough that the main difference is displacement. A rough positional similarity between two offsets $$\Delta$$ and $$\Delta&#x27;$$ is the normalized phase-kernel</p>
+<div class="math-block">$$K(\Delta,\Delta&#x27;)
+=\frac{2}{d}\sum_{j=1}^{d/2}\cos\big(\omega_j(\Delta-\Delta&#x27;)\big).$$</div>
+<p>Equivalently, if $$\delta=\Delta-\Delta&#x27;$$,</p>
+<div class="math-block">$$K(\delta)=\frac{2}{d}\sum_{j=1}^{d/2}\cos(\omega_j\delta).$$</div>
+<p>Perfect local distinction would mean</p>
+<div class="math-block">$$K(0)=1,
+\qquad
+K(\delta)\approx 0 \text{ for all relevant } \delta\ne 0.$$</div>
+<p>But RoPE frequencies are finite, structured, and periodic. For each frequency, phase repeats whenever</p>
+<div class="math-block">$$\omega_j\delta \approx 2\pi m_j,
+\qquad m_j\in\mathbb Z.$$</div>
+<p>Exact simultaneous repetition across all $$j$$ is not required for trouble. Attention is noisy, content-dependent, softmaxed, and concentrated in a subspace. If the dimensions that carry a given retrieval behavior have high kernel similarity for two offsets, the model can confuse them even if other unused dimensions would distinguish them.</p>
+<p>A practical alias condition is therefore not</p>
+<div class="math-block">$$\omega_j\delta=2\pi m_j \quad \forall j.$$</div>
+<p>It is closer to a weighted condition:</p>
+<div class="math-block">$$K_w(\delta)=\sum_j w_j \cos(\omega_j\delta) \text{ is large},
+\qquad
+w_j\ge 0,\quad \sum_j w_j=1,$$</div>
+<p>where $$w_j$$ reflects the frequency bands actually used by the head/layer/task. Two positions can be theoretically distinguishable by the full basis while practically confusable under the learned weighting.</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RoPE phase fingerprints can alias for distant offsets">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="30" y="42" width="220" height="190" rx="18" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+  <text x="140" y="74" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#0f172a">true evidence</text>
+  <text x="140" y="101" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">token at offset Δ</text>
+  <g transform="translate(72,126)">
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#2563eb" stroke-width="2" />
+    <line x1="0" y1="0" x2="19" y2="-10" stroke="#2563eb" stroke-width="3" />
+    <circle cx="70" cy="0" r="22" fill="none" stroke="#2563eb" stroke-width="2" />
+    <line x1="70" y1="0" x2="51" y2="-11" stroke="#2563eb" stroke-width="3" />
+    <circle cx="140" cy="0" r="22" fill="none" stroke="#2563eb" stroke-width="2" />
+    <line x1="140" y1="0" x2="143" y2="22" stroke="#2563eb" stroke-width="3" />
+  </g>
+  <text x="140" y="188" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">phase fingerprint</text>
+
+  <rect x="295" y="42" width="220" height="190" rx="18" fill="#fef3c7" stroke="#d97706" stroke-width="2" />
+  <text x="405" y="74" text-anchor="middle" font-family="sans-serif" font-size="16" fill="#0f172a">distractor alias</text>
+  <text x="405" y="101" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">token at offset Δ′</text>
+  <g transform="translate(337,126)">
+    <circle cx="0" cy="0" r="22" fill="none" stroke="#d97706" stroke-width="2" />
+    <line x1="0" y1="0" x2="18" y2="-11" stroke="#d97706" stroke-width="3" />
+    <circle cx="70" cy="0" r="22" fill="none" stroke="#d97706" stroke-width="2" />
+    <line x1="70" y1="0" x2="52" y2="-10" stroke="#d97706" stroke-width="3" />
+    <circle cx="140" cy="0" r="22" fill="none" stroke="#d97706" stroke-width="2" />
+    <line x1="140" y1="0" x2="144" y2="21" stroke="#d97706" stroke-width="3" />
+  </g>
+  <text x="405" y="188" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#334155">nearly same phases in used bands</text>
+
+  <rect x="590" y="72" width="170" height="130" rx="18" fill="#f8fafc" stroke="#64748b" stroke-width="2" />
+  <text x="675" y="107" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">attention</text>
+  <text x="675" y="132" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">softmax over</text>
+  <text x="675" y="152" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">content × position</text>
+  <text x="675" y="178" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#dc2626">binding margin shrinks</text>
+
+  <line x1="250" y1="137" x2="286" y2="137" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="515" y1="137" x2="582" y2="137" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+</svg></div>
+<h2>Softmax turns small aliasing into margin loss</h2>
+<p>Suppose a query at position $$p$$ should retrieve evidence at position $$s_*$$. There is also a distractor at $$s_d$$ with similar content. Let the attention logits be</p>
+<div class="math-block">$$\ell_* = \tilde q_p^\top \tilde k_{s_*},
+\qquad
+\ell_d = \tilde q_p^\top \tilde k_{s_d}.$$</div>
+<p>The probability of attending to the evidence rather than the distractor depends on the logit margin</p>
+<div class="math-block">$$M = \ell_* - \ell_d.$$</div>
+<p>For a two-item simplification,</p>
+<div class="math-block">$$P(*)=\frac{e^{\ell_*}}{e^{\ell_*}+e^{\ell_d}}
+=\sigma(M).$$</div>
+<p>If positional aliasing increases the distractor logit by $$\epsilon$$ or decreases the evidence logit by $$\epsilon$$, the margin changes by that amount. The sensitivity is</p>
+<div class="math-block">$$\frac{\partial P(*)}{\partial M}=\sigma(M)(1-\sigma(M)).$$</div>
+<p>This derivative is largest when $$M\approx 0$$. That is exactly the rare-evidence setting: the model has weak content evidence, many plausible distractors, or an early fact that competes with recency and surface similarity. In other words, aliasing is most damaging where long-context benchmarks usually hide the decisive clue.</p>
+<p>With many distractors $$D$$, the evidence attention mass is</p>
+<div class="math-block">$$\alpha_*=
+\frac{e^{\ell_*}}{e^{\ell_*}+\sum_{d\in D}e^{\ell_d}}.$$</div>
+<p>Define the aggregate distractor log-sum-exp</p>
+<div class="math-block">$$L_D=\log\sum_{d\in D}e^{\ell_d}.$$</div>
+<p>Then</p>
+<div class="math-block">$$\alpha_* = \sigma(\ell_* - L_D).$$</div>
+<p>This shows a second failure mode: no single distractor needs to beat the evidence. Many weak aliases can collectively reduce the effective margin.</p>
+<h2>The binding problem: content identity and position identity are multiplied, not checked separately</h2>
+<p>A common intuition is: if the content is unique, the model can ignore position; if position matters, RoPE gives relative position. Long-context tasks often violate both assumptions. They contain repeated templates:</p>
+<ul>
+<li>“The passcode is X.”</li>
+<li>“Ignore the previous passcode; the real passcode is Y.”</li>
+<li>“In the earlier contract, clause 17 has exception Z.”</li>
+<li>“For patient A, use dosage B; for patient A in the updated note, use dosage C.”</li>
+</ul>
+<p>The model must bind <strong>which content</strong> to <strong>which temporal or document location</strong> under conflicts. Attention logit geometry combines these terms. A schematic decomposition is</p>
+<div class="math-block">$$\ell(p,s)
+\approx C(q_p,k_s) + P(p-s; q_p,k_s),$$</div>
+<p>where $$C$$ is content compatibility and $$P$$ is the RoPE-dependent positional compatibility. This is not a literal architectural separation, because RoPE rotates content-bearing dimensions. But it is a useful diagnostic abstraction.</p>
+<p>A binding failure happens when</p>
+<div class="math-block">$$C(q_p,k_{s_d}) + P(p-s_d)
+\ge
+C(q_p,k_{s_*}) + P(p-s_*).$$</div>
+<p>The dangerous distractor is not necessarily the most semantically similar token or the nearest token. It is the token that wins the <strong>sum</strong> of content similarity, positional phase similarity, recency priors, and learned head specialization.</p>
+<p>This is why RoPE aliasing should be tested with position-swapped near-duplicates, not just random needle-in-haystack retrieval. A random haystack mostly measures semantic uniqueness plus context length. An aliasing harness needs repeated, plausible, position-sensitive facts.</p>
+<h2>Long context is a stack: positional geometry, state carrier, and serving path</h2>
+<p>The scout&#x27;s recurring state-interface theme matters because RoPE is only one layer. Evidence access in a deployed long-context system depends on at least three transformations:</p>
+<ol>
+<li><strong>Coordinate system:</strong> does the positional encoding make the evidence distinguishable from aliases?</li>
+<li><strong>State carrier:</strong> does full context, retrieval, learned memory, KV retention, sparse attention, or persistent session state keep the evidence available?</li>
+<li><strong>Serving path:</strong> do prefill/decode scheduling, KV layout, quantization, cache policies, and batching preserve the same decision geometry?</li>
+</ol>
+<p>A failure in any layer can look like “the model cannot use long context.” The measurement goal is to localize which layer caused it.</p>
+<p>One way to write the decomposition is to define an evidence variable $$E$$, a state representation $$S$$, and an output $$Y$$. The system succeeds only if the evidence remains informative at decision time:</p>
+<div class="math-block">$$I(E;Y\mid x) &gt; 0.$$</div>
+<p>But the path is mediated:</p>
+<div class="math-block">$$E \longrightarrow Z_{\text{pos}} \longrightarrow S_{\text{KV/memory/retrieval}} \longrightarrow H_{\text{decode}} \longrightarrow Y.$$</div>
+<p>A bottleneck at the positional layer means</p>
+<div class="math-block">$$I(E;Z_{\text{pos}})$$</div>
+<p>is already reduced by aliasing or non-identifiability. A serving bottleneck means the information existed in principle but was evicted, approximated, quantized, or not scheduled. A reasoning/RL bottleneck means evidence was available but the policy failed to use it.</p>
+<p>The practical diagnostic is to change one layer at a time.</p>
+<h2>A small derivation for aliasing stress</h2>
+<p>Let a task contain one true evidence token and one distractor with similar content. Model their logits as</p>
+<div class="math-block">$$\ell_* = c_* + \lambda K_w(\Delta_*),
+\qquad
+\ell_d = c_d + \lambda K_w(\Delta_d),$$</div>
+<p>where $$c_*$$ and $$c_d$$ are content terms, $$K_w$$ is the weighted RoPE positional kernel relative to the query, and $$\lambda$$ is the effective strength of the positional head/subspace.</p>
+<p>The evidence wins when</p>
+<div class="math-block">$$M = (c_* - c_d) + \lambda\left(K_w(\Delta_*)-K_w(\Delta_d)\right) &gt; 0.$$</div>
+<p>Define content advantage</p>
+<div class="math-block">$$A_c=c_* - c_d$$</div>
+<p>and positional advantage</p>
+<div class="math-block">$$A_p=K_w(\Delta_*)-K_w(\Delta_d).$$</div>
+<p>Then</p>
+<div class="math-block">$$M=A_c+\lambda A_p.$$</div>
+<p>This gives three experimentally separable regimes:</p>
+<ol>
+<li><strong>Content-dominant:</strong> $$A_c\gg |\lambda A_p|$$. Aliasing does little; the fact is semantically unique.</li>
+<li><strong>Position-dominant:</strong> $$A_c\approx 0$$ and success depends on $$A_p&gt;0$$. This is the clean RoPE stress case.</li>
+<li><strong>Alias inversion:</strong> $$A_p&lt;0$$ and $$|\lambda A_p|&gt;A_c$$. The distractor wins despite content being no better.</li>
+</ol>
+<p>Many headline long-context tests live in regime 1. Mechanism tests should target regimes 2 and 3.</p>
+<p>For multiple distractors, replace the maximum competitor by log-sum-exp:</p>
+<div class="math-block">$$M_{\mathrm{eff}} = \ell_* - \log\sum_{d\in D}e^{\ell_d}.$$</div>
+<p>Even if every individual distractor has slightly lower logit,</p>
+<div class="math-block">$$\ell_d = \ell_* - \gamma,$$</div>
+<p>with $$n$$ similar distractors,</p>
+<div class="math-block">$$M_{\mathrm{eff}} = \ell_* - \log(n e^{\ell_* - \gamma}) = \gamma - \log n.$$</div>
+<p>So evidence retrieval collapses when</p>
+<div class="math-block">$$\gamma &lt; \log n.$$</div>
+<p>This is a crisp reason to include repeated aliases. Long-context failures can arise from the <strong>multiplicity</strong> of plausible wrong bindings, not only from one strong confounder.</p>
+<h2>What RoPE scaling and extrapolation change</h2>
+<p>Context extension methods often rescale positions or frequencies. Abstractly, replace $$\omega_j$$ with $$\omega&#x27;_j$$ or positions $$p$$ with $$g(p)$$. The phase difference becomes</p>
+<div class="math-block">$$\omega_j\big(g(s)-g(p)\big)$$</div>
+<p>or</p>
+<div class="math-block">$$\omega&#x27;_j(s-p).$$</div>
+<p>This can reduce phase wrap in some bands, but it changes the geometry the model learned during training. The question is not only “can the phase represent longer distances?” It is also whether the learned heads still use the frequency bands in a way that separates task-relevant offsets.</p>
+<p>A head trained to use certain phase differences as local syntactic or document-structure cues may see those cues compressed after scaling. In kernel terms, scaling changes</p>
+<div class="math-block">$$K_w(\delta)=\sum_j w_j\cos(\omega_j\delta)$$</div>
+<p>to</p>
+<div class="math-block">$$K&#x27;_w(\delta)=\sum_j w_j\cos(\omega&#x27;_j\delta)$$</div>
+<p>or</p>
+<div class="math-block">$$K&#x27;_w(p,s)=\sum_j w_j\cos(\omega_j(g(s)-g(p))).$$</div>
+<p>The right measurement is therefore not generic perplexity at long length. It is whether the <strong>binding margin</strong> survives for rare, position-sensitive evidence:</p>
+<div class="math-block">$$M&#x27; = (c_* - c_d)+\lambda\left(K&#x27;_w(\Delta_*)-K&#x27;_w(\Delta_d)\right).$$</div>
+<p>If scaling preserves average local behavior but shrinks margins on rare long-distance conflicts, aggregate metrics will look fine while evidence access fails.</p>
+<h2>Why this matters for RL on long context</h2>
+<p>GoLongRL-style evidence-access training raises a subtle credit question. Suppose RL improves long-context QA. Did it learn a better reasoning policy, or did it learn heuristics that exploit the positional/serving interface available during training?</p>
+<p>If the reward is final-answer correctness,</p>
+<div class="math-block">$$\nabla_\theta J
+=\mathbb{E}\left[R(y)\sum_t\nabla_\theta\log\pi_\theta(y_t\mid h_t)\right],$$</div>
+<p>then the gradient reinforces whatever trace happened to retrieve the evidence. If retrieval success depends on a particular RoPE scaling, KV layout, sparse-attention rule, or serving backend, the learned behavior may not transfer when that state interface changes.</p>
+<p>The measurement should include cross-interface generalization:</p>
+<div class="math-block">$$\Delta_{\mathrm{iface}} =
+\mathrm{Acc}(\text{train interface})-
+\mathrm{Acc}(\text{held-out interface}).$$</div>
+<p>For a mechanism-preserving evidence-access policy, $$\Delta_{\mathrm{iface}}$$ should be small after controlling for cost. If it is large, RL may have optimized against artifacts of one positional/serving coordinate system.</p>
+<h2>What to measure</h2>
+<p>For a RoPE / long-context evidence-access audit, log mechanism-level quantities rather than only exact-match accuracy:</p>
+<ol>
+<li><strong>Binding margin:</strong></li>
+</ol>
+<div class="math-block">$$   M=\ell_* - \max_{d\in D}\ell_d$$</div>
+<p>   and the log-sum-exp version</p>
+<div class="math-block">$$   M_{\mathrm{eff}}=\ell_* - \log\sum_{d\in D}e^{\ell_d}.$$</div>
+<ol>
+<li><strong>Evidence attention mass:</strong> attention paid to true evidence vs repeated aliases, by layer/head.</li>
+<li><strong>Alias distance profile:</strong> accuracy and margin as a function of $$\delta=\Delta_* - \Delta_d$$.</li>
+<li><strong>Frequency-band sensitivity:</strong> if accessible, ablate or reweight RoPE dimensions/bands and measure margin changes.</li>
+<li><strong>Position-swap asymmetry:</strong> swap the true fact and distractor positions while holding content constant.</li>
+<li><strong>State-carrier comparison:</strong> full context, retrieval, compact summary/signature, learned memory, KV-retention, sparse attention.</li>
+<li><strong>Serving-path drift:</strong> baseline PyTorch/vLLM/MLX/quantized/KV-compressed paths where possible; log output/logit drift and latency.</li>
+<li><strong>Multiplicity stress:</strong> number of near-duplicate distractors $$n$$ required to collapse $$M_{\mathrm{eff}}$$.</li>
+<li><strong>Cost-normalized result:</strong> accuracy per token, KV byte, prefill time, decode latency, or retrieval call budget.</li>
+</ol>
+<h2>Minimal experiment</h2>
+<p>Build a synthetic but adversarial long-context binding benchmark.</p>
+<ol>
+<li>Generate documents with repeated templates and rare facts:</li>
+</ol>
+<p>   - true early fact;</p>
+<p>   - later distractor fact;</p>
+<p>   - stale correction;</p>
+<p>   - negative evidence;</p>
+<p>   - position-swapped near-duplicate.</p>
+<ol>
+<li>Construct questions whose answer depends on the exact location, recency rule, or document section, not only semantic match.</li>
+<li>Evaluate at several context lengths and alias offsets $$\delta$$.</li>
+<li>Compare:</li>
+</ol>
+<p>   - RoPE baseline;</p>
+<p>   - RoPE-scaled/context-extended variant if available;</p>
+<p>   - alternative positional encoding if available;</p>
+<p>   - retrieval or raw-tool access;</p>
+<p>   - summary/signature access;</p>
+<p>   - KV-retention or sparse-attention path if available.</p>
+<ol>
+<li>For local models, capture attention/logprob where possible. If attention is unavailable, approximate with answer logit margin or forced-choice logprobs.</li>
+<li>Plot binding margin and accuracy against alias offset, number of distractors, and serving/runtime path.</li>
+</ol>
+<p>A useful falsifier:</p>
+<div class="math-block">$$M(\delta),\; M_{\mathrm{eff}}(\delta),\; \text{and accuracy}$$</div>
+<p>show no RoPE-specific degradation on position-swapped aliases once model size, context length, and serving budget are controlled. If that happens, the practical bottleneck is more likely retrieval policy, KV budget, or task format than rotary geometry.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Semantic uniqueness hides the mechanism.</strong> A random needle is too easy because content wins without positional binding.</li>
+<li><strong>Confounding RoPE with serving limits.</strong> KV eviction, chunking, quantization, and prefill/decode scheduling can mimic positional failure.</li>
+<li><strong>Attention-as-explanation overclaim.</strong> Attention to evidence is useful but not sufficient; pair it with logit margins and controlled swaps.</li>
+<li><strong>Scaling helps average perplexity but hurts rare binding.</strong> Context-extension methods can preserve common local behavior while shrinking margins on rare conflicts.</li>
+<li><strong>Alias multiplicity beats single-distractor tests.</strong> Many weak distractors can collapse log-sum-exp margin even if no single distractor dominates.</li>
+<li><strong>Head/layer specialization is ignored.</strong> The full RoPE basis may distinguish positions, but the learned subspace used for the task may not.</li>
+<li><strong>RL learns interface-specific shortcuts.</strong> Long-context RL may improve on the training backend while failing under a different state carrier or runtime path.</li>
+<li><strong>Aggregate metric camouflage.</strong> Long-context average accuracy can rise while stale corrections, negative evidence, or early rare facts fail.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant scout notes and questions:</p>
+<ul>
+<li>[[2026-05-21]]: RoPE non-identifiability and million-token serving split long-context evidence access into positional geometry and systems state.</li>
+<li>[[2026-05-19]]: adaptive sparse/state attention and latent/KV layouts were framed as rare-evidence interfaces.</li>
+<li>[[2026-05-16]]: the weekly synthesis promoted state-interface benchmarks beyond generic long context.</li>
+<li>[[questions#Open questions]]: “Do RoPE positional aliasing effects independently predict rare-evidence failures after controlling for serving/KV budget and retrieval interface?”</li>
+<li>[[questions#Candidate experiments]]: <strong>Cost-normalized state / long-context access benchmark</strong> should include position-swapped alias cases and binding-margin logging.</li>
+</ul>
+<p>Refined question after this derivation: under equal token/KV/latency budget, how much rare-evidence failure is explained by RoPE phase-kernel aliasing versus state-carrier loss or serving-path drift?</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 08:04</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
