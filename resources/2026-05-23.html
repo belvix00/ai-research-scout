@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-23 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-23</h1>
+<p>Buckets covered: Core DL/LLM research; Training/RL/math/mech interp; Audio/TTS/speech; Inference/ML infra/GPU; Broad learning / outside current project bubble; Skeptical or failure signal.</p>
+<h2>arXiv — Vector Policy Optimization: Training for Diversity Improves Test-Time Search</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22817v1</p>
+<p>Summary: A reasoning-RL paper arguing that standard likelihood-style updates can under-prepare models for inference-time search, where many diverse rollouts are sampled and filtered by task rewards. The mechanism signal is explicit diversity training: optimize a vector-valued policy objective so the rollout set has more useful behavioral spread, not merely higher average correctness. Collected because it connects post-training objectives to test-time compute/search behavior.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Two is better than one: A Collapse-free Multi-Reward RLIF Training Framework</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22620v1</p>
+<p>Summary: Proposes a reinforcement-learning-from-internal-feedback setup with multiple reward signals to reduce collapse in reasoning post-training. The useful mechanism is reward-channel diversification: internal evaluators can provide a training signal, but single-channel reward can compress behavior, so multi-reward structure becomes a stability control. It is relevant to RLVR/GRPO-style questions without being only a benchmark result.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — DelTA: Discriminative Token Credit Assignment for Reinforcement Learning from Verifiable Rewards</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.21467</p>
+<p>Summary: DelTA targets the response-level-to-token-level credit-assignment gap in RLVR. It treats the hard part as identifying which tokens or spans caused verifiable success, rather than spreading outcome reward uniformly over the whole trace. Collected because token credit maps are becoming a repeated mechanism in reasoning-model training.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Clipping Bottleneck: Stabilizing RLVR via Stochastic Recovery of Near-Boundary Signals</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22703v1</p>
+<p>Summary: Studies instability in RLVR through the lens of clipped policy-gradient updates and near-boundary signals that may be discarded or distorted. The core mechanism is optimizer geometry: clipping can protect against large destructive updates while also hiding useful weak advantages. This is a good skeptical/diagnostic companion to new RLVR methods.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Search-E1: Self-Distillation Drives Self-Evolution in Search-Augmented Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22511v1</p>
+<p>Summary: Presents a search-augmented reasoning recipe where self-distillation helps a model improve with less elaborate external machinery. The mechanism signal is a feedback loop between retrieval/search traces, generated reasoning, and distilled training data. It is useful for understanding when self-generated traces are improvement signals versus stale self-imitation.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Unified Data Selection for LLM Reasoning</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22389v1</p>
+<p>Summary: Addresses the bottleneck of selecting high-value reasoning data for long-CoT training. The collected mechanism is data selection as gradient routing: the model&#x27;s reasoning ability depends not only on total data volume but on which examples expose useful intermediate structure and failure boundaries. Useful broad learning item for post-training/data-mixture design.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Tokenisation via Convex Relaxations</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.22821v1</p>
+<p>Summary: Reframes tokenization away from greedy BPE/Unigram choices and toward a convex-relaxation view of vocabulary construction. The mechanism value is mathematical: tokenization can be studied as a global optimization problem rather than a sequence of local merges. Collected as a broad foundation item because tokenizer decisions affect frequency skew, rare-token learning, and downstream representation geometry.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Full Attention Strikes Back: Transferring Full Attention into Sparse within Hundred Training Steps</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.16928</p>
+<p>Summary: A long-context efficiency paper about transferring a full-attention model into a sparse-attention regime with very little additional training. The mechanism signal is attention-pattern transfer: instead of training sparse attention from scratch or using heuristic eviction, distill/convert a dense attention behavior into a cheaper structure. Collected for long-context inference and rare-evidence retention questions.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — LCGuard: Latent Communication Guard for Safe KV Sharing in Multi-Agent Systems</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22786v1</p>
+<p>Summary: Examines safety for latent communication and KV sharing in multi-agent LLM systems. The mechanism is not generic agent safety; it is that sharing hidden state/KV can leak or transmit information outside natural-language observability. Useful as a skeptical signal for any agent architecture that treats latent state exchange as a cheap coordination primitive.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — SegCompass: Exploring Interpretable Alignment with Sparse Autoencoders for Enhanced Reasoning Segmentation</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.22658v1</p>
+<p>Summary: Uses sparse-autoencoder-style interpretability to make reasoning segmentation in vision-language settings more inspectable. The mechanism signal is feature-level alignment between compositional reasoning and perceptual segmentation, rather than end-to-end latent query matching alone. Collected because it extends SAE tools from text internals into multimodal alignment.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Conceptualizing Embeddings: Sparse Disentanglement for Vision-Language Models</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.22679v1</p>
+<p>Summary: Targets interpretability of VLM embeddings by extracting sparse, more disentangled conceptual factors. The learning value is a representation-geometry question: can compact multimodal embeddings be made inspectable without expanding into unwieldy feature spaces? Useful as a companion to SAE and multimodal-factor-probe work.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — LatentOmni: Rethinking Omni-Modal Understanding via Unified Audio-Visual Latent Reasoning</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://huggingface.co/papers/2605.22012</p>
+<p>Summary: Proposes unified audio-visual latent reasoning for omnimodal models where text-only intermediate explanations are insufficient. The mechanism signal is latent cross-modal evidence integration: audio and visual clues may need a shared reasoning space before language serialization. Collected for speech/audio plus multimodal reasoning, not as a generic benchmark item.</p>
+<p>Personalization: low</p>
+<h2>arXiv — RobustSpeechFlow: Learning Robust Text-to-Speech Trajectories via Augmentation-based Contrastive Flow Matching</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.22083v1</p>
+<p>Summary: Focuses on skip/repeat/content-fidelity failures in flow-matching TTS and introduces augmentation-based contrastive flow matching to improve trajectories. The mechanism is trajectory robustness: the model should learn flow paths that preserve content under alignment noise and perturbations. Important for TTS because naturalness alone can hide content errors.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Live Music Diffusion Models: Efficient Fine-Tuning and Post-Training of Interactive Diffusion Music Generators</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.22717v1</p>
+<p>Summary: Studies efficient fine-tuning and post-training for interactive, streaming music diffusion models. The mechanism signal is making diffusion audio generators responsive enough for live co-creation without industrial-scale retraining. Collected as a broader audio-generation item with lessons for streaming latency, conditioning, and post-training of generative audio.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Automatic Contextual Audio Denoising</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.22262v1</p>
+<p>Summary: Treats denoising as context-dependent: the same sound can be signal in one setting and noise in another. The mechanism value is conditional audio separation, where semantic/task context should alter which components are suppressed. This is useful for audio-agent pipelines because transcript-only metrics can miss context-specific acoustic evidence.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Runtime-Certified Bounded-Error Quantized Attention</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.20868v1</p>
+<p>Summary: Proposes runtime certification for bounded-error quantized attention, especially relevant to low-memory KV-cache and long-context inference. The mechanism is a sign-off layer: instead of trusting average empirical robustness, the runtime detects or bounds approximation error. Collected because quantized attention is becoming a causal transformation in deployed LLM behavior.</p>
+<p>Personalization: high</p>
+<h2>arXiv — OCTOPUS: Optimized KV Cache for Transformers via Octahedral Parametrization Under optimal Squared error quantization</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.21226v1</p>
+<p>Summary: A KV-cache compression paper using structured parametrization and quantization to reduce long-context inference memory. The mechanism signal is geometry-aware cache coding: rotate/parameterize KV states so quantization error is better controlled. This matters because cache compression can preserve or erase rare evidence differently from weight quantization.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Frontier: Towards Comprehensive and Accurate LLM Inference Simulation</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.21312v1</p>
+<p>Summary: Builds toward realistic simulation of modern LLM serving with disaggregated execution, parallelism, runtime optimizations, agents, reasoning, and RL rollouts. The mechanism value is experimental infrastructure: better simulators let researchers ask how serving policy changes latency, cost, and rollout distributions before renting a fleet. Strong fit for treating runtime as part of the training/evaluation loop.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — PALS: Power-Aware LLM Serving for Mixture-of-Experts Models</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.21427v1</p>
+<p>Summary: Looks at MoE serving under power constraints, not just latency/throughput. The mechanism is power-aware scheduling for sparse expert workloads, where routing and batching interact with GPU utilization and energy limits. Collected because MoE efficiency increasingly depends on system-level constraints that can feed back into feasible model design.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Llamas on the Web: Memory-Efficient, Performance-Portable, and Multi-Precision LLM Inference with WebGPU</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://arxiv.org/abs/2605.20706v1</p>
+<p>Summary: Explores browser-based LLM inference with WebGPU across constrained and heterogeneous devices. The mechanism signal is portable multi-precision inference: memory layout and precision choices make small local experiments and private applications more accessible. Broad learning item for on-device/local LLM infrastructure.</p>
+<p>Personalization: low</p>
+<h2>arXiv — SpaceDG: Benchmarking Spatial Intelligence under Visual Degradation</h2>
+<p>Type: Weak signal</p>
+<p>Link: https://arxiv.org/abs/2605.22536v1</p>
+<p>Summary: A benchmark-style item, included only as a skeptical/failure signal: multimodal spatial reasoning may fail when visual inputs are degraded rather than pristine. The mechanism value is degradation sensitivity, not leaderboard rank. It reminds multimodal work to test perception noise and robustness slices before claiming reasoning improvements.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

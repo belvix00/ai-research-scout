@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-21 03:07:28</p>
+<p>Generated: 2026-05-23 03:06:54</p>
 <h2>Build an audio identity-leakage probe for codec and speaker representations</h2>
 <ul>
 <li>Status: <code>promote</code></li>
@@ -503,6 +503,90 @@
 <li><code>running.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking all replace fixed budgets with feedback signals. Experiment: tiny controller over speculation/thinking budget using entropy/self-consistency; measure accuracy-per-compute plus rare-case cascade failures.</li>
 <li><code>daily/2026-05-05-2nd-run.md</code> — SpecKV, diffusion-style speculative decoding, distribution-aware rollout acceleration, and Adaptive Thinking replace fixed budgets with feedback signals.</li>
 </ul>
+<h2>KV and sparse attention rare-evidence survival</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-17</li>
+<li>Last seen: 2026-05-23</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>KV compression and adaptive sparse attention should be evaluated as memory interfaces that may evict rare decisive facts, not only as latency optimizations.</p>
+<h3>Mechanism</h3>
+<p>Cache compression and sparse block rules allocate state bandwidth across tokens, heads, and layers.</p>
+<h3>Minimal experiment</h3>
+<p>Long-context rare-clue/distractor benchmark comparing full attention/KV with compressed KV and adaptive sparse attention; log answer accuracy, attention to evidence spans, output/logit drift, cache bytes, and latency.</p>
+<h3>Falsifier</h3>
+<p>Compression and sparse attention preserve rare evidence slices under matched latency improvements.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-23.md</code> — 2026-05-23 evidence: Runtime-certified bounded-error quantized attention and OCTOPUS KV coding make low-bit attention/cache paths measurable transformations; Frontier adds serving simulation for reasoning/agent/RL rollout stacks.</li>
+<li><code>daily/2026-05-17.md</code> — KVServe, AB-Sparse, and speculative-decoding latency modeling are not only speedups; they decide which cached state remains usable.</li>
+</ul>
+<h2>Probe speech/audio factor survival under compression and unified representation</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-16</li>
+<li>Last seen: 2026-05-23</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Evidence: <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression</a>, <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a>, <a href="https://arxiv.org/abs/2605.04045v1" target="_blank" rel="noopener">Audio-Visual Intelligence in Large Foundation Models</a>. Mechanism: Audio systems must preserve content, speaker/acoustic detail, prosody, timing, and rare entities through compression or semantic-acoustic representations. Aggregate audio quality or WER can hide task-specific damage. Minimal experiment/probe: Use</p>
+<h3>Minimal experiment</h3>
+<p>/probe: Use a small public speech dataset with labeled speaker/entity/prosody slices. Run raw audio and compressed variants through a speech encoder or LALM; fit probes for entity, speaker, phoneme, prosody, and task answer preservation. Add shuffled-metadata and codec-bitrate controls. Falsifier: Compression level or representation type affects only perceptual quality and does not differentially damage entity/prosody/task-answer slices.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-23.md</code> — 2026-05-23 evidence: RobustSpeechFlow targets TTS skip/repeat trajectory failures; contextual audio denoising makes source relevance task-dependent; LatentOmni stresses unified audio-visual latent reasoning.</li>
+<li><code>daily/2026-05-10.md</code> — Evidence: <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression</a>, <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a>, <a href="https://arxiv.org/abs/2605.04045v1" target="_blank" rel="noopener">Audio-Visual Intelligence in Large Foundation Models</a>. Mechanism: Audio systems must preserve content, speaker/acoustic detail, prosody, timing, and rare entities through compression or semantic-acoustic representations. Aggregate audio quality or WER can hide task-specific damage. Minimal experiment/probe: Use a small public speech dataset with labeled speaker/entity/prosody slices. Run raw audio and compressed variants through a speech encoder or LALM; fit</li>
+</ul>
+<h2>RLVR strategy coverage versus token credit geometry</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-19</li>
+<li>Last seen: 2026-05-23</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<p>Reasoning-RL gains should be decomposed into candidate-strategy coverage and the rule that maps trajectory advantage into token updates.</p>
+<h3>Mechanism</h3>
+<p>Exploration nudges determine which branches exist; aggregation rules determine which prefixes receive gradient after reward is observed.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed rollout set comparing strategy-guided RLVR, Hölder-style aggregation, dense teachers, and baseline GRPO with prefix-local KL and strategy-diversity metrics.</p>
+<h3>Falsifier</h3>
+<p>Methods with different exploration and aggregation rules produce indistinguishable update geometry once reward labels and rollout set are controlled.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-23.md</code> — 2026-05-23 evidence: Vector Policy Optimization frames rollout diversity as necessary for test-time search; DelTA targets token-level credit assignment; Clipping Bottleneck suggests clipped near-boundary advantages can hide useful RLVR signal.</li>
+<li><code>daily/2026-05-19.md</code> — GRLO, strategy-guided RLVR, Hölder Policy Optimisation, and MetaAgent-X suggest rollout distribution and sequence-to-token credit mapping are the real objects.</li>
+</ul>
+<h2>Visual/multimodal representation bottlenecks</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-09</li>
+<li>Last seen: 2026-05-23</li>
+<li>Evidence count: 2</li>
+</ul>
+<h3>Thesis</h3>
+<ul>
+<li>Before this week: Persistent visual memory / attention dilution was a clean demo idea; multimodal tokenizers as gradient gates were plausible. - Evidence this week: Persistent Visual Memory gave the attention-denominator mechanism; TC-JEPA raised the caption-conditioning bias question; GenLIP/end-to-end semantic tokenizers suggested downstream generative loss can reshape visual tokenization; MMDG-Bench warned specialized multimodal methods may barely beat ERM and degrade under corruption/missi</li>
+</ul>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-23.md</code> — 2026-05-23 evidence: SegCompass and sparse VLM embedding work extend SAE-style interpretability into multimodal concept spaces; SpaceDG adds degradation robustness as a causal-evaluation slice.</li>
+<li><code>weekly/2026-05-09.md</code> — - Before this week: Persistent visual memory / attention dilution was a clean demo idea; multimodal tokenizers as gradient gates were plausible. - Evidence this week: Persistent Visual Memory gave the attention-denominator mechanism; TC-JEPA raised the caption-conditioning bias question; GenLIP/end-to-end semantic tokenizers suggested downstream generative loss can reshape visual tokenization; MMDG-Bench warned specialized multimodal methods may barely beat ERM and degrade under corruption/missing-modality; diffusion outlier-token work suggested local patch semantics matter. - After this week: Multimodal claims need factorized stress tests: n</li>
+</ul>
 <h2>Dense teacher audits for reasoning and agent RL</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -763,6 +847,28 @@
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
 </ul>
+<h2>Tokenizer optimization as rare-token gradient routing</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-23</li>
+<li>Last seen: 2026-05-23</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Global/convex-relaxation tokenization may reduce greedy BPE/Unigram rare-token pathologies and create a clean tiny-LM testbed for frequency-skew learning.</p>
+<h3>Mechanism</h3>
+<p>Vocabulary construction changes fragmentation, token frequency, and which rare strings receive usable gradient.</p>
+<h3>Minimal experiment</h3>
+<p>Train tiny LMs with matched vocabulary sizes under BPE/Unigram and a convex-relaxation-inspired tokenizer proxy; measure rare-string fragmentation, gradient frequency, rare-token accuracy, and downstream string reasoning.</p>
+<h3>Falsifier</h3>
+<p>If matched global tokenizer variants do not change rare-slice learning or gradient allocation, tokenization optimization is weaker than expected.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-23.md</code> — 2026-05-23 evidence: Tokenisation via Convex Relaxations reframes tokenization as global optimization instead of greedy local merges.</li>
+</ul>
 <h2>Information-weighted reasoning RL trace selection</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -851,28 +957,6 @@
 <ul>
 <li><code>daily/2026-05-19.md</code> — GQLA, STS, block attention, and speculative decoding variants expose attention/state layout as a serving-time policy variable.</li>
 </ul>
-<h2>RLVR strategy coverage versus token credit geometry</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: none</li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-19</li>
-<li>Last seen: 2026-05-19</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>Reasoning-RL gains should be decomposed into candidate-strategy coverage and the rule that maps trajectory advantage into token updates.</p>
-<h3>Mechanism</h3>
-<p>Exploration nudges determine which branches exist; aggregation rules determine which prefixes receive gradient after reward is observed.</p>
-<h3>Minimal experiment</h3>
-<p>Fixed rollout set comparing strategy-guided RLVR, Hölder-style aggregation, dense teachers, and baseline GRPO with prefix-local KL and strategy-diversity metrics.</p>
-<h3>Falsifier</h3>
-<p>Methods with different exploration and aggregation rules produce indistinguishable update geometry once reward labels and rollout set are controlled.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>daily/2026-05-19.md</code> — GRLO, strategy-guided RLVR, Hölder Policy Optimisation, and MetaAgent-X suggest rollout distribution and sequence-to-token credit mapping are the real objects.</li>
-</ul>
 <h2>Speech factor localization with speaker, impairment, and streaming timing</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -930,28 +1014,6 @@
 <h3>Evidence</h3>
 <ul>
 <li><code>daily/2026-05-18.md</code> — BEAM learns token-adaptive binary masks for MoE routing with CUDA/vLLM integration and large FLOP reductions; evaluate it as a rare-capacity gate rather than only a speedup.</li>
-</ul>
-<h2>KV and sparse attention rare-evidence survival</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: none</li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-17</li>
-<li>Last seen: 2026-05-17</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>KV compression and adaptive sparse attention should be evaluated as memory interfaces that may evict rare decisive facts, not only as latency optimizations.</p>
-<h3>Mechanism</h3>
-<p>Cache compression and sparse block rules allocate state bandwidth across tokens, heads, and layers.</p>
-<h3>Minimal experiment</h3>
-<p>Long-context rare-clue/distractor benchmark comparing full attention/KV with compressed KV and adaptive sparse attention; log answer accuracy, attention to evidence spans, output/logit drift, cache bytes, and latency.</p>
-<h3>Falsifier</h3>
-<p>Compression and sparse attention preserve rare evidence slices under matched latency improvements.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>daily/2026-05-17.md</code> — KVServe, AB-Sparse, and speculative-decoding latency modeling are not only speedups; they decide which cached state remains usable.</li>
 </ul>
 <h2>Quantization survival of model interventions</h2>
 <ul>
@@ -2701,24 +2763,6 @@
 <ul>
 <li><code>daily/2026-05-09.md</code> — useful if future audio/music representation work needs an example of data-cleaning-first progress.</li>
 </ul>
-<h2>Probe speech/audio factor survival under compression and unified representation</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>audio</code>, <code>mech-interp</code>, <code>multimodal</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-16</li>
-<li>Last seen: 2026-05-16</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<p>Evidence: <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression</a>, <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a>, <a href="https://arxiv.org/abs/2605.04045v1" target="_blank" rel="noopener">Audio-Visual Intelligence in Large Foundation Models</a>. Mechanism: Audio systems must preserve content, speaker/acoustic detail, prosody, timing, and rare entities through compression or semantic-acoustic representations. Aggregate audio quality or WER can hide task-specific damage. Minimal experiment/probe: Use</p>
-<h3>Minimal experiment</h3>
-<p>/probe: Use a small public speech dataset with labeled speaker/entity/prosody slices. Run raw audio and compressed variants through a speech encoder or LALM; fit probes for entity, speaker, phoneme, prosody, and task answer preservation. Add shuffled-metadata and codec-bitrate controls. Falsifier: Compression level or representation type affects only perceptual quality and does not differentially damage entity/prosody/task-answer slices.</p>
-<h3>Evidence</h3>
-<ul>
-<li><code>daily/2026-05-10.md</code> — Evidence: <a href="https://arxiv.org/abs/2605.06631v1" target="_blank" rel="noopener">Task-Aware Answer Preservation under Audio Compression</a>, <a href="https://arxiv.org/abs/2605.06407v1" target="_blank" rel="noopener">WavCube</a>, <a href="https://arxiv.org/abs/2605.04045v1" target="_blank" rel="noopener">Audio-Visual Intelligence in Large Foundation Models</a>. Mechanism: Audio systems must preserve content, speaker/acoustic detail, prosody, timing, and rare entities through compression or semantic-acoustic representations. Aggregate audio quality or WER can hide task-specific damage. Minimal experiment/probe: Use a small public speech dataset with labeled speaker/entity/prosody slices. Run raw audio and compressed variants through a speech encoder or LALM; fit</li>
-</ul>
 <h2>Probe whether text-conditioned visual SSL preserves non-nameable factors</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -3643,24 +3687,6 @@
 <ul>
 <li><code>daily/2026-05-12.md</code> — Evidence links: PairAlign (https://arxiv.org/abs/2605.06582v1), MiniMind-O (https://arxiv.org/abs/2605.03937v1), TextPro-SLM (https://arxiv.org/abs/2605.05927v2), task-aware compression (https://arxiv.org/abs/2605.06631v1). Mechanism: Speech systems can preserve aggregate intelligibility while losing specific factors: semantic edit structure, prosody, speaker identity, language/phoneme detail, or downstream answer family. Minimal experiment/probe: Use a small open speech stack and create slices for rare words, speaker, prosody, accent/language, and answer family. Compare raw audio, compressed audio, codec tokens, PairAlign-like sequence token</li>
 </ul>
-<h2>Visual/multimodal representation bottlenecks</h2>
-<ul>
-<li>Status: <code>watch</code></li>
-<li>Confidence: <code>low</code></li>
-<li>Tags: <code>audio</code>, <code>inference</code>, <code>training-dynamics</code>, <code>agent-memory</code>, <code>multimodal</code>, <code>on-device</code></li>
-<li>Score proxy: 12/20</li>
-<li>First seen: 2026-05-09</li>
-<li>Last seen: 2026-05-16</li>
-<li>Evidence count: 1</li>
-</ul>
-<h3>Thesis</h3>
-<ul>
-<li>Before this week: Persistent visual memory / attention dilution was a clean demo idea; multimodal tokenizers as gradient gates were plausible. - Evidence this week: Persistent Visual Memory gave the attention-denominator mechanism; TC-JEPA raised the caption-conditioning bias question; GenLIP/end-to-end semantic tokenizers suggested downstream generative loss can reshape visual tokenization; MMDG-Bench warned specialized multimodal methods may barely beat ERM and degrade under corruption/missi</li>
-</ul>
-<h3>Evidence</h3>
-<ul>
-<li><code>weekly/2026-05-09.md</code> — - Before this week: Persistent visual memory / attention dilution was a clean demo idea; multimodal tokenizers as gradient gates were plausible. - Evidence this week: Persistent Visual Memory gave the attention-denominator mechanism; TC-JEPA raised the caption-conditioning bias question; GenLIP/end-to-end semantic tokenizers suggested downstream generative loss can reshape visual tokenization; MMDG-Bench warned specialized multimodal methods may barely beat ERM and degrade under corruption/missing-modality; diffusion outlier-token work suggested local patch semantics matter. - After this week: Multimodal claims need factorized stress tests: n</li>
-</ul>
 <h2>Warmth/sycophancy tradeoff</h2>
 <ul>
 <li>Status: <code>watch</code></li>
@@ -4064,7 +4090,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 08:04</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-23 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-23</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. The strongest signals were: reasoning post-training is getting more explicit about rollout diversity and token credit; long-context/inference work is moving from speed-only claims toward error-bounded or simulation-aware systems; audio work emphasized trajectory/factor robustness; and interpretability continued to spread into multimodal embeddings rather than staying text-only.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The architecture-side signal was less about a new universal model block and more about interfaces: sparse attention converted from full attention, tokenization reframed as global optimization, latent audio-visual reasoning, and browser/runtime constraints shaping what architectures can run cheaply. <a href="https://huggingface.co/papers/2605.16928" target="_blank" rel="noopener">Full Attention Strikes Back</a> is the most direct long-context architecture item: instead of choosing between native sparse training and heuristic token eviction, it tries to transfer dense-attention behavior into sparse attention within a short adaptation window. That matters because sparse attention is only useful if it preserves the dense model&#x27;s evidence-access behavior, not just if it lowers compute.</p>
+<p><a href="https://arxiv.org/abs/2605.22821v1" target="_blank" rel="noopener">Tokenisation via Convex Relaxations</a> is a foundations item: it questions the greedy merge worldview of BPE/Unigram and suggests studying vocabulary construction as a global optimization problem. Relative to last week&#x27;s repeated token/frequency-skew concerns, this is a cleaner mathematical handle: tokenizer pathologies can be probed as objective/relaxation artifacts rather than anecdotes about rare strings.</p>
+<p>For multimodal architectures, <a href="https://huggingface.co/papers/2605.22012" target="_blank" rel="noopener">LatentOmni</a> argues that audio-visual reasoning may need a shared latent reasoning space before text explanation. That is a different failure mode from “the model did not see the evidence”; it may have audio and visual evidence, but the language bottleneck serializes or drops cross-modal interactions too early.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Reasoning-RL signals were dense today. <a href="https://arxiv.org/abs/2605.22817v1" target="_blank" rel="noopener">Vector Policy Optimization</a> explicitly links training objectives to inference-time search: if a model will be sampled many times and selected by task rewards, then a training objective that collapses rollout diversity can underperform even when average likelihood/correctness improves. <a href="https://arxiv.org/abs/2605.22620v1" target="_blank" rel="noopener">Two is better than one</a>, <a href="https://huggingface.co/papers/2605.21467" target="_blank" rel="noopener">DelTA</a>, and <a href="https://arxiv.org/abs/2605.22703v1" target="_blank" rel="noopener">Clipping Bottleneck</a> each attack a different part of the same post-training pipeline: reward-channel collapse, response-to-token credit assignment, and clipped optimizer geometry.</p>
+<p>What changed relative to earlier runs is that “RLVR works for reasoning” is no longer the interesting claim. The interesting questions are now: which rollout branches receive credit, whether diversity survives the objective, whether clipping discards near-boundary useful signals, and whether internal or self-distilled feedback adds information or just amplifies stale behavior. <a href="https://arxiv.org/abs/2605.22511v1" target="_blank" rel="noopener">Search-E1</a> and <a href="https://arxiv.org/abs/2605.22389v1" target="_blank" rel="noopener">Unified Data Selection for LLM Reasoning</a> add the data-loop side: search traces and selected reasoning examples are becoming part of the objective design.</p>
+<h3>Mechanistic interpretability / evaluation failure modes</h3>
+<p>Interpretability work today pushed into multimodal representation spaces. <a href="https://arxiv.org/abs/2605.22658v1" target="_blank" rel="noopener">SegCompass</a> uses sparse-autoencoder-style alignment to connect compositional reasoning with visual segmentation, and <a href="https://arxiv.org/abs/2605.22679v1" target="_blank" rel="noopener">Conceptualizing Embeddings</a> tries to make VLM embeddings more sparsely disentangled and inspectable. The learning value is that multimodal embeddings are not automatically interpretable just because they sit in a shared space; we still need feature-level or concept-level units that predict interventions.</p>
+<p>The skeptical evaluation signal was <a href="https://arxiv.org/abs/2605.22536v1" target="_blank" rel="noopener">SpaceDG</a>, a benchmark on spatial intelligence under visual degradation. I am not promoting it as a benchmark race. It is useful because it asks whether multimodal reasoning survives realistic perception noise; this directly checks whether “reasoning” gains are actually robust or just conditioned on clean inputs.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>Audio had a strong day, spread across TTS robustness, music diffusion, contextual denoising, and omnimodal latent reasoning. <a href="https://arxiv.org/abs/2605.22083v1" target="_blank" rel="noopener">RobustSpeechFlow</a> targets a very concrete TTS failure: skip/repeat/content-fidelity errors in flow-matching speech generation. Its mechanism is augmentation-based contrastive flow matching, i.e. making the trajectory itself more robust to alignment perturbations rather than only optimizing naturalness.</p>
+<p><a href="https://arxiv.org/abs/2605.22717v1" target="_blank" rel="noopener">Live Music Diffusion Models</a> brings post-training/fine-tuning pressure to interactive audio generation: diffusion models must become responsive enough for live co-creation, not just high-quality offline rendering. <a href="https://arxiv.org/abs/2605.22262v1" target="_blank" rel="noopener">Automatic Contextual Audio Denoising</a> is a useful conceptual counterweight: “noise” is not an acoustic category independent of task context. Together these say audio systems need factor-level probes: content, timing, source identity, context relevance, and latency can fail independently.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>Inference systems were unusually rich. <a href="https://arxiv.org/abs/2605.20868v1" target="_blank" rel="noopener">Runtime-Certified Bounded-Error Quantized Attention</a> is the cleanest mechanism-preservation item: low-bit attention/KV optimizations should carry runtime error bounds or detection, not rely only on average empirical quality. <a href="https://arxiv.org/abs/2605.21226v1" target="_blank" rel="noopener">OCTOPUS</a> is a geometry-aware KV-cache compression proposal; <a href="https://arxiv.org/abs/2605.21312v1" target="_blank" rel="noopener">Frontier</a> works on inference simulation for modern serving stacks that include disaggregation, parallelism, agents, reasoning, and RL rollouts.</p>
+<p>The shift relative to prior weeks is that inference is not just “make tokens cheaper.” It is now a source of experimental confounds and design constraints. Quantized attention can change hidden-state trajectories; serving simulators can change what experiments are affordable; MoE power scheduling in <a href="https://arxiv.org/abs/2605.21427v1" target="_blank" rel="noopener">PALS</a> can influence which sparse architectures are practical; and browser/WebGPU inference in <a href="https://arxiv.org/abs/2605.20706v1" target="_blank" rel="noopener">Llamas on the Web</a> changes the floor for local/private experiments.</p>
+<h3>Models, datasets, and tooling</h3>
+<p>HF daily papers contributed useful discovery, but I did not rely on HF alone. The selected pool combined HF papers, arXiv recent submissions, OpenReview scanning, RSS/blog feeds, and a small HN weak-signal pass. Blog/RSS signals today were less central than papers, but Microsoft Research&#x27;s small-model agentic stack post appeared as a supporting ecosystem signal: agent systems are being optimized for smaller/local models, not only frontier hosted models. I did not promote generic agent product news because the mechanism was weaker than the paper-side signals.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Diversity is becoming an explicit reasoning-RL training target.</strong> <a href="https://arxiv.org/abs/2605.22817v1" target="_blank" rel="noopener">Vector Policy Optimization</a> argues that test-time search wants a distribution of useful rollouts, not a single mode. The development matters because many post-training objectives increase the probability of known-good traces while accidentally reducing exploration breadth.</li>
+</ol>
+<ol>
+<li><strong>Multi-reward internal feedback is being used to avoid reasoning collapse.</strong> <a href="https://arxiv.org/abs/2605.22620v1" target="_blank" rel="noopener">Two is better than one</a> frames RLIF as vulnerable to collapse when one internal reward dominates. The mechanism to watch is whether multiple internal evaluators genuinely provide independent information or just correlated reward noise.</li>
+</ol>
+<ol>
+<li><strong>Token-level credit assignment is moving from nice-to-have to central RLVR machinery.</strong> <a href="https://huggingface.co/papers/2605.21467" target="_blank" rel="noopener">DelTA</a> focuses on which tokens caused a verifiable answer. This is a better unit than whole-response reward when most of a long CoT is boilerplate and only a few branch points determine success.</li>
+</ol>
+<ol>
+<li><strong>Clipping may hide exactly the near-boundary signal RLVR needs.</strong> <a href="https://arxiv.org/abs/2605.22703v1" target="_blank" rel="noopener">Clipping Bottleneck</a> is valuable because it treats PPO/GRPO-style stabilization as a possible information bottleneck, not a harmless implementation detail. The falsifiable question is whether recovered near-boundary updates improve transfer or only add variance.</li>
+</ol>
+<ol>
+<li><strong>Search-augmented reasoning is being folded back into self-distillation.</strong> <a href="https://arxiv.org/abs/2605.22511v1" target="_blank" rel="noopener">Search-E1</a> suggests search traces can drive self-evolution with simpler machinery. The risk is teacher staleness: self-generated traces may reinforce the model&#x27;s current search habits unless diversity and failure cases are preserved.</li>
+</ol>
+<ol>
+<li><strong>Reasoning data selection is becoming gradient routing.</strong> <a href="https://arxiv.org/abs/2605.22389v1" target="_blank" rel="noopener">Unified Data Selection for LLM Reasoning</a> treats training data quality as the bottleneck for long-CoT reasoning. The useful lens is not “more hard examples” but “which examples expose useful branch points and update directions.”</li>
+</ol>
+<ol>
+<li><strong>Sparse attention may be better treated as transferred behavior than a hand-designed mask.</strong> <a href="https://huggingface.co/papers/2605.16928" target="_blank" rel="noopener">Full Attention Strikes Back</a> attempts to move full-attention behavior into sparse attention quickly. This should be judged by rare early evidence and distractor tests, not only long-context throughput.</li>
+</ol>
+<ol>
+<li><strong>KV sharing between agents is a latent communication safety surface.</strong> <a href="https://arxiv.org/abs/2605.22786v1" target="_blank" rel="noopener">LCGuard</a> warns that latent/KV exchange can coordinate agents outside natural-language monitoring. It matters technically because KV sharing is tempting as a cheap multi-agent speedup, but it changes observability and control.</li>
+</ol>
+<ol>
+<li><strong>VLM/mech-interp work is moving from text features to multimodal concept geometry.</strong> <a href="https://arxiv.org/abs/2605.22658v1" target="_blank" rel="noopener">SegCompass</a> and <a href="https://arxiv.org/abs/2605.22679v1" target="_blank" rel="noopener">Conceptualizing Embeddings</a> both ask whether sparse/interpretable units can be attached to multimodal reasoning. The open issue is causal validity: do these units predict patching/ablation effects or just provide readable descriptions?</li>
+</ol>
+<ol>
+<li><strong>TTS robustness is being attacked at the flow-trajectory level.</strong> <a href="https://arxiv.org/abs/2605.22083v1" target="_blank" rel="noopener">RobustSpeechFlow</a> is important because skip/repeat errors are not captured by broad naturalness scores. Contrastive flow matching gives a specific place to test whether content fidelity improves under alignment perturbations.</li>
+</ol>
+<ol>
+<li><strong>Audio generation is moving toward interactive post-training constraints.</strong> <a href="https://arxiv.org/abs/2605.22717v1" target="_blank" rel="noopener">Live Music Diffusion Models</a> focuses on efficient fine-tuning and post-training of interactive diffusion music generators. The key mechanism is low-latency controllability under streaming use, not merely offline sample quality.</li>
+</ol>
+<ol>
+<li><strong>Context matters for audio denoising.</strong> <a href="https://arxiv.org/abs/2605.22262v1" target="_blank" rel="noopener">Automatic Contextual Audio Denoising</a> makes the “noise versus signal” label task-dependent. This is a reminder that audio-agent metrics should include context-use probes, not only separation or WER.</li>
+</ol>
+<ol>
+<li><strong>Quantized attention is getting runtime certification.</strong> <a href="https://arxiv.org/abs/2605.20868v1" target="_blank" rel="noopener">Runtime-Certified Bounded-Error Quantized Attention</a> directly supports the idea that deployment optimizations need mechanism-preservation checks. The important change is an error-bound/detection framing rather than after-the-fact aggregate evals.</li>
+</ol>
+<ol>
+<li><strong>LLM serving simulation is becoming a research enabler.</strong> <a href="https://arxiv.org/abs/2605.21312v1" target="_blank" rel="noopener">Frontier</a> tries to model complex production-serving stacks including reasoning, agents, and RL rollouts. This matters because runtime policy can alter rollout distributions and cost, which means it can affect training conclusions.</li>
+</ol>
+<ol>
+<li><strong>Local/browser inference remains a useful broad learning frontier.</strong> <a href="https://arxiv.org/abs/2605.20706v1" target="_blank" rel="noopener">Llamas on the Web</a> shows that WebGPU/multi-precision work is still pushing memory-efficient LLM inference into constrained environments. The research value is not the browser demo; it is that local deployment paths become cheap perturbation targets for model-behavior audits.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ul>
+<li><strong>Credit and state are both becoming explicit objects.</strong> RL papers asked which rollout/token gets credit; inference papers asked which KV/cache/quantized state remains faithful. These are separate clusters, but both replace black-box aggregate scores with mechanism-level accounting.</li>
+<li><strong>Diversity is appearing in multiple places.</strong> Reasoning-RL wants diverse rollouts; multi-reward RLIF wants diverse feedback channels; audio/contextual systems want factor-sensitive outputs. This is a genuine pattern, but it should not be over-unified: each domain has a different failure mode.</li>
+<li><strong>Runtime is no longer passive infrastructure.</strong> Quantized attention, KV compression, serving simulation, MoE power scheduling, and WebGPU inference all change what experiments are cheap and may change behavior. Treat runtime choices as experimental conditions.</li>
+</ul>
+<h2>Five research opportunities</h2>
+<ol>
+<li><strong>Fixed-rollout diversity vs credit-assignment audit for reasoning RL</strong></li>
+</ol>
+<p>   - Evidence: <a href="https://arxiv.org/abs/2605.22817v1" target="_blank" rel="noopener">Vector Policy Optimization</a>, <a href="https://huggingface.co/papers/2605.21467" target="_blank" rel="noopener">DelTA</a>, <a href="https://arxiv.org/abs/2605.22703v1" target="_blank" rel="noopener">Clipping Bottleneck</a>.</p>
+<p>   - Mechanism: rollout diversity, token-level credit maps, and clipping boundaries may move probability mass in different parts of the same trace distribution.</p>
+<p>   - Minimal experiment/probe: generate a fixed set of math/code/tool rollouts; compare winner-SFT, pairwise preference, token-credit weighting, diversity-regularized updates, and clipped/unclipped advantages. Log branch diversity, prefix-local KL, promoted-token base rank, changed-token sparsity, and held-out transfer.</p>
+<p>   - Falsifier: if all objectives produce the same update geometry and same transfer slices under equal samples, the diversity/credit distinction is not practically important at small scale.</p>
+<p>   - Confidence: high.</p>
+<ol>
+<li><strong>Runtime-certified quantization as a sign-off layer for long-context mechanisms</strong></li>
+</ol>
+<p>   - Evidence: <a href="https://arxiv.org/abs/2605.20868v1" target="_blank" rel="noopener">Runtime-Certified Bounded-Error Quantized Attention</a>, <a href="https://arxiv.org/abs/2605.21226v1" target="_blank" rel="noopener">OCTOPUS</a>, <a href="https://arxiv.org/abs/2605.21312v1" target="_blank" rel="noopener">Frontier</a>.</p>
+<p>   - Mechanism: low-bit attention/KV transformations can preserve average output while breaking rare-evidence binding or hidden-state trajectories.</p>
+<p>   - Minimal experiment/probe: run one small long-context model under full precision, quantized attention, and compressed KV paths on rare early clue/distractor tasks; record output, logit margin, attention-to-evidence, latency, memory, and any runtime error certificate.</p>
+<p>   - Falsifier: if certified/error-bounded paths show no better rare-slice reliability than naive quantization at equal compression, certification is not buying mechanism preservation.</p>
+<p>   - Confidence: high.</p>
+<ol>
+<li><strong>Audio factor survival under trajectory and context perturbations</strong></li>
+</ol>
+<p>   - Evidence: <a href="https://arxiv.org/abs/2605.22083v1" target="_blank" rel="noopener">RobustSpeechFlow</a>, <a href="https://arxiv.org/abs/2605.22262v1" target="_blank" rel="noopener">Automatic Contextual Audio Denoising</a>, <a href="https://huggingface.co/papers/2605.22012" target="_blank" rel="noopener">LatentOmni</a>.</p>
+<p>   - Mechanism: speech/audio systems can preserve naturalness or transcript while losing content fidelity, source relevance, prosody, timing, or cross-modal evidence.</p>
+<p>   - Minimal experiment/probe: use public speech encoders/codecs plus a small TTS/denoising setup; perturb alignment, context labels, and background sources; probe phoneme/content, speaker, prosody, rare entity, and context-relevance factors.</p>
+<p>   - Falsifier: if factor probes and downstream task metrics always move together, separate factor-survival instrumentation is less urgent.</p>
+<p>   - Confidence: medium-high.</p>
+<ol>
+<li><strong>Causal scorecard for multimodal sparse features</strong></li>
+</ol>
+<p>   - Evidence: <a href="https://arxiv.org/abs/2605.22658v1" target="_blank" rel="noopener">SegCompass</a>, <a href="https://arxiv.org/abs/2605.22679v1" target="_blank" rel="noopener">Conceptualizing Embeddings</a>, <a href="https://arxiv.org/abs/2605.22536v1" target="_blank" rel="noopener">SpaceDG</a>.</p>
+<p>   - Mechanism: sparse/concept features in VLMs may be readable but not causally useful, especially under visual degradation or segmentation shifts.</p>
+<p>   - Minimal experiment/probe: extract sparse features or concept factors from a small VLM; evaluate whether feature activations predict held-out patch/ablation effects and robustness under degraded images.</p>
+<p>   - Falsifier: if sparse concepts fail to predict interventions better than embedding similarity or linear probes, they should not be treated as mechanistic explanations.</p>
+<p>   - Confidence: medium.</p>
+<ol>
+<li><strong>Tokenizer optimization as a rare-token/frequency-skew testbed</strong></li>
+</ol>
+<p>   - Evidence: <a href="https://arxiv.org/abs/2605.22821v1" target="_blank" rel="noopener">Tokenisation via Convex Relaxations</a>.</p>
+<p>   - Mechanism: greedy tokenizer construction may encode local choices that amplify rare-token fragmentation, multilingual imbalance, or downstream gradient sparsity.</p>
+<p>   - Minimal experiment/probe: train tiny LMs on the same corpus with BPE/Unigram and one convex-relaxation-inspired vocabulary variant or proxy; measure rare-token accuracy, gradient frequency, compression, and downstream reasoning strings.</p>
+<p>   - Falsifier: if global tokenization changes do not alter rare-slice learning after controlling vocabulary size and corpus, tokenizer optimization is a weaker lever than expected.</p>
+<p>   - Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><a href="https://arxiv.org/abs/2605.22786v1" target="_blank" rel="noopener">LCGuard</a>: revisit when there is runnable code or clearer evidence that KV sharing changes multi-agent behavior beyond leakage/safety framing.</li>
+<li><a href="https://arxiv.org/abs/2605.22511v1" target="_blank" rel="noopener">Search-E1</a>: compare with other self-distillation/search-agent recipes; key question is whether strategy diversity survives.</li>
+<li><a href="https://arxiv.org/abs/2605.21427v1" target="_blank" rel="noopener">PALS</a>: watch for MoE serving work that reports not only power/latency but also expert-drop or routing-quality effects.</li>
+<li><a href="https://arxiv.org/abs/2605.22717v1" target="_blank" rel="noopener">Live Music Diffusion Models</a>: revisit if interactive audio diffusion exposes reusable low-latency post-training tricks for speech/TTS.</li>
+<li><a href="https://huggingface.co/papers/2605.16928" target="_blank" rel="noopener">Full Attention Strikes Back</a>: worth testing on rare early evidence; sparse conversion papers often look good on average-context tasks.</li>
+<li><a href="https://arxiv.org/abs/2605.20706v1" target="_blank" rel="noopener">Llamas on the Web</a>: watch as a local experimentation enabler, especially if WebGPU paths expose logit/activation or precision-drift instrumentation.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 03:07</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

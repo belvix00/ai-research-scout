@@ -30,6 +30,19 @@
 <h2>Mechanism questions</h2>
 <h2>Audio ML / speech signals</h2>
 <h2>Inference optimization signals</h2>
+<h2>Daily additions — 2026-05-23</h2>
+<ul>
+<li><strong>Reasoning-RL objectives now need a fixed-rollout geometry audit.</strong> Vector Policy Optimization, DelTA, RLIF multi-reward training, and clipping-bottleneck work all modify different parts of the same update object: rollout diversity, token credit, reward-channel independence, and clipped near-boundary advantages. Experiment: fixed math/code/tool rollout set; compare diversity-regularized, token-credit, multi-reward, and clipped/unclipped objectives with prefix-local KL, branch diversity, changed-token sparsity, and held-out transfer.</li>
+<li><strong>Quantized attention/KV paths need runtime sign-off, not just average evals.</strong> Runtime-certified bounded-error attention, OCTOPUS KV coding, and inference simulation reinforce that low-bit/cache/serving choices are causal transformations. Experiment: rare early clue + distractor long-context suite across fp/full attention, quantized attention, and compressed KV; log error certificates, binding margins, attention-to-evidence, latency, and memory.</li>
+<li><strong>Audio robustness should probe trajectories and context, not only perceptual quality.</strong> RobustSpeechFlow, contextual audio denoising, LatentOmni, and live music diffusion show content fidelity, context relevance, cross-modal evidence, and streaming latency can fail separately. Experiment: perturb alignment/context/background sources and probe phoneme, rare entity, speaker, prosody, timing, and context-relevance factors.</li>
+<li><strong>Multimodal interpretability claims need causal scorecards.</strong> SegCompass and sparse VLM embedding work extend SAE-style ideas into multimodal spaces, but should be promoted only if features predict held-out patch/ablation effects and degradation robustness.</li>
+<li><strong>Tokenizer design may be a clean rare-token optimization testbed.</strong> Convex-relaxation tokenization gives a more formal handle on BPE/Unigram local-greediness. Experiment: tiny LM with matched-vocab tokenizers; measure rare-string fragmentation, gradient frequency, rare-token accuracy, and downstream reasoning-string robustness.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; durable memory splits across reasoning-RL update geometry, runtime-certified quantization/KV preservation, audio factor robustness, multimodal causal interpretability, and tokenizer optimization.</li>
+<li>Inference systems are increasingly experimental conditions: serving simulators, power-aware MoE scheduling, WebGPU paths, and cache codecs change both cost and potentially mechanism validity.</li>
+</ul>
 <h2>Daily additions — 2026-05-21</h2>
 <ul>
 <li><strong>Long-context evidence access now needs a positional-geometry + serving-stack split.</strong> RoPE non-identifiability and million-token serving evidence suggest long-context failures can arise from coordinate aliasing, KV/prefill/decode constraints, or both. Experiment: rare early facts plus distractor aliases under RoPE/alternative position encodings and serving/runtime variants; log evidence reachability, attention, logit margin, latency, and KV cost.</li>
@@ -370,7 +383,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-21 08:04</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 03:07</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
