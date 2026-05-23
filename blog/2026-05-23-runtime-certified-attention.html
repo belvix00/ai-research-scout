@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Runtime-Certified Attention: Turning Quantization Error Into a Decision Margin · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="active" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>Runtime-Certified Attention: Turning Quantization Error Into a Decision Margin</h1>
+<h2>Why this concept appeared in the scout</h2>
+<p>The 2026-05-23 scout had a strong inference-systems cluster:</p>
+<ul>
+<li><strong>Runtime-Certified Bounded-Error Quantized Attention</strong> reframed low-bit attention as something that should come with a per-instance error certificate, not just a good average benchmark.</li>
+<li><strong>OCTOPUS</strong> and related KV-cache compression work made cache/state compression part of the model’s decision geometry.</li>
+<li>The running scout notes already treat deployment paths as causal transformations: fp16, quantized weights, quantized KV, sparse attention, runtime LoRA, MLX/ExecuTorch/vLLM, and browser/WebGPU paths are not transparent serialization formats.</li>
+</ul>
+<p>The useful foundations refresher is not “what is quantization?” The important object is the <strong>margin between the exact attention computation and the deployed approximation</strong>. A low-bit attention path is safe for a particular token only if its error is smaller than the task-relevant margin.</p>
+<p>Averages can hide this. Perplexity can barely move while a rare early clue loses to a distractor because the deployed path perturbed one key logit by a few tenths. The scout question is therefore:</p>
+<blockquote>Can runtime error certificates predict when quantized attention/KV compression will preserve the evidence binding that matters for a decision?</blockquote>
+<h2>The exact attention object we are perturbing</h2>
+<p>For one attention head, write the exact attention output for query $$q$$, keys $$k_i$$, and values $$v_i$$ as</p>
+<div class="math-block">$$z_i = \frac{q^\top k_i}{\sqrt d},
+\qquad
+\alpha_i = \frac{e^{z_i}}{\sum_j e^{z_j}},
+\qquad
+y = \sum_i \alpha_i v_i.$$</div>
+<p>A quantized or compressed path replaces some part of this computation:</p>
+<div class="math-block">$$q \mapsto \hat q,
+\qquad
+k_i \mapsto \hat k_i,
+\qquad
+v_i \mapsto \hat v_i,
+\qquad
+z_i \mapsto \hat z_i,
+\qquad
+y \mapsto \hat y.$$</div>
+<p>The deployed output error is</p>
+<div class="math-block">$$\Delta y = \hat y - y.$$</div>
+<p>But output norm alone is not enough. If the answer depends on choosing the true evidence token $$*$$ over distractors $$d\in D$$, the more relevant quantity is the <strong>attention margin</strong></p>
+<div class="math-block">$$M = z_* - \max_{d\in D} z_d$$</div>
+<p>or, with many distractors, the log-sum-exp margin</p>
+<div class="math-block">$$M_{\mathrm{eff}} = z_* - \log \sum_{d\in D} e^{z_d}.$$</div>
+<p>Quantization is harmless for this decision if the perturbation cannot flip the sign of the relevant margin.</p>
+<h2>From vector quantization error to logit error</h2>
+<p>Suppose the deployed path has bounded query/key errors</p>
+<div class="math-block">$$\hat q = q + \delta q,
+\qquad
+\hat k_i = k_i + \delta k_i.$$</div>
+<p>The deployed logit is</p>
+<div class="math-block">$$\hat z_i
+= \frac{(q+\delta q)^\top(k_i+\delta k_i)}{\sqrt d}.$$</div>
+<p>So the logit perturbation is</p>
+<div class="math-block">$$\Delta z_i
+= \hat z_i-z_i
+= \frac{q^\top\delta k_i + k_i^\top\delta q + \delta q^\top\delta k_i}{\sqrt d}.$$</div>
+<p>By Cauchy-Schwarz,</p>
+<div class="math-block">$$|\Delta z_i|
+\le
+\frac{\|q\|\,\|\delta k_i\| + \|k_i\|\,\|\delta q\| + \|\delta q\|\,\|\delta k_i\|}{\sqrt d}.$$</div>
+<p>If runtime metadata can bound</p>
+<div class="math-block">$$\|\delta q\|\le \epsilon_q,
+\qquad
+\|\delta k_i\|\le \epsilon_{k,i},$$</div>
+<p>then it can emit a logit-error certificate</p>
+<div class="math-block">$$|\Delta z_i| \le b_i
+=
+\frac{\|q\|\epsilon_{k,i}+\|k_i\|\epsilon_q+\epsilon_q\epsilon_{k,i}}{\sqrt d}.$$</div>
+<p>This is the first key mechanism: a quantization method is not merely “4-bit” or “8-bit.” For a specific token, head, and prompt, it induces a <strong>local logit uncertainty interval</strong></p>
+<div class="math-block">$$\hat z_i \in [z_i-b_i, z_i+b_i]$$</div>
+<p>or, if the exact logit is not computed, an interval around an approximate logit using a conservative bound.</p>
+<h2>A certificate for preserving the winning evidence token</h2>
+<p>For one evidence token $$*$$ and one distractor $$d$$, the exact margin is</p>
+<div class="math-block">$$M_{*d}=z_*-z_d.$$</div>
+<p>The deployed margin is</p>
+<div class="math-block">$$\hat M_{*d}=\hat z_* - \hat z_d
+= M_{*d} + \Delta z_* - \Delta z_d.$$</div>
+<p>If</p>
+<div class="math-block">$$|\Delta z_*|\le b_* ,
+\qquad
+|\Delta z_d|\le b_d,$$</div>
+<p>then</p>
+<div class="math-block">$$\hat M_{*d} \ge M_{*d} - b_* - b_d.$$</div>
+<p>So a sufficient condition for preserving the pairwise ordering is</p>
+<div class="math-block">$$M_{*d} &gt; b_*+b_d.$$</div>
+<p>With multiple distractors, a conservative certificate is</p>
+<div class="math-block">$$z_* - z_d &gt; b_*+b_d
+\qquad \forall d\in D.$$</div>
+<p>This is stricter than necessary but interpretable. It says: the evidence logit is separated from every distractor by more than the maximum quantization-induced margin shrinkage.</p>
+<p>For the log-sum-exp version, define the approximate distractor mass</p>
+<div class="math-block">$$L_D = \log \sum_{d\in D} e^{z_d}.$$</div>
+<p>If all distractor logits may increase by their bounds and the evidence logit may decrease by its bound, a worst-case deployed effective margin is</p>
+<div class="math-block">$$\hat M_{\mathrm{eff}}
+\ge
+z_* - b_* - \log\sum_{d\in D} e^{z_d+b_d}.$$</div>
+<p>A runtime certificate can therefore report</p>
+<div class="math-block">$$C_{\mathrm{eff}}
+= z_* - b_* - \log\sum_{d\in D} e^{z_d+b_d}.$$</div>
+<p>If</p>
+<div class="math-block">$$C_{\mathrm{eff}}&gt;0,$$</div>
+<p>then quantization cannot make the aggregate distractor set beat the evidence under the stated logit bounds.</p>
+<div class="diagram-svg"><svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="runtime-certified attention compares decision margin to quantization error bounds">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#475569" />
+    </marker>
+  </defs>
+
+  <rect x="38" y="58" width="170" height="150" rx="16" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+  <text x="123" y="92" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">exact attention</text>
+  <text x="123" y="122" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">logits zᵢ</text>
+  <text x="123" y="146" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">margin M</text>
+  <text x="123" y="174" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#1d4ed8">evidence beats distractors</text>
+
+  <rect x="288" y="58" width="190" height="150" rx="16" fill="#fef3c7" stroke="#d97706" stroke-width="2" />
+  <text x="383" y="88" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">quantized path</text>
+  <text x="383" y="116" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">q,k,v → q̂,k̂,v̂</text>
+  <text x="383" y="142" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">logit errors |Δzᵢ| ≤ bᵢ</text>
+  <text x="383" y="174" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#b45309">approximate but bounded</text>
+
+  <rect x="570" y="58" width="190" height="150" rx="16" fill="#f8fafc" stroke="#64748b" stroke-width="2" />
+  <text x="665" y="88" text-anchor="middle" font-family="sans-serif" font-size="15" fill="#0f172a">runtime certificate</text>
+  <text x="665" y="116" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">is M &gt; error budget?</text>
+  <text x="665" y="144" text-anchor="middle" font-family="sans-serif" font-size="13" fill="#334155">safe / uncertain / fallback</text>
+  <text x="665" y="174" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#dc2626">rare-clue failures become visible</text>
+
+  <line x1="208" y1="133" x2="280" y2="133" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+  <line x1="478" y1="133" x2="562" y2="133" stroke="#475569" stroke-width="2" marker-end="url(#arrow)" />
+
+  <line x1="120" y1="240" x2="680" y2="240" stroke="#94a3b8" stroke-width="2" />
+  <line x1="295" y1="228" x2="295" y2="252" stroke="#2563eb" stroke-width="3" />
+  <text x="295" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#2563eb">evidence logit</text>
+  <line x1="490" y1="228" x2="490" y2="252" stroke="#d97706" stroke-width="3" />
+  <text x="490" y="270" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#d97706">distractor mass</text>
+  <path d="M298 236 C350 215, 430 215, 486 236" fill="none" stroke="#dc2626" stroke-width="2" />
+  <text x="392" y="218" text-anchor="middle" font-family="sans-serif" font-size="12" fill="#dc2626">margin must exceed error bound</text>
+</svg></div>
+<h2>Why softmax makes the certificate decision-dependent</h2>
+<p>Attention output error is not linear only because logits change; softmax amplifies some perturbations and suppresses others. Let</p>
+<div class="math-block">$$\alpha = \mathrm{softmax}(z).$$</div>
+<p>The Jacobian is</p>
+<div class="math-block">$$\frac{\partial \alpha_i}{\partial z_j}
+= \alpha_i(\mathbf 1_{i=j}-\alpha_j).$$</div>
+<p>For a small logit perturbation $$\Delta z$$,</p>
+<div class="math-block">$$\Delta \alpha_i
+\approx
+\alpha_i\left(\Delta z_i - \sum_j \alpha_j\Delta z_j\right).$$</div>
+<p>So perturbing a token with negligible attention may not matter. Perturbing a near-tie among evidence-bearing tokens can matter a lot. The pairwise two-token case is especially clear:</p>
+<div class="math-block">$$P(*)=\sigma(M),
+\qquad
+\frac{\partial P(*)}{\partial M}=\sigma(M)(1-\sigma(M)).$$</div>
+<p>The derivative is largest when $$M\approx 0$$. That is exactly the regime where rare evidence, stale corrections, or low-salience early facts compete with plausible distractors.</p>
+<p>This is why aggregate quantization metrics underweight the dangerous cases. Most tokens may have large margins or irrelevant perturbations. The failures concentrate where the model was already uncertain and the exact computation barely preserved the correct binding.</p>
+<h2>Value-vector error: preserving the winner is not enough</h2>
+<p>Even if quantization preserves the attention ordering, value compression can change the retrieved information. Write</p>
+<div class="math-block">$$\hat v_i = v_i + \delta v_i.$$</div>
+<p>The deployed output is</p>
+<div class="math-block">$$\hat y = \sum_i \hat \alpha_i \hat v_i.$$</div>
+<p>Subtract the exact output:</p>
+<div class="math-block">$$\hat y-y
+= \sum_i (\hat\alpha_i-\alpha_i)v_i
++ \sum_i \hat\alpha_i \delta v_i.$$</div>
+<p>The first term is attention distribution drift. The second is value reconstruction error. A simple bound is</p>
+<div class="math-block">$$\|\hat y-y\|
+\le
+\sum_i |\hat\alpha_i-\alpha_i|\,\|v_i\|
++ \sum_i \hat\alpha_i\|\delta v_i\|.$$</div>
+<p>For rare evidence, the second term matters because the decisive content can be low-energy in average reconstruction terms. A KV codec can preserve most value dimensions while damaging the subspace that carries the rare clue.</p>
+<p>If the downstream residual/logit readout for an answer contrast is approximately a vector $$u$$, then the relevant scalar is not $$\|\Delta y\|$$ but</p>
+<div class="math-block">$$\Delta m = u^\top(\hat y-y).$$</div>
+<p>A value-error certificate should ideally bound</p>
+<div class="math-block">$$|u^\top(\hat y-y)|$$</div>
+<p>or a proxy for task-relevant subspaces, not only MSE over cached values.</p>
+<h2>Three levels of certification</h2>
+<p>Runtime certificates can be useful at different strengths.</p>
+<h3>1. Numeric certificate</h3>
+<p>This certifies that the approximate attention output is close to exact attention:</p>
+<div class="math-block">$$\|\hat y-y\|\le \epsilon_y.$$</div>
+<p>This is helpful for debugging and fallback decisions, but it is not directly a behavioral guarantee.</p>
+<h3>2. Ordering certificate</h3>
+<p>This certifies that the evidence token remains above distractors:</p>
+<div class="math-block">$$z_* - z_d &gt; b_*+b_d
+\qquad \forall d\in D.$$</div>
+<p>This is better for rare-evidence tasks because it targets the attention decision.</p>
+<h3>3. Behavior-margin certificate</h3>
+<p>This certifies that the final answer margin survives the deployed approximation. If the exact answer contrast is</p>
+<div class="math-block">$$S = \ell_{\mathrm{answer}} - \ell_{\mathrm{competitor}},$$</div>
+<p>and the runtime path can bound the final contrast perturbation by $$B_S$$, then</p>
+<div class="math-block">$$S&gt;B_S$$</div>
+<p>is the decision-level certificate.</p>
+<p>This is hardest to compute but closest to what we care about. In practice, a cheap harness can log all three proxies: attention logit bounds, output drift, and answer logit margin.</p>
+<h2>Why runtime certification is different from post-hoc eval</h2>
+<p>A normal eval says: “this quantized model got 82%.” A runtime certificate says: “on this prompt, this head/layer/token decision had error budget $$b$$ and margin $$M$$.”</p>
+<p>That distinction matters for deployment because failures are instance-specific. The same quantized path can be safe for short, redundant prompts and unsafe for long contexts with repeated aliases. A good runtime policy can do something with this information:</p>
+<ul>
+<li>accept the fast low-bit path when the certificate is strong;</li>
+<li>recompute selected heads/tokens in higher precision when the certificate is weak;</li>
+<li>preserve uncompressed KV for rare high-risk spans;</li>
+<li>route uncertain prompts to a slower backend;</li>
+<li>log certificate failures as benchmark slices.</li>
+</ul>
+<p>In other words, certification turns quantization from a static model choice into an adaptive systems policy.</p>
+<h2>The optimization geometry view</h2>
+<p>Quantization is often described as minimizing reconstruction loss:</p>
+<div class="math-block">$$\min_{\hat W\in\mathcal Q}\|W-\hat W\|^2$$</div>
+<p>or some activation-weighted version. For attention/KV, the decision-relevant objective is closer to preserving margins:</p>
+<div class="math-block">$$\min_{\mathrm{quantizer}}\;\mathbb E_x\left[\max\left(0, B(x)-M(x)\right)\right],$$</div>
+<p>where $$M(x)$$ is the exact decision margin and $$B(x)$$ is the runtime error bound under the deployed approximation.</p>
+<p>This changes the geometry. A reconstruction-optimal quantizer may spend bits on high-variance common directions. A certificate-aware quantizer should spend bits where small errors threaten small margins:</p>
+<div class="math-block">$$\text{risk}(x) = \frac{B(x)}{|M(x)|+\eta}.$$</div>
+<p>High risk does not necessarily mean high norm. It means the approximation error is large relative to the margin needed for the decision.</p>
+<p>For long-context evidence, this suggests a useful policy: preserve precision around tokens with high evidence potential and low binding margin, not merely tokens with high activation norm or recent position.</p>
+<h2>What to measure</h2>
+<p>For a runtime-certified attention/KV audit, log quantities that connect low-level error to decision survival:</p>
+<ol>
+<li><strong>Per-token logit error bounds:</strong> $$b_i$$ for attention logits, by layer/head/token.</li>
+<li><strong>Evidence margin:</strong> $$M=z_<em> - \max_d z_d$$ and $$M_{\mathrm{eff}}=z_</em> - \log\sum_d e^{z_d}$$.</li>
+<li><strong>Certificate slack:</strong></li>
+</ol>
+<div class="math-block">$$   \mathrm{slack}=M-(b_*+b_{d^*})$$</div>
+<p>   or the log-sum-exp certificate $$C_{\mathrm{eff}}$$.</p>
+<ol>
+<li><strong>Attention drift:</strong> $$\|\hat\alpha-\alpha\|_1$$ on evidence/distractor spans.</li>
+<li><strong>Value drift:</strong> $$\|\hat y-y\|$$ plus task-projected drift if answer-logit contrasts are available.</li>
+<li><strong>Answer margin survival:</strong> exact vs deployed logit margin for the correct answer.</li>
+<li><strong>Rare-slice failures:</strong> early clue, stale correction, negative evidence, low-frequency name/entity, repeated distractor templates.</li>
+<li><strong>Fallback rate:</strong> fraction of prompts/tokens where the certificate is uncertain and higher precision would be triggered.</li>
+<li><strong>Cost tradeoff:</strong> latency, memory, KV bytes, bandwidth, and recomputation overhead per certified-safe decision.</li>
+</ol>
+<h2>Minimal experiment</h2>
+<p>Build a small long-context rare-evidence harness and compare exact vs approximate attention paths.</p>
+<ol>
+<li>Use one local model where logprobs or attention/logit proxies are accessible.</li>
+<li>Construct prompts with:</li>
+</ol>
+<p>   - one true early clue;</p>
+<p>   - several semantically similar distractors;</p>
+<p>   - stale corrections;</p>
+<p>   - rare names/entities;</p>
+<p>   - position-swapped variants.</p>
+<ol>
+<li>Run at least three paths:</li>
+</ol>
+<p>   - fp16/bf16 baseline;</p>
+<p>   - quantized attention or quantized KV path;</p>
+<p>   - quantized path with a conservative fallback rule if certificate slack is negative.</p>
+<ol>
+<li>For each prompt, record exact answer logprob margin where possible and deployed answer margin always.</li>
+<li>Approximate certificate risk even if the paper’s full method is not implemented: use measured logit drift between exact and deployed runs as empirical $$b_i$$, then test whether low slack predicts failures.</li>
+<li>Plot failure probability against</li>
+</ol>
+<div class="math-block">$$   \mathrm{risk}=\frac{B}{|M|+\eta}.$$</div>
+<p>The cheap falsifier is strong: if certificate slack or empirical risk does not predict rare-evidence failures better than aggregate perplexity, output drift, or context length, then certification may not be the right sign-off layer for this setting.</p>
+<h2>Failure modes</h2>
+<ol>
+<li><strong>Certificate bound is too loose.</strong> If $$B$$ is always huge, everything falls back and the certificate is operationally useless.</li>
+<li><strong>Certificate bound is too local.</strong> A head-level attention guarantee may not bound downstream residual, MLP, or final answer behavior.</li>
+<li><strong>Wrong evidence span.</strong> The harness may label the evidence token, but the model may use another correlated cue.</li>
+<li><strong>Attention preservation without value preservation.</strong> The model attends to the right KV slot but compressed values lose the decisive feature.</li>
+<li><strong>Value preservation without answer survival.</strong> Small hidden-state drift can still flip a close final logit margin.</li>
+<li><strong>Average reconstruction wins the wrong objective.</strong> Low MSE can coexist with high margin risk on rare slices.</li>
+<li><strong>Fallback hides the problem.</strong> A fallback policy can restore accuracy while making latency unpredictable; log fallback rate and tail latency.</li>
+<li><strong>Serving stack confounds.</strong> Batching, prefill/decode split, cache layout, speculative decoding, and runtime kernels can all change drift independently of nominal quantization.</li>
+</ol>
+<h2>Links back to scout questions</h2>
+<p>Relevant scout notes and questions:</p>
+<ul>
+<li>[[2026-05-23]]: runtime-certified bounded-error quantized attention, OCTOPUS KV compression, and serving simulation made inference paths a mechanism-preservation issue.</li>
+<li>[[2026-05-21]]: long-context evidence access split into positional geometry, serving state, and runtime path.</li>
+<li>[[2026-05-17-quantization-intervention-validity]]: intervention validity under deployment quantization used update-to-bin and target-margin survival; this post extends the margin logic to attention/KV decisions.</li>
+<li>[[2026-05-21-rope-positional-aliasing]]: binding-margin measurement for rare evidence; quantized attention should report whether it preserves that margin.</li>
+<li>[[questions#Open questions]]: “Can runtime error certificates for quantized attention/KV predict rare-evidence failures better than aggregate perplexity or broad task accuracy?”</li>
+<li>[[questions#Candidate experiments]]: <strong>Mechanism-preserving inference/runtime harness</strong> and <strong>Cost-normalized state / long-context access benchmark</strong> should log certificate slack, fallback rate, and answer-margin survival.</li>
+</ul>
+<p>Refined question after this derivation: can certificate slack $$M-B$$ be made tight enough to drive an adaptive precision policy that preserves rare evidence at lower KV/latency cost than always running the exact path?</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 08:02</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>
