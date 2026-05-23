@@ -30,6 +30,45 @@
 <h2>Mechanism questions</h2>
 <h2>Audio ML / speech signals</h2>
 <h2>Inference optimization signals</h2>
+<h2>Weekly synthesis — 2026-05-23</h2>
+<h3>Durable belief updates</h3>
+<ul>
+<li><strong>Promote fixed-rollout reasoning-RL credit geometry to a testable priority.</strong> The week’s evidence (VPD, self-distilled agent RL, FEST, GRLO, Hölder policy optimization, PMI anti-self-distillation, CEPO, DelTA, VPO, multi-reward RLIF, clipping bottleneck) points to one fixed-rollout audit: hold candidate traces constant and compare prefix-local KL, branch-credit share, promoted-token base rank, changed-token sparsity, diversity, and transfer across objectives.</li>
+<li><strong>Promote long-context evidence access as coordinate/carrier/runtime localization.</strong> RoPE aliasing, MeMo, KV retention/compression, sparse/block attention, Full Attention Strikes Back, quantized attention, and million-token serving should feed one state benchmark with early rare facts, stale corrections, negative evidence, repeated aliases, position swaps, binding margins, evidence reachability, KV bytes, and latency.</li>
+<li><strong>Promote deployment-path validity under a decision-margin sign-off template.</strong> Quantization-permanent unlearning, outlier-injection attacks, low-bit/runtime paths, and runtime-certified attention should be reported with update-to-bin ratios, exact/deployed logit drift, certificate slack $M-B$, fallback rate, target-margin survival, latency, and memory.</li>
+<li><strong>Promote speech/audio factor survival under interface perturbations.</strong> SpeakerLLM, Streaming SpeechLLM, TextPro-SLM, RobustSpeechFlow, contextual denoising, voice-agent evaluation, and ASR-evaluator failures all support a frozen-encoder/codec probe suite for phoneme/entity, speaker, prosody, timing, impairment/accent, recording condition, context relevance, and tool-schema failures.</li>
+<li><strong>Keep causal interpretability scorecards as a candidate direction.</strong> SAE polysemanticity, exemplar partitioning, tensor similarity, Jets, neuron-aware data selection, SegCompass, and sparse VLM embeddings should be judged by held-out patch/ablation prediction, cross-checkpoint equivalence, side-effect specificity, deployment stability, and data-selection interference reduction.</li>
+<li><strong>Watch adaptive compute gates through rare-branch retention.</strong> MoE masks, stage-adaptive multimodal token selection, speculative decoding, power-aware MoE scheduling, and parallel reasoning controllers should be folded into existing harnesses until rare-feature/rare-branch retention curves justify a standalone project.</li>
+<li><strong>Watch tokenizer optimization as rare-gradient routing.</strong> Convex-relaxation tokenization is a compact side experiment: matched tiny LMs across tokenizers, measuring fragmentation, gradient frequency, rare-string accuracy, and reasoning-string robustness.</li>
+</ul>
+<h3>Recurring bottlenecks</h3>
+<ul>
+<li><strong>Credit allocation:</strong> final-answer rewards, dense teachers, token credit, information/contrastive trace filters, clipping, and multi-reward channels route gradient differently over the same traces.</li>
+<li><strong>State accessibility:</strong> positional encoding, KV/cache, retrieval, learned memory, sparse attention, persistent sessions, and serving backends decide whether evidence exists at decision time.</li>
+<li><strong>Deployment aliasing:</strong> quantization, KV codecs, runtime LoRA, MLX/ExecuTorch/WebGPU/vLLM paths, speculative decoding, and routers can change the causal object.</li>
+<li><strong>Rare-evidence eviction:</strong> adaptive controllers optimize average cost while dropping low-frequency decisive facts, branches, experts, audio factors, or visual details.</li>
+<li><strong>Stale supervision:</strong> fixed teachers, self-distillation, replay, old logits, persistent memories, and self-generated mid-training data can preserve detail while copying old mistakes.</li>
+<li><strong>Aggregate metric camouflage:</strong> WER, naturalness, final-answer reward, perplexity, tokens/sec, average latency, compile success, broad accuracy, and safety pass rates hide slice-level failures.</li>
+<li><strong>Cost normalization:</strong> useful comparisons need equal token/time/KV/memory/bandwidth/sample/latency budgets.</li>
+</ul>
+<h3>Missing tools / annoying manual things</h3>
+<ul>
+<li>Fixed-rollout objective diff tool: rollouts in, objective-specific token weights and prefix/branch metrics out.</li>
+<li>State-interface benchmark runner for rare facts, stale corrections, negative evidence, aliases, and position swaps across context/retrieval/memory/KV/sparse/runtime cells.</li>
+<li>Runtime drift/certification logger for PyTorch/MLX/ExecuTorch/GGUF/quantized-KV/speculative paths with drift, slack, fallback, latency, and memory.</li>
+<li>Speech-factor manifest/probe kit for speaker, accent/impairment, phoneme/entity, prosody, timing, recording condition, context, and tool-use labels.</li>
+<li>Causal interpretability scorecard harness for reconstruction/readability plus patch, ablation, equivalence, and side-effect metrics.</li>
+<li>Idea DB merge tooling: weekly runs still surface the same direction under many slugs.</li>
+</ul>
+<h3>Cheap-paper opportunities</h3>
+<ul>
+<li><strong>Fixed-rollout RL credit geometry:</strong> no full RL stack initially; compute objective-induced update maps offline.</li>
+<li><strong>Rare-evidence state benchmark:</strong> synthetic corpus plus forced-choice logprobs and budget-normalized state carriers.</li>
+<li><strong>Runtime certificate proxy:</strong> use empirical drift as $B$ and test whether $B/(|M|+\eta)$ predicts rare-evidence failures.</li>
+<li><strong>Apple Silicon runtime drift report:</strong> same small model and prompt suite across PyTorch/MLX/GGUF/quantized paths.</li>
+<li><strong>Speech factor survival notebook:</strong> frozen encoders/codecs plus factor labels before any new TTS/audio training.</li>
+<li><strong>Tokenizer rare-gradient lab:</strong> tiny matched-tokenizer LMs for rare string fragmentation and gradient routing.</li>
+</ul>
 <h2>Daily additions — 2026-05-23</h2>
 <ul>
 <li><strong>Reasoning-RL objectives now need a fixed-rollout geometry audit.</strong> Vector Policy Optimization, DelTA, RLIF multi-reward training, and clipping-bottleneck work all modify different parts of the same update object: rollout diversity, token credit, reward-channel independence, and clipped near-boundary advantages. Experiment: fixed math/code/tool rollout set; compare diversity-regularized, token-credit, multi-reward, and clipped/unclipped objectives with prefix-local KL, branch diversity, changed-token sparsity, and held-out transfer.</li>
@@ -383,7 +422,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 08:02</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 09:12</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
