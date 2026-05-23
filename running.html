@@ -121,6 +121,19 @@
 <li>No single dominant pattern today; durable memory splits across state placement, sparse RL credit channels, MoE routing masks, causal interpretability evaluation, speech-to-tool factor localization, and deployment-path validity.</li>
 <li>Quantization remains a hard sign-off requirement for interventions: outlier-injection and quantization-permanent unlearning show low-bit deployment can invert, erase, or preserve targeted edits depending on mechanism.</li>
 </ul>
+<h2>Daily additions — 2026-05-24</h2>
+<ul>
+<li><strong>State carriers should be split by edit semantics, not filed under one long-context bucket.</strong> Gated DeltaNet-2 and WorldKV suggest separate probes for recurrent-state erase/write, KV retrieval/compression, and world-state consistency. Experiment: stale correction + rare-evidence sequence suite across softmax KV, linear recurrent state, and retrieved/compressed state; log stale resurrection, correction margin, gate dynamics, and memory cost.</li>
+<li><strong>Speech-language factual recall is now a direct causal-mechanism target.</strong> Text-to-speech factual recall transfer work suggests the audio harness should test whether factual associations share text circuits or pass through speech-specific acoustic-semantic bridges. Add matched text/TTS/noisy-speech recall prompts with speaker/accent perturbations and causal/probe localization where possible.</li>
+<li><strong>Cheap process supervision needs adversarial trace sanity checks.</strong> Unsupervised PRMs, capability-selective self-distillation, multilingual hint guidance, and simulative-planning controllers all move supervision/control inward. Before trusting them, score fixed rollouts with localized wrong steps, fluent detours, language drift, and terse correct solutions against verifier labels.</li>
+<li><strong>Robust representation losses need nuisance-covariance sign-off.</strong> The Matching Principle gives a useful geometric lens: invariance objectives should match deployment nuisance directions. The falsifier to watch is rare-factor erasure when the nuisance covariance is estimated from average cases.</li>
+<li><strong>Proxy metrics should be audited for local rank preservation.</strong> Downstream-performance forecasting and scientific-progress forecasting reinforce that cheap metrics must preserve recipe rankings for the exact decision slice, not merely correlate globally.</li>
+</ul>
+<h3>Weak signals / bottlenecks</h3>
+<ul>
+<li>No single dominant pattern today; useful signals split across state editing, process-supervision observability, speech/text recall transfer, diffusion/vision attention extrapolation, and evaluation proxy validity.</li>
+<li>Weekend source flow was sparse; HF Papers/arXiv supplied the main signal, and weak social signals were not promoted.</li>
+</ul>
 <h2>User roadmap links</h2>
 <ul>
 <li>MTP as gradient-channel widening</li>
@@ -422,7 +435,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 09:12</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-24 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

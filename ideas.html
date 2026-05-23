@@ -20,7 +20,7 @@
   <main>
     <article class="prose"><h1>AI Research Scout — Idea Database</h1>
 <p>This file is generated from <code>scout.db</code> by <code>scripts/idea_db.py export-md</code>. Edit the DB via the script or cron jobs; do not treat this as the only source of truth.</p>
-<p>Generated: 2026-05-23 09:12:41</p>
+<p>Generated: 2026-05-24 03:06:29</p>
 <h2>Merged conceptually:</h2>
 <ul>
 <li>Status: <code>killed</code></li>
@@ -883,6 +883,72 @@
 <ul>
 <li><code>daily/2026-05-12.md</code> — Fast BLT uses block-wise diffusion and verification to reduce byte-level autoregressive decoding cost.</li>
 <li><code>daily/2026-05-12.md</code> — Layer Collapse in Diffusion Language Models reports super-outliers and reversed quantization/sparsity behavior relative to AR models.</li>
+</ul>
+<h2>Erase/write state editing for compressed sequence memory</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-24</li>
+<li>Last seen: 2026-05-24</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Gated DeltaNet-2 and WorldKV suggest state carriers should be evaluated by edit semantics: erase stale association, write new evidence, and preserve revisitable state under fixed memory.</p>
+<h3>Mechanism</h3>
+<p>Compressed recurrent/KV state can fail by stale resurrection or rare-evidence eviction when forgetting and writing are coupled.</p>
+<h3>Minimal experiment</h3>
+<p>Synthetic stale-correction and rare-evidence sequences across softmax KV, linear recurrent state, and retrieved/compressed state; log correction margin, stale resurrection, gate dynamics, memory and latency.</p>
+<h3>Falsifier</h3>
+<p>Separate erase/write or retrieval/compression variants do not improve stale-correction or rare-evidence slices under matched compute/memory.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-24.md</code> — Gated DeltaNet-2 treats linear attention as compressed-memory editing with separable erase and write controls; WorldKV adds retrieval/compression for persistent world state.</li>
+</ul>
+<h2>Modality-transfer factual recall probes for speech-language models</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-24</li>
+<li>Last seen: 2026-05-24</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Speech-language factual recall may share text circuits or route through modality-specific acoustic-semantic bridge features that fail under speaker, accent, and noise shifts.</p>
+<h3>Mechanism</h3>
+<p>Factual associations cross a speech/text interface; causal recall paths may differ by modality even when transcript-level answers match.</p>
+<h3>Minimal experiment</h3>
+<p>Matched text, TTS, and noisy speech factual prompts with speaker/accent perturbations; compare recall margins, layer localization, causal mediation/patching where possible, and transcript-only controls.</p>
+<h3>Falsifier</h3>
+<p>Speech and text recall localize identically after transcript quality is controlled and show no speech-specific bottleneck across perturbation slices.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-24.md</code> — Do Factual Recall Mechanisms Carry over from Text to Speech in Multimodal Language Models? turns speech factual memory into a causal mediation question rather than a WER-only question.</li>
+</ul>
+<h2>Process-supervision sanity checks for unsupervised PRMs</h2>
+<ul>
+<li>Status: <code>watch</code></li>
+<li>Confidence: <code>low</code></li>
+<li>Tags: none</li>
+<li>Score proxy: 12/20</li>
+<li>First seen: 2026-05-24</li>
+<li>Last seen: 2026-05-24</li>
+<li>Evidence count: 1</li>
+</ul>
+<h3>Thesis</h3>
+<p>Unsupervised PRMs and self-distillation filters need adversarial trace tests to prove they detect step validity rather than fluency, length, or familiar trace shapes.</p>
+<h3>Mechanism</h3>
+<p>Step-level reward signals can become stale self-imitation or superficial trace-quality proxies unless checked on localized corruptions.</p>
+<h3>Minimal experiment</h3>
+<p>Fixed math/code rollouts with injected single-step errors, fluent detours, terse correct solutions, and plausible wrong alternatives; compare unsupervised PRM scores to verifier labels and simple baselines.</p>
+<h3>Falsifier</h3>
+<p>Unsupervised scores cannot separate localized invalid steps from fluent wrong traces better than length/confidence/logprob baselines.</p>
+<h3>Evidence</h3>
+<ul>
+<li><code>daily/2026-05-24.md</code> — Unsupervised Process Reward Models and capability-selective self-distillation move supervision inward, requiring sanity checks for fluent but wrong reasoning traces.</li>
 </ul>
 <h2>ASR-as-speech-enhancement evaluator failure</h2>
 <ul>
@@ -5003,7 +5069,7 @@
 <h3>Evidence</h3></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 09:12</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-24 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>

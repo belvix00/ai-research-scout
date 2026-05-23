@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout — 2026-05-24 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="" href="/ai-research-scout/resources.html">Resources</a><a class="active" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout — 2026-05-24</h1>
+<h2>What happened today</h2>
+<p>No single dominant pattern today; the important movements were in separate clusters. It was also a weekend-style run: arXiv/HF/OpenReview produced most of the useful signal, while fresh lab-blog/RSS signal was thinner and HN remained too noisy to promote. The useful developments were not one grand story; they split across state architectures, reasoning/RL supervision, speech/audio mechanisms, diffusion/inference efficiency, and evaluation skepticism.</p>
+<h3>Architectures / model mechanisms</h3>
+<p>The strongest architecture signal was <strong>Gated DeltaNet-2</strong> (<a href="https://arxiv.org/abs/2605.22791v1" target="_blank" rel="noopener">arXiv</a>), which treats linear attention as a compressed-memory editing problem: when the recurrent state is the only cache, the model needs separate controls for erasing old associations and writing new ones. This is a concrete mechanism-level update relative to the recent long-context/KV-cache stream: not all state carriers are equivalent, and a fixed-size recurrent state fails through different channels than a softmax KV cache.</p>
+<p>A related state/memory item was <strong>WorldKV</strong> (<a href="https://arxiv.org/abs/2605.22718v1" target="_blank" rel="noopener">arXiv</a>), which moves the same issue into autoregressive video/world models. Full KV preserves persistent world consistency but is too expensive; sliding windows are fast but forget revisited views. WorldKV’s useful signal is selective memory retrieval/compression for world state, giving another example where the “state interface” is the mechanism, not a backend detail.</p>
+<p>Outside language-only models, <strong>DecQ</strong> (<a href="https://huggingface.co/papers/2605.22777" target="_blank" rel="noopener">HF Papers</a>) tackled representation autoencoders for latent diffusion: frozen foundation encoders supply semantic latents but lose detail needed for reconstruction/generation. Its detail-query interface is a broader reminder that tokenizer/encoder boundaries decide which factors survive into the generative model.</p>
+<h3>Training, RL, and optimization</h3>
+<p>Reasoning-RL signals continued, but today’s useful additions were about <strong>control and observability</strong> rather than another scalar reward recipe. <strong>Efficient Agentic Reasoning Through Self-Regulated Simulative Planning</strong> (<a href="https://huggingface.co/papers/2605.22138" target="_blank" rel="noopener">HF Papers</a>) argues that agents should explicitly decide when and how far to plan. The mechanism is a test-time planning controller: spend simulation only when uncertainty/value warrants it, instead of hoping longer chain-of-thought emerges efficiently from a reactive policy.</p>
+<p><strong>Unsupervised Process Reward Models</strong> (<a href="https://huggingface.co/papers/2605.10158" target="_blank" rel="noopener">HF Papers</a>) and <strong>Self-Policy Distillation via Capability-Selective Subspace Projection</strong> (<a href="https://arxiv.org/abs/2605.22675v1" target="_blank" rel="noopener">arXiv</a>) both addressed the cost/staleness problem of trace supervision. Unsupervised PRMs ask whether step-level reward can be learned without human step labels or final-answer verification. Capability-selective subspace projection asks whether self-generated traces can be filtered by internal capability directions rather than copied wholesale.</p>
+<p><strong>LANG</strong> (<a href="https://arxiv.org/abs/2605.22567v1" target="_blank" rel="noopener">arXiv</a>) added a multilingual twist to reasoning RL: models can improve reasoning while drifting toward English, or preserve input-language consistency while losing reasoning quality. That is a useful failure mode for RLVR/GRPO-style work because it shows scalar reasoning rewards can route representation/language factors in unwanted ways.</p>
+<h3>Mechanistic interpretability / representation theory</h3>
+<p>Two items were worth keeping, but with caution. <strong>Reading Task Failure Off the Activations</strong> (<a href="https://arxiv.org/abs/2605.22719v1" target="_blank" rel="noopener">arXiv</a>) is a small SAE-feature audit on GPT-2 small IOI failures. It is valuable because the setup is reproducible and slice-specific, but it should be scored by whether features predict interventions/ablations, not just whether they correlate with failed prompts.</p>
+<p><strong>The Matching Principle</strong> (<a href="https://arxiv.org/abs/2605.22800v1" target="_blank" rel="noopener">arXiv</a>) gives a more theoretical representation-learning update: many invariance/robustness losses can be seen as matching encoder regularization to deployment nuisance covariance. This matters for both mech interp and audio/vision probes because it sharpens the question “which factor should be invariant?” into a geometric loss-design problem. If the nuisance covariance is wrong, the same invariance objective can erase useful rare factors.</p>
+<h3>Audio, TTS, and speech</h3>
+<p>The most relevant speech item was <strong>Do Factual Recall Mechanisms Carry over from Text to Speech in Multimodal Language Models?</strong> (<a href="https://arxiv.org/abs/2605.22170v1" target="_blank" rel="noopener">arXiv</a>). It asks whether causal mechanisms for factual recall in text also operate in speech-language models. That is directly mechanism-first: the issue is not WER or voice quality, but whether acoustic/semantic interfaces route factual associations through the same internal circuits.</p>
+<p>Two additional audio robustness items broaden the speech-factor harness. <strong>Effective User-defined Keyword Spotting</strong> (<a href="https://arxiv.org/abs/2605.22120v1" target="_blank" rel="noopener">arXiv</a>) focuses on personalized wake words under speaker/pronunciation variation, using dual-stage matching, multimodal enrollment, and continual adaptation. <strong>Neighbor-Consistent Neural Filters</strong> (<a href="https://arxiv.org/abs/2605.21891v1" target="_blank" rel="noopener">arXiv</a>) shows that coordinate-conditioned sound-zone filters can be unstable under small localization jitter. Both are outside the LLM core, but they teach the same lesson: audio systems need factor/slice tests for speaker, pronunciation, spatial uncertainty, and adaptation, not only aggregate accuracy or quality.</p>
+<h3>Inference systems / GPU / ML infra</h3>
+<p>The infra cluster was mostly about treating optimized inference as a mechanism-changing transformation. <strong>Q-ARVD</strong> (<a href="https://huggingface.co/papers/2605.21072" target="_blank" rel="noopener">HF Papers</a>) studies quantization for autoregressive video diffusion models, where streaming generation and temporal consistency make quantization error different from ordinary LLM weight compression. <strong>LoREnc</strong> (<a href="https://huggingface.co/papers/2605.13163" target="_blank" rel="noopener">HF Papers</a>) uses low-rank spectral structure to protect foundation models and LoRA adapters, showing that the same low-rank channel used for efficient adaptation is also a deployment/security surface.</p>
+<p><strong>SEGA</strong> (<a href="https://huggingface.co/papers/2605.22668" target="_blank" rel="noopener">HF Papers</a>) was a useful attention/extrapolation item in diffusion transformers. It uses spectral-energy guidance for out-of-training-range resolution generation, arguing that RoPE/attention scaling should be frequency-aware rather than uniform. This broadens the recent long-context/position-extrapolation discussion: positional-frequency components can fail differently in vision/diffusion settings, not only in LLM context extension.</p>
+<h3>Models, datasets, and tooling / evaluation skepticism</h3>
+<p>Two papers were mostly evaluation/meta-science signals. <strong>Forecasting Downstream Performance of LLMs With Proxy Metrics</strong> (<a href="https://huggingface.co/papers/2605.18607" target="_blank" rel="noopener">HF Papers</a>) asks whether cheap proxy metrics preserve the ordering of expensive downstream outcomes when choosing architecture/data/recipe variants. <strong>Forecasting Scientific Progress with AI</strong> (<a href="https://huggingface.co/papers/2605.22681" target="_blank" rel="noopener">HF Papers</a>) introduces a temporally grounded benchmark for forecasting scientific progress under knowledge cutoffs. These are not immediate experiment directions by themselves, but they are useful guards against leakage, benchmark-only claims, and proxy metrics that fail exactly where model-selection decisions matter.</p>
+<h2>Important developments, one by one</h2>
+<ol>
+<li><strong>Gated DeltaNet-2 separates erase and write in linear attention</strong> — <a href="https://arxiv.org/abs/2605.22791v1" target="_blank" rel="noopener">arXiv</a>. Fixed-size recurrent-state models need state editing, not just state accumulation. The important mechanism is whether forgetting stale associations and writing new values share one gate or can be controlled separately.</li>
+</ol>
+<ol>
+<li><strong>WorldKV treats persistent world memory as retrievable/compressible KV state</strong> — <a href="https://arxiv.org/abs/2605.22718v1" target="_blank" rel="noopener">arXiv</a>. Full KV is too expensive for long video/world rollouts, while sliding windows break consistency. This is a clean state-interface tradeoff: preserve revisitable scene evidence under real-time constraints.</li>
+</ol>
+<ol>
+<li><strong>The Matching Principle turns robustness loss design into covariance geometry</strong> — <a href="https://arxiv.org/abs/2605.22800v1" target="_blank" rel="noopener">arXiv</a>. The useful idea is to regularize the encoder along deployment nuisance directions. The failure mode is equally important: mismatched nuisance assumptions can suppress factors that are rare but label-relevant.</li>
+</ol>
+<ol>
+<li><strong>Sparse-feature IOI audit gives a small mech-interp failure-localization target</strong> — <a href="https://arxiv.org/abs/2605.22719v1" target="_blank" rel="noopener">arXiv</a>. It reports SAE features that differ between successful and failed GPT-2 small IOI prompts. Promote only if those features predict held-out patch/ablation effects, not just post-hoc correlations.</li>
+</ol>
+<ol>
+<li><strong>Speech-language factual recall is becoming a causal-mechanism question</strong> — <a href="https://arxiv.org/abs/2605.22170v1" target="_blank" rel="noopener">arXiv</a>. The paper asks whether text-model factual recall mechanisms carry into speech-language models. This is a strong audio signal because it moves beyond transcript metrics into causal mediation across modality interfaces.</li>
+</ol>
+<ol>
+<li><strong>LANG exposes language drift as an RL reasoning failure mode</strong> — <a href="https://arxiv.org/abs/2605.22567v1" target="_blank" rel="noopener">arXiv</a>. Reasoning RL can improve multi-step performance while pushing multilingual models toward English. The mechanism is reward/hint shaping under a language-consistency constraint.</li>
+</ol>
+<ol>
+<li><strong>Capability-selective self-distillation tries to avoid copying a model’s whole distribution</strong> — <a href="https://arxiv.org/abs/2605.22675v1" target="_blank" rel="noopener">arXiv</a>. Filtering self-generated data by capability subspaces could be better than raw self-imitation. The open question is whether those subspaces track transferable skill or simply launder existing biases.</li>
+</ol>
+<ol>
+<li><strong>Self-regulated simulative planning reframes agent reasoning as a compute-control problem</strong> — <a href="https://huggingface.co/papers/2605.22138" target="_blank" rel="noopener">HF Papers</a>. Instead of making all agents think longer, the proposal is to allocate planning horizon and structure deliberately. That fits the adaptive-compute watchlist, but should be tested on rare-branch failures as well as average token savings.</li>
+</ol>
+<ol>
+<li><strong>Unsupervised PRMs target the annotation bottleneck for step-level reward</strong> — <a href="https://huggingface.co/papers/2605.10158" target="_blank" rel="noopener">HF Papers</a>. If reliable, this would make process supervision much cheaper. The falsifier is whether unsupervised step scores prefer fluent but wrong reasoning or collapse to superficial trace statistics.</li>
+</ol>
+<ol>
+<li><strong>SEGA makes attention extrapolation frequency-aware in diffusion transformers</strong> — <a href="https://huggingface.co/papers/2605.22668" target="_blank" rel="noopener">HF Papers</a>. Uniform RoPE/attention scaling treats all spectral components alike; SEGA argues resolution extrapolation needs component-wise structure. Good broad learning item for positional/frequency extrapolation outside text.</li>
+</ol>
+<ol>
+<li><strong>Q-ARVD pushes quantization into autoregressive video diffusion</strong> — <a href="https://huggingface.co/papers/2605.21072" target="_blank" rel="noopener">HF Papers</a>. Quantization here can affect denoising trajectories and temporal consistency, not just next-token logits. It is a reminder that runtime-drift sign-off should include modalities beyond text.</li>
+</ol>
+<ol>
+<li><strong>Forecasting/downstream proxy metrics and scientific-progress forecasting are evaluation warnings</strong> — <a href="https://huggingface.co/papers/2605.18607" target="_blank" rel="noopener">HF performance forecasting</a>, <a href="https://huggingface.co/papers/2605.22681" target="_blank" rel="noopener">HF scientific progress forecasting</a>. Both ask whether cheap or temporally controlled evaluations actually predict the target behavior. Useful skeptical signal: model-selection and research-agent claims need leakage-aware, cutoff-aware design.</li>
+</ol>
+<h2>Cross-cutting patterns, if any</h2>
+<ul>
+<li><strong>State interfaces remain plural.</strong> Today had recurrent linear-attention state, world-model KV memory, speech/text recall routes, representation-autoencoder detail queries, and diffusion attention extrapolation. These should not be collapsed into “long context”; each carrier has different failure modes.</li>
+<li><strong>Cheap supervision is moving inward.</strong> Unsupervised PRMs, self-policy distillation, language-adaptive hints, and self-regulated planning all try to extract more training/control signal from the model or process itself. The recurring risk is stale self-imitation or reward channels that hide factor drift.</li>
+<li><strong>Evaluation claims need mechanism-preserving proxies.</strong> Proxy metrics, scientific-progress forecasting, sparse-feature audits, and quantized/video inference all highlight the same caution: average or cheap measurements are useful only if they preserve the causal object under study.</li>
+</ul>
+<h2>Five research opportunities</h2>
+<h3>1. Erase/write state-editing probe for linear-attention memory</h3>
+<p>Evidence: <strong>Gated DeltaNet-2</strong> (<a href="https://arxiv.org/abs/2605.22791v1" target="_blank" rel="noopener">arXiv</a>) and the recent state/KV stream including WorldKV (<a href="https://arxiv.org/abs/2605.22718v1" target="_blank" rel="noopener">arXiv</a>).</p>
+<p>Mechanism: compressed state models may fail because the same update mixes “erase stale association” and “write new association.” Separating those channels should improve stale-correction and rare-evidence retention if the architecture is doing true memory editing.</p>
+<p>Minimal experiment/probe: create synthetic sequences with an early fact, later correction, repeated distractor aliases, and a final query. Compare a small softmax transformer, a DeltaNet-like recurrent state, and an ablated erase/write-gate variant. Log correction accuracy, stale-fact resurrection, gate activations, and state-vector drift.</p>
+<p>Falsifier: the separated erase/write variant improves average loss but does not improve stale-correction or rare-evidence slices under matched parameters/compute.</p>
+<p>Confidence: medium.</p>
+<h3>2. Modality-transfer causal recall test for speech-language models</h3>
+<p>Evidence: <strong>Do Factual Recall Mechanisms Carry over from Text to Speech in Multimodal Language Models?</strong> (<a href="https://arxiv.org/abs/2605.22170v1" target="_blank" rel="noopener">arXiv</a>) plus the running speech-factor harness.</p>
+<p>Mechanism: factual recall may share text circuits, route through speech-specific acoustic-semantic bridges, or split by entity/acoustic condition. The key is whether causal mediation paths are stable across text input, clean speech, noisy speech, and speaker/accent variants.</p>
+<p>Minimal experiment/probe: choose a small set of factual associations with matched text and TTS/speech forms. Run causal mediation or activation patching where feasible, and simpler linear probes where not. Compare recall margin, layer localization, speaker/accent perturbation sensitivity, and transcript-only controls.</p>
+<p>Falsifier: speech and text recall localize identically after controlling for transcript quality, with no additional speech-specific bottleneck across noise/accent/speaker slices.</p>
+<p>Confidence: medium.</p>
+<h3>3. Cheap process-supervision sanity suite for unsupervised PRMs</h3>
+<p>Evidence: <strong>Unsupervised Process Reward Models</strong> (<a href="https://huggingface.co/papers/2605.10158" target="_blank" rel="noopener">HF Papers</a>), self-policy distillation (<a href="https://arxiv.org/abs/2605.22675v1" target="_blank" rel="noopener">arXiv</a>), and the recurring fixed-rollout RL credit-geometry idea.</p>
+<p>Mechanism: unsupervised/process rewards may detect genuine step quality, or may reward fluency, length, self-consistency theater, and familiar trace shapes. The minimal object is a fixed rollout set with known local corruptions.</p>
+<p>Minimal experiment/probe: build math/code rollouts with injected single-step errors, irrelevant but fluent detours, correct terse solutions, and plausible wrong alternatives. Score with unsupervised PRM/proxy methods and compare against verifier labels plus token-local corruption position.</p>
+<p>Falsifier: the unsupervised process score cannot separate localized invalid steps from fluent wrong traces better than simple length/confidence/logprob baselines.</p>
+<p>Confidence: medium-low.</p>
+<h3>4. Frequency-aware attention extrapolation toy for diffusion/vision transformers</h3>
+<p>Evidence: <strong>SEGA</strong> (<a href="https://huggingface.co/papers/2605.22668" target="_blank" rel="noopener">HF Papers</a>) and broader RoPE/positional-extrapolation failures.</p>
+<p>Mechanism: positional/frequency components may carry different spatial-detail and global-layout roles. Uniform scaling can preserve one while breaking the other.</p>
+<p>Minimal experiment/probe: train a tiny DiT/ViT-like model on low-resolution synthetic images with separate global shape and high-frequency texture labels. At higher resolution, compare uniform RoPE scaling, frequency-aware scaling, and no scaling. Measure global-shape accuracy, texture fidelity, attention spectra, and artifact rate.</p>
+<p>Falsifier: frequency-aware scaling has no slice-level advantage over uniform scaling once total compute and sampling settings are controlled.</p>
+<p>Confidence: low-medium.</p>
+<h3>5. Proxy-metric order-preservation audit for small LLM recipe choices</h3>
+<p>Evidence: <strong>Forecasting Downstream Performance of LLMs With Proxy Metrics</strong> (<a href="https://huggingface.co/papers/2605.18607" target="_blank" rel="noopener">HF Papers</a>) and <strong>Forecasting Scientific Progress with AI</strong> (<a href="https://huggingface.co/papers/2605.22681" target="_blank" rel="noopener">HF Papers</a>).</p>
+<p>Mechanism: a proxy is useful only if it preserves ranking under the decision being made: data mixture, architecture tweak, tokenizer, or post-training recipe. Many proxies may correlate globally but fail locally near the choices researchers actually face.</p>
+<p>Minimal experiment/probe: train or collect several tiny recipe variants, compute cheap proxies during training, then evaluate on target slices: reasoning, rare strings, long-context recall, and calibration. Report Kendall/Spearman rank preservation per slice and whether proxy confidence intervals would choose the same recipe.</p>
+<p>Falsifier: proxy rankings are unstable across seeds and fail to predict the target slice better than validation loss/perplexity.</p>
+<p>Confidence: medium.</p>
+<h2>Watchlist / things to revisit</h2>
+<ul>
+<li><strong>LoREnc</strong> (<a href="https://huggingface.co/papers/2605.13163" target="_blank" rel="noopener">HF Papers</a>): interesting low-rank security/adaptation interface, but needs a clearer learning experiment before promotion.</li>
+<li><strong>Q-ARVD</strong> (<a href="https://huggingface.co/papers/2605.21072" target="_blank" rel="noopener">HF Papers</a>): track for runtime-drift ideas beyond text LLMs, especially if code/eval slices appear.</li>
+<li><strong>DecQ</strong> (<a href="https://huggingface.co/papers/2605.22777" target="_blank" rel="noopener">HF Papers</a>): relevant to tokenizer/detail-query interfaces for generative models; revisit if it offers runnable ablations.</li>
+<li><strong>LANG</strong> (<a href="https://arxiv.org/abs/2605.22567v1" target="_blank" rel="noopener">arXiv</a>): add language drift to reasoning-RL credit audits if multilingual data becomes part of a toy harness.</li>
+<li><strong>Neighbor-consistent neural audio filters</strong> (<a href="https://arxiv.org/abs/2605.21891v1" target="_blank" rel="noopener">arXiv</a>): keep as an outside-bubble audio robustness item; not yet a core opportunity.</li>
+<li><strong>Scientific-progress forecasting benchmark</strong> (<a href="https://huggingface.co/papers/2605.22681" target="_blank" rel="noopener">HF Papers</a>): useful skeptical design pattern for research agents, but not itself a mechanism project.</li>
+</ul></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-24 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

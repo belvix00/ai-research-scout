@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>AI Research Scout Resources — 2026-05-24 · AI Research Scout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/ai-research-scout/assets/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css">
+</head>
+<body>
+  <div class="noise"></div>
+  <header class="topbar">
+    <a class="brand" href="/ai-research-scout/index.html"><span class="dot"></span>AI Research Scout</a>
+    <nav><a class="" href="/ai-research-scout/index.html">Home</a><a class="active" href="/ai-research-scout/resources.html">Resources</a><a class="" href="/ai-research-scout/daily.html">Daily</a><a class="" href="/ai-research-scout/weekly.html">Weekly</a><a class="" href="/ai-research-scout/monthly.html">Monthly</a><a class="" href="/ai-research-scout/ideas.html">Ideas</a><a class="" href="/ai-research-scout/blog.html">First-principles Blog</a><a class="" href="/ai-research-scout/questions.html">Questions</a><a class="" href="/ai-research-scout/running.html">Running Ideas</a></nav>
+  </header>
+  <main>
+    <article class="prose"><h1>AI Research Scout Resources — 2026-05-24</h1>
+<p>Buckets covered: Core DL/LLM research; Training/RL/math/mech interp; Audio/TTS/speech; Inference/ML infra/GPU; Broad learning / outside current project bubble; Skeptical or failure signal.</p>
+<h2>arXiv — Gated DeltaNet-2: Decoupling Erase and Write in Linear Attention</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22791v1</p>
+<p>Summary: A linear-attention architecture paper that treats recurrent state updates as an edit operation with separable erase and write controls. The useful mechanism is memory editing under constant-cache decoding: compressed state models need to forget stale associations without corrupting useful ones. Collected because it gives a concrete architectural handle on the long-context/state-carrier question beyond softmax attention.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — WorldKV: Efficient World Memory with World Retrieval and Compression</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22718v1</p>
+<p>Summary: Proposes trainable KV retrieval/compression for autoregressive video/world models where persistent scene consistency conflicts with real-time rollout cost. The mechanism signal is memory as a selective world-state cache, not just a generic KV-size reduction. It is useful for thinking about how state carriers preserve rare or revisited evidence under streaming constraints.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — The Matching Principle: A Geometric Theory of Loss Functions for Nuisance-Robust Representation Learning</h2>
+<p>Type: Math/theory</p>
+<p>Link: https://arxiv.org/abs/2605.22800v1</p>
+<p>Summary: Frames many robustness and invariance losses as one geometric problem: estimate deployment nuisance covariance and regularize encoder Jacobians along matching directions. The learning value is a mathematical mechanism for when invariance objectives preserve labels versus erase useful factors. Collected as broad DL theory with direct relevance to speech, vision, and representation robustness.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Reading Task Failure Off the Activations: A Sparse-Feature Audit of GPT-2 Small on Indirect Object Identification</h2>
+<p>Type: Mech interp</p>
+<p>Link: https://arxiv.org/abs/2605.22719v1</p>
+<p>Summary: A small reproducible SAE-feature audit comparing failed and successful IOI prompts in GPT-2 small. The mechanism signal is failure-localization from sparse features, but the important question is whether correlates predict interventions or merely describe failures post hoc. Useful as a compact test case for causal interpretability scorecards.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — Do Factual Recall Mechanisms Carry over from Text to Speech in Multimodal Language Models?</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.22170v1</p>
+<p>Summary: Investigates whether causal mechanisms for factual association in text models transfer to speech-language models. The mechanism value is modality transfer of recall circuits: speech may share knowledge storage with text or route factual recall through different acoustic/semantic interfaces. Collected for the audio-factor harness because it connects causal mediation, modality, and factual memory.</p>
+<p>Personalization: medium</p>
+<h2>arXiv — LANG: Reinforcement Learning for Multilingual Reasoning with Language-Adaptive Hint Guidance</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22567v1</p>
+<p>Summary: Studies reasoning RL in multilingual settings where models trade off reasoning quality against language consistency and drift toward English. The collected mechanism is hint-guided credit shaping under a language constraint, not just multilingual benchmarking. It expands the reasoning-RL bucket to include representation/language-routing failures that scalar rewards can hide.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Self-Policy Distillation via Capability-Selective Subspace Projection</h2>
+<p>Type: Paper</p>
+<p>Link: https://arxiv.org/abs/2605.22675v1</p>
+<p>Summary: A self-distillation paper that tries to curate model-generated outputs by projecting through capability-selective subspaces instead of relying only on correctness filters or external judges. The mechanism signal is subspace-level filtering of self-generated data, which may separate useful capability traces from copied model biases. Collected as a stale-supervision and self-training diagnostic item.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Efficient Agentic Reasoning Through Self-Regulated Simulative Planning</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.22138</p>
+<p>Summary: Argues that efficient agents need explicit decisions about when, how, and how far to plan rather than relying on implicit long chain-of-thought. The mechanism is a planning controller: allocate simulation depth and structure only when the state uncertainty/action value warrants it. Useful for adaptive test-time compute and agent reasoning without treating longer traces as automatically better.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — Unsupervised Process Reward Models</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.10158</p>
+<p>Summary: Targets the cost bottleneck of process reward models by training step-level supervision without human step annotations or final-answer verification. The mechanism signal is unsupervised step-quality estimation for reasoning traces. Collected because it probes whether fine-grained reward can be made cheap enough for broad reasoning-RL experiments.</p>
+<p>Personalization: medium</p>
+<h2>Hugging Face Papers — SEGA: Spectral-Energy Guided Attention for Resolution Extrapolation in Diffusion Transformers</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.22668</p>
+<p>Summary: A diffusion-transformer inference-time method for out-of-training-range resolution generation, using spectral-energy structure rather than uniform RoPE/attention scaling. The mechanism is frequency-aware attention adjustment: different positional-frequency components should not be scaled identically. Broad learning value for attention extrapolation outside LLM-only contexts.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Q-ARVD: Quantizing Autoregressive Video Diffusion Models</h2>
+<p>Type: Infra/GPU</p>
+<p>Link: https://huggingface.co/papers/2605.21072</p>
+<p>Summary: Studies quantization for autoregressive video diffusion, where streaming world/video generation makes inference cost a central bottleneck. The mechanism signal is that quantization errors in AR diffusion may hit temporal consistency and denoising trajectories differently from text LLMs. Collected for deployment-path validity beyond language-only inference.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — LoREnc: Low-Rank Encryption for Securing Foundation Models and LoRA Adapters</h2>
+<p>Type: Model/dataset</p>
+<p>Link: https://huggingface.co/papers/2605.13163</p>
+<p>Summary: Proposes a training-free protection scheme for foundation models and LoRA adapters using spectral truncation, compensation, and orthogonal reparameterization. The mechanism value is low-rank structure as both adaptation channel and security surface. Collected as a deployment/interface item, not as generic model-security news.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Forecasting Downstream Performance of LLMs With Proxy Metrics</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.18607</p>
+<p>Summary: Studies whether proxy metrics can forecast downstream LLM performance across architecture, data, and recipe choices. The mechanism signal is model-selection observability: cheap proxies are only useful if they preserve the ordering of expensive target behaviors. Useful as a skeptical companion to daily papers that report only one or two headline evaluations.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — Forecasting Scientific Progress with Artificial Intelligence</h2>
+<p>Type: Skeptical or failure signal</p>
+<p>Link: https://huggingface.co/papers/2605.22681</p>
+<p>Summary: Introduces a temporally grounded benchmark for forecasting scientific progress under controlled knowledge cutoffs. The scoped value is not generic science automation hype; it is an evaluation design warning about leakage, cutoff conditioning, and whether models can extrapolate from prior literature. Collected as a skeptical signal for research-agent claims.</p>
+<p>Personalization: low</p>
+<h2>Hugging Face Papers — DecQ: Detail-Condensing Queries for Enhanced Reconstruction and Generation in Representation Autoencoders</h2>
+<p>Type: Paper</p>
+<p>Link: https://huggingface.co/papers/2605.22777</p>
+<p>Summary: Addresses a representation-autoencoder tradeoff: frozen vision foundation encoders give semantic latents but lose spatial reconstruction detail needed by latent diffusion. The mechanism is a detail-query interface that tries to recover fine-grained information without destroying pretrained semantic geometry. Broadly useful for tokenizer/interface thinking in generative models.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Effective User-defined Keyword Spotting with Dual-stage Matching, Multi-modal Enrollment, and Continual Adaptation</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.22120v1</p>
+<p>Summary: Presents a personalized keyword-spotting pipeline with dual-stage matching, multimodal enrollment, and continual adaptation. The mechanism signal is discriminability under speaker/pronunciation variation: wake-word systems need adaptation without exploding data requirements. Collected for speech-factor robustness and personalized audio interfaces.</p>
+<p>Personalization: low</p>
+<h2>arXiv — Neighbor-Consistent Neural Filters for Robust Personal Sound Zones Under Localization Uncertainty</h2>
+<p>Type: Audio/TTS</p>
+<p>Link: https://arxiv.org/abs/2605.21891v1</p>
+<p>Summary: Studies neural sound-zone filters whose outputs can change sharply under small listener-coordinate jitter. The mechanism is smoothness/neighbor consistency in coordinate-conditioned audio control. This is outside the usual LLM bubble but useful for audio ML robustness: spatial uncertainty can break learned acoustic mappings even when average quality looks fine.</p>
+<p>Personalization: low</p></article>
+  </main>
+  <footer>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-24 03:06</p>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
+  <script>
+    renderMathInElement(document.body, {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false});
+  </script>
+</body>
+</html>

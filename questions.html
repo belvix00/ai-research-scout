@@ -57,6 +57,10 @@
 <li><code>experiment</code> <strong>Cheap hallucination/uncertainty probe overlap map.</strong> On one small factual QA set, log first-content-token entropy, ordinary logprob, middle-layer attention divergence/KL, semantic self-consistency, answer type, and correctness. Cluster failures by which signal catches them.</li>
 <li><code>experiment</code> <strong>Visual grounding persistence / attention dilution demo.</strong> Create simple images with late-needed details; compare short answer, long answer, and long answer with visual refresh/memory summary. Measure detail accuracy vs generation length and attention-to-image fraction if available.</li>
 <li><code>experiment</code> <strong>Text-conditioned visual SSL nameability probe.</strong> Create/reuse synthetic images with nameable/captioned and non-nameable/uncaptioned factors. Compare visual SSL, text-conditioned SSL, end-to-end tokenizer, and caption-randomized controls with linear probes and local-factor corruption metrics.</li>
+<li><code>candidate</code> In compressed-state sequence models, can separate erase/write gates reduce stale-correction failures without hurting early rare-fact retention under a matched memory budget?</li>
+<li><code>candidate</code> Do speech-language models retrieve factual associations through the same causal paths as text models, or through modality-specific acoustic-semantic bridge features that fail under speaker/accent/noise shifts?</li>
+<li><code>candidate</code> Can unsupervised process reward models detect localized invalid reasoning steps after controlling for fluency, length, and self-consistency-style trace aesthetics?</li>
+<li><code>candidate</code> Which proxy metrics preserve local ranking among small LLM recipe choices on rare-string, long-context, reasoning, and calibration slices, rather than only correlating globally?</li>
 </ul>
 <h2>Answered / killed</h2>
 <ul>
@@ -83,7 +87,7 @@
 </ul></article>
   </main>
   <footer>
-    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-23 09:12</p>
+    <p>Built from Obsidian notes by Hermes · Last updated 2026-05-24 03:06</p>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js"></script>
